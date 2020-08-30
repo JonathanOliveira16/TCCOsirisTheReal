@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using OsirisPdvReal.Models;
 using OsirisPdvReal.Utils;
+using ReflectionIT.Mvc.Paging;
 
 namespace OsirisPdvReal.Controllers
 {
@@ -136,10 +137,12 @@ namespace OsirisPdvReal.Controllers
         }
 
         // GET: Jornaleiros
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1)
         {
-            var contexto = _context.Jornaleiros.Include(j => j.Status);
-            return View(await contexto.ToListAsync());
+            //essas linhas sao necessarias para a paginaca so trocar o tipo de context, jornaleiro, produto etc
+            var query = _context.Jornaleiros.AsNoTracking().OrderBy(j => j.NomeJornaleiro);
+            var model = await PagingList.CreateAsync(query,5,page);
+            return View(model);
         }
 
         // GET: Jornaleiros/Details/5

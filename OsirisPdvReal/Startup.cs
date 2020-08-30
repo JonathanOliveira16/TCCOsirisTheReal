@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OsirisPdvReal.Models;
+using ReflectionIT.Mvc.Paging;
 
 namespace OsirisPdvReal
 {
@@ -29,6 +30,12 @@ namespace OsirisPdvReal
             services.AddDbContext<Contexto>(opcoes => opcoes.UseSqlServer(Configuration.GetConnectionString("Conexao")));
 
             services.AddControllersWithViews();
+            services.AddPaging(options => {
+                options.ViewName = "Bootstrap4";
+                options.HtmlIndicatorDown = " <span>&darr;</span>";
+                options.HtmlIndicatorUp = " <span>&uarr;</span>";
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -56,7 +63,7 @@ namespace OsirisPdvReal
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Jornaleiros}/{action=Login}/{id?}");
+                    pattern: "{controller=Jornaleiros}/{action=Create}/{id?}");
             });
         }
     }

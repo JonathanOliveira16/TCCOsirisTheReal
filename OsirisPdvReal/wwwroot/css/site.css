@@ -120,6 +120,12 @@ body {
     font-weight: bold
 }
 
+.btnPage {
+    width: 20%;
+    font-size: 15px;
+    font-weight: bold
+}
+
 .borderInput {
     border: 2px solid #7433FF
 }
@@ -140,4 +146,69 @@ body {
 
 .marginLabelLeft {
     margin-left: 13%;
+}
+
+.navbar-custom {
+    background-color: #7433FF;
+}
+    /* change the brand and text color */
+    .navbar-custom .navbar-brand,
+    .navbar-custom .navbar-text {
+        color: rgba(255,255,255,.8);
+    }
+    /* change the link color */
+    .navbar-custom .navbar-nav .nav-link {
+        color: rgba(255,255,255,.8);
+    }
+    /* change the color of active or hovered links */
+    .navbar-custom .nav-item.active .nav-link {
+      color:white;  
+    }
+    .navbar-custom .nav-item:hover .nav-link {
+        color: black;
+    }
+
+.imageLogo{
+    width:80%;
+    height:80%;
+    
+}
+
+.sizeLogo{
+    width:10%;
+}
+
+.fontSizeDezoito {
+    font-size:18px;
+}
+
+.fontPurple {
+    color: #7433FF;
+}
+
+.tHeadPurple {
+    background-color: #7433FF;
+}
+
+.removeEmailHtml {
+    text-decoration: none !important;
+    text-decoration: none;
+}
+
+.borderPurple {
+    border-color: #7433FF;
+    border-style: solid;
+    border-width: 2px;
+    border-radius: 8px;
+}
+
+.btnSizeFontUpper {
+    width: 15%;
+    font-size: 13px;
+    font-weight: bold
+}
+
+.centerCreateOrEdit {
+    width: 60%;
+    margin-left: 20%
 }

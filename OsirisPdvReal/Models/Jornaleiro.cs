@@ -29,6 +29,7 @@ namespace OsirisPdvReal.Models
         [Display(Name = "Senha")]
         public string SenhaJornaleiro { get; set; }
         public ICollection<JornaleiroBanca> JornaleiroBanca { get; set; }
+        [Display(Name = "Status")]
         public int StatusId { get; set; }
         public Status Status { get; set; }
 

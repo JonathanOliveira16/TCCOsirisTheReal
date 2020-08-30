@@ -1,59 +1,67 @@
-﻿@model IEnumerable<OsirisPdvReal.Models.Jornaleiro>
-
+﻿@model ReflectionIT.Mvc.Paging.PagingList<OsirisPdvReal.Models.Jornaleiro>
+@using ReflectionIT.Mvc.Paging
+@addTagHelper *, ReflectionIT.Mvc.Paging
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
+
+<div class="divBtn">
+    <a class="btn btnPage btn-success mt-2" asp-action="Create">Novo Jornaleiro</a>
+</div>
+
+<table class="table mt-4">
+    <thead class="tHeadPurple">
         <tr>
-            <th>
+            <th class="text-white">
                 @Html.DisplayNameFor(model => model.NomeJornaleiro)
             </th>
-            <th>
+            <th class="text-white">
                 @Html.DisplayNameFor(model => model.EmailJornaleiro)
             </th>
-            <th>
+            <th class="text-white">
                 @Html.DisplayNameFor(model => model.TelefoneJornaleiro)
             </th>
-            <th>
+            <th class="text-white">
                 @Html.DisplayNameFor(model => model.SenhaJornaleiro)
             </th>
-            <th>
+            <th class="text-white">
                 @Html.DisplayNameFor(model => model.Status)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.NomeJornaleiro)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EmailJornaleiro)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TelefoneJornaleiro)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SenhaJornaleiro)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status.NomeStatus)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.JornaleiroId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.JornaleiroId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.JornaleiroId">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NomeJornaleiro)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EmailJornaleiro)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TelefoneJornaleiro)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SenhaJornaleiro)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status.NomeStatus)
+                </td>
+                <td>
+                    <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.JornaleiroId">Editar</a> |
+
+                    <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.JornaleiroId">Excluir</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+
+<!--isso e as 3 primeiras linhas sao necessarias para a paginacao-->
+<nav class="float-right">
+    @await this.Component.InvokeAsync("Pager", new { PagingList = this.Model })
+</nav>
