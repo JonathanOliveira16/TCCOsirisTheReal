@@ -1,0 +1,86 @@
+﻿@model OsirisPdvReal.Models.Jornaleiro
+
+@{
+    Layout = "LayoutLogin";
+}
+
+<head>
+    <title>Osiris PDV</title>
+</head>
+<body class="bodyLogin">
+
+    <div class="modal" id="visao" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="titleModal"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="textModal"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" style="font-size:10px;" data-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div>
+            <img src="@Url.Content("~/images/logo.png")" class="imageStyle" />
+        </div>
+        <div class="justify-content-center align-content-center centerLogin h-75">
+            @if (TempData["msgSucesso"] != null)
+            {
+                <div class="alert @TempData["alertColor"] alert-dismissable mt-2" style="margin-left:10%;margin-right:10%">
+                    <strong>@TempData["msgSucesso"]</strong>
+                </div>
+            }
+            <div class="mt-4">
+                <form style="height:350px;" asp-action="Login">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div>
+                        <label style="margin-left:13%" class="font-weight-bold">E-MAIL</label>
+                        <br>
+                        <input type="email" asp-for="EmailJornaleiro" required class="form-control w-75 centerText borderInput" placeholder="example@example.com" />
+                        <span style="margin-left:13%" asp-validation-for="EmailJornaleiro" class="text-danger font"></span>
+                    </div>
+
+                    <div class="mt-4">
+                        <label style="margin-left:13%" class="font-weight-bold">SENHA</label>
+                        <br>
+                        <input type="password" asp-for="SenhaJornaleiro" required class="form-control w-75 centerText borderInput" placeholder="***********" />
+                        <span style="margin-left:13%" asp-validation-for="SenhaJornaleiro" class="text-danger"></span>
+                    </div>
+                    <div class="divBtn mt-4 mb-4">
+                        <input type="submit" class="btn-success btn btnSize" value="LOGAR" />
+                        <a asp-controller="Jornaleiros" asp-action="EnviarTokenSenha" class="btn btn-info btnSize text-white">ESQUECI MINHA SENHA</a>
+                    </div>
+
+                    <div class="divBtn">
+                        <a href="#"><p class="textRanking">VERIFICAR RANKING DE CLIENTES</p></a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+
+</body>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+<script>
+    function MensagemModal(tipo, mensagem) {
+        document.getElementById('textModal').innerHTML = mensagem;
+        document.getElementById('titleModal').innerHTML = tipo;
+    }
+</script>
+}
+

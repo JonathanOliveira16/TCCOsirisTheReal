@@ -1,0 +1,30 @@
+﻿@model OsirisPdvReal.Models.Banca
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Banca</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.NomeBanca)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.NomeBanca)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Jornaleiro)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Jornaleiro.EmailJornaleiro)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.BancaId">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

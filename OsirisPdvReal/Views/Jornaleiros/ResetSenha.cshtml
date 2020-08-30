@@ -1,0 +1,62 @@
+﻿@{
+    Layout = "LayoutLogin";
+}
+
+<head>
+    <title>Osiris PDV</title>
+</head>
+<body class="bodyLogin">
+
+    <div class="modal" id="visao" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="titleModal"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="textModal"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" style="font-size:10px;" data-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div>
+            <img src="@Url.Content("~/images/logo.png")" class="imageStyle" />
+        </div>
+        <div class="justify-content-center align-content-center centerLogin h-75">
+
+            <div class="mt-5">
+                <form style="height:250px;" asp-action="ResetSenha">
+                    <div class="marginUpper">
+                        <label style="margin-left:13%" class="font-weight-bold">Digite a nova senha</label>
+                        <br>
+                        <input type="password" id="senhaNova" name="senhaNova" class="form-control w-75 centerText borderInput" placeholder="******" />
+                    </div>
+
+
+                    <div class="divBtn mt-4 mb-4">
+                        <input type="submit" class="btn-success btn btnSize" value="RESETAR" />
+                        <a class="btn btn-info btnSize text-white" asp-controller="Jornaleiros" asp-action="EnviarTokenSenha">VOLTAR</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+
+</body>
+
+<script>
+    function MensagemModal(tipo,mensagem){
+        document.getElementById('textModal').innerHTML = mensagem;
+        document.getElementById('titleModal').innerHTML = tipo;
+    }
+</script>

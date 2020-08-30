@@ -1,0 +1,59 @@
+﻿@model IEnumerable<OsirisPdvReal.Models.Jornaleiro>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.NomeJornaleiro)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EmailJornaleiro)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TelefoneJornaleiro)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SenhaJornaleiro)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.NomeJornaleiro)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EmailJornaleiro)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TelefoneJornaleiro)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SenhaJornaleiro)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status.NomeStatus)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.JornaleiroId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.JornaleiroId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.JornaleiroId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

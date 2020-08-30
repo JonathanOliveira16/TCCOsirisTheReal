@@ -1,0 +1,28 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Osiris_PDV</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+   
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class=" footer text-muted bg-dark">
+        <div class="container">
+            &copy; 2020 - Osiris_PDV - <a href="#" data-toggle="modal" data-target="#visao" onclick="MensagemModal('Visão da empresa','Nossa visão é fornecer sistemas que atendam as expectativas de todos nossos clientes para que a empresa torne-se uma referência no cenário de desenvolvimento de softwares para microempresas')">Visão</a> - <a href="#" data-toggle="modal" data-target="#visao" onclick="MensagemModal('Missão da empresa','Nossa missão é fornecer sistemas simples para todos os tipos de usuários e que façam o que foi solicitado')">Missão</a> - <a href="#" data-toggle="modal" data-target="#visao" onclick="MensagemModal('Valores da empresa','Nossos valores sNosso valor principal é a satisfação do cliente entregando produtos acimas da expectativa dos nossos clientes temos certeza que iremos crescer, também prezamos pela valorização e respeito às pessoas, sem o respeito não temos o reconhecimento.')">Valores</a>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

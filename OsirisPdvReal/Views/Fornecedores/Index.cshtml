@@ -1,0 +1,71 @@
+﻿@model IEnumerable<OsirisPdvReal.Models.Fornecedor>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.NomeFornecedor)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EmailFornecedor)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TelefoneFornecedor)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PontoFocalFornecedor)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LogradouroFornecedor)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CEPFornecedor)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.NomeFornecedor)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EmailFornecedor)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TelefoneFornecedor)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PontoFocalFornecedor)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LogradouroFornecedor)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CEPFornecedor)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status.NomeStatus)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.FornecedorId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.FornecedorId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.FornecedorId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
