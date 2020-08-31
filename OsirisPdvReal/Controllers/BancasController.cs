@@ -63,7 +63,7 @@ namespace OsirisPdvReal.Controllers
                 _context.Bancas.Add(new Banca
                 {
                     NomeBanca = banca.NomeBanca,
-
+                    JornaleiroId = banca.JornaleiroId
 
                 });
 
@@ -74,7 +74,7 @@ namespace OsirisPdvReal.Controllers
                 if (!existe)
                 {
 
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync();
                     return RedirectToAction("Index");
 
                 }

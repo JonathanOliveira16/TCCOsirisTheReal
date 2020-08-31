@@ -1,0 +1,57 @@
+﻿@model OsirisPdvReal.Models.Cliente
+
+
+@{
+    ViewData["Title"] = "RankingClientes";
+}
+
+<h1>Ranking de Clientes</h1>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.NomeCliente)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EmailCliente)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TelefoneCliente)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th><label>Valor Total</label></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.ClienteBancas != null)
+        {
+
+
+@foreach (var item in Model.ClienteBancas)
+{
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Clientes.NomeCliente)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Clientes.EmailCliente)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Clientes.TelefoneCliente)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Clientes.Status.NomeStatus)
+            </td>
+            <td>@Html.DisplayFor(modelItem => item.ValorTotal)</td>
+           
+        </tr>
+}
+        }
+    </tbody>
+</table>
+        

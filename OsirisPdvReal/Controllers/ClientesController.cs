@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 using OsirisPdvReal.Models;
 
 namespace OsirisPdvReal.Controllers
@@ -23,6 +24,25 @@ namespace OsirisPdvReal.Controllers
         {
             var contexto = _context.Clientes.Include(c => c.Status);
             return View(await contexto.ToListAsync());
+        }
+
+        public async Task<IActionResult> RankingClientes()
+        {
+
+            var clienteid = _context.Clientes.Where(x => x.ClienteId > 0).Select(x=>x.ClienteId).FirstOrDefault();
+
+            var clientes = _context.Clientes.Find(clienteid) ;
+
+            if (clientes!=null)
+            {
+                var cb = _context.ClienteBancas.Include(e => e.Clientes).Include(x => x.Bancas).Where(e=>e.ClienteId==clienteid).OrderByDescending(x=>x.ValorTotal).ToList();
+                clientes.ClienteBancas = cb;
+
+                return View(clientes);
+            }
+
+            return View();
+            
         }
 
         // GET: Clientes/Details/5

@@ -22,6 +22,8 @@ namespace OsirisPdvReal.Models
         public DbSet<ProdutoCompras> ProdutoCompras { get; set; }
         public DbSet<VendaProduto> VendaProduto { get; set; }
 
+        public DbSet<ClienteBanca> ClienteBancas { get; set; }
+
 
         public Contexto(DbContextOptions<Contexto> opcoes) : base(opcoes)
         {
