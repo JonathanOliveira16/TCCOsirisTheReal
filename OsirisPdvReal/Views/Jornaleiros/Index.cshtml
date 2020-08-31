@@ -6,10 +6,31 @@
 }
 
 
+<div class="modal" id="visao" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="titleModal">Excluir</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Deseja realmente excluir esse jornaleiro?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success botaoDoId" style="font-size:10px;">Sim</button>
+                <button type="button" class="btn btn-danger" style="font-size:10px;" data-dismiss="modal">Não</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <div class="divBtn">
     <a class="btn btnPage btn-success mt-2" asp-action="Create">Novo Jornaleiro</a>
 </div>
+
 
 <table class="table mt-4">
     <thead class="tHeadPurple">
@@ -54,7 +75,7 @@
                 <td>
                     <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.JornaleiroId">Editar</a> |
 
-                    <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.JornaleiroId">Excluir</a>
+                    <a class="btn btn-danger" data-toggle="modal" data-target="#visao" onclick="PassarDados(@item.JornaleiroId)">Excluir</a>
                 </td>
             </tr>
         }
@@ -65,3 +86,25 @@
 <nav class="float-right">
     @await this.Component.InvokeAsync("Pager", new { PagingList = this.Model })
 </nav>
+
+@section Scripts{
+    <script>
+        var idParaApagar
+
+        function PassarDados(idJornaleiro) {
+            $(".botaoDoId").on('click', function () {
+                $.ajax({
+                    url: "/Jornaleiros/Delete",
+                    method: "POST",
+                    data: { id: idJornaleiro },
+                    success: function (data) {
+                        $(".modal").modal('hide');
+                        location.reload(true);
+                    }
+                });
+            });
+        }
+
+        
+    </script>
+}

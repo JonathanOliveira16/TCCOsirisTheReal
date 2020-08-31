@@ -178,14 +178,34 @@ namespace OsirisPdvReal.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("JornaleiroId,NomeJornaleiro,EmailJornaleiro,TelefoneJornaleiro,SenhaJornaleiro,StatusId")] Jornaleiro jornaleiro)
         {
-            if (ModelState.IsValid)
+            try
             {
-                _context.Add(jornaleiro);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    var emailOrName = _context.Jornaleiros.Where(j => j.EmailJornaleiro == jornaleiro.EmailJornaleiro || j.NomeJornaleiro == jornaleiro.NomeJornaleiro).Select(j => j.EmailJornaleiro).FirstOrDefault();
+                    if (emailOrName == null)
+                    {
+                        _context.Add(jornaleiro);
+                        await _context.SaveChangesAsync();
+                        return RedirectToAction(nameof(Index));
+                    }
+                    else
+                    {
+                        TempData["msgSucesso"] = "E-mail ou nome de jornaleiro já cadastrado!";
+
+                    }
+
+                }
+                ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus", jornaleiro.StatusId);
+                return View(jornaleiro);
             }
-            ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus", jornaleiro.StatusId);
-            return View(jornaleiro);
+            catch (Exception)
+            {
+                TempData["msgSucesso"] = "Erro na sua solicitação, favor tentar novamente!";
+                ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus", jornaleiro.StatusId);
+                return View(jornaleiro);
+            }
+          
         }
 
         // GET: Jornaleiros/Edit/5
@@ -212,58 +232,80 @@ namespace OsirisPdvReal.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("JornaleiroId,NomeJornaleiro,EmailJornaleiro,TelefoneJornaleiro,SenhaJornaleiro,StatusId")] Jornaleiro jornaleiro)
         {
-            if (id != jornaleiro.JornaleiroId)
-            {
-                return NotFound();
-            }
 
-            if (ModelState.IsValid)
+            try
             {
-                try
+                if (id != jornaleiro.JornaleiroId)
                 {
-                    _context.Update(jornaleiro);
-                    await _context.SaveChangesAsync();
+                    return NotFound();
                 }
-                catch (DbUpdateConcurrencyException)
+
+                if (ModelState.IsValid)
                 {
-                    if (!JornaleiroExists(jornaleiro.JornaleiroId))
+                    try
                     {
-                        return NotFound();
+                        var emailOrName = _context.Jornaleiros.Where(j => j.EmailJornaleiro == jornaleiro.EmailJornaleiro || j.NomeJornaleiro == jornaleiro.NomeJornaleiro).Select(j => j.EmailJornaleiro).FirstOrDefault();
+                        if (emailOrName == null)
+                        {
+                            _context.Update(jornaleiro);
+                            await _context.SaveChangesAsync();
+                        }
+                        else
+                        {
+                            TempData["msgSucesso"] = "E-mail ou nome de jornaleiro já cadastrado!";
+                            ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus", jornaleiro.StatusId);
+                            return View(jornaleiro);
+                        }
+                     
                     }
-                    else
+                    catch (DbUpdateConcurrencyException)
                     {
-                        throw;
+                        if (!JornaleiroExists(jornaleiro.JornaleiroId))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
                     }
+                    return RedirectToAction(nameof(Index));
                 }
-                return RedirectToAction(nameof(Index));
+                ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus", jornaleiro.StatusId);
+                return View(jornaleiro);
             }
-            ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus", jornaleiro.StatusId);
-            return View(jornaleiro);
+            catch (Exception)
+            {
+                TempData["msgSucesso"] = "Erro na sua solicitação, favor tentar novamente!";
+
+                ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus", jornaleiro.StatusId);
+                return View(jornaleiro);
+            }
+            
         }
 
         // GET: Jornaleiros/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //public async Task<IActionResult> Delete(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var jornaleiro = await _context.Jornaleiros
-                .Include(j => j.Status)
-                .FirstOrDefaultAsync(m => m.JornaleiroId == id);
-            if (jornaleiro == null)
-            {
-                return NotFound();
-            }
+        //    var jornaleiro = await _context.Jornaleiros
+        //        .Include(j => j.Status)
+        //        .FirstOrDefaultAsync(m => m.JornaleiroId == id);
+        //    if (jornaleiro == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return View(jornaleiro);
-        }
+        //    return View(jornaleiro);
+        //}
 
         // POST: Jornaleiros/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        [HttpPost]
+        public async Task<IActionResult> Delete(int id)
         {
             var jornaleiro = await _context.Jornaleiros.FindAsync(id);
             _context.Jornaleiros.Remove(jornaleiro);

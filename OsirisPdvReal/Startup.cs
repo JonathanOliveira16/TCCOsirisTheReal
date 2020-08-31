@@ -63,7 +63,7 @@ namespace OsirisPdvReal
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Jornaleiros}/{action=Create}/{id?}");
+                    pattern: "{controller=Jornaleiros}/{action=Index}/{id?}");
             });
         }
     }
