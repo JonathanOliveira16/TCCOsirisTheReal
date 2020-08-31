@@ -1,16 +1,39 @@
 ﻿@model IEnumerable<OsirisPdvReal.Models.Banca>
-
+@using ReflectionIT.Mvc.Paging
+@addTagHelper *, ReflectionIT.Mvc.Paging
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<div class="modal" id="visao" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="titleModal">Excluir</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Deseja realmente excluir esse jornaleiro?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success botaoDoId" style="font-size:10px;">Sim</button>
+                <button type="button" class="btn btn-danger" style="font-size:10px;" data-dismiss="modal">Não</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
+
+    <div class="d-flex">
+        <input type="text" class="form-control borderInput w-25" placeholder="Pesquisar..." />
+        <a class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></a>
+        <a class="btn btnPage btn-success mlAddNew" style="margin-left:10%;" asp-action="Create">Nova banca</a>
+    </div>
+
+<table class="table mt-4">
+    <thead class="tHeadPurple">
         <tr>
             <th>
                 @Html.DisplayNameFor(model => model.NomeBanca)
@@ -22,20 +45,48 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.NomeBanca)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Jornaleiro.EmailJornaleiro)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.BancaId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.BancaId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.BancaId">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NomeBanca)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Jornaleiro.NomeJornaleiro)
+                </td>
+                <td>
+                    <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.BancaId">Editar</a> |
+
+                    <a class="btn btn-danger" data-toggle="modal" data-target="#visao" onclick="PassarDados(@item.BancaId)">Excluir</a>
+                </td>
+
+            </tr>
+        }
     </tbody>
 </table>
+
+<nav class="float-right">
+    @await this.Component.InvokeAsync("Pager", new { PagingList = this.Model })
+</nav>
+
+@section Scripts{
+    <script>
+        var idParaApagar
+
+        function PassarDados(idJornaleiro) {
+            $(".botaoDoId").on('click', function () {
+                $.ajax({
+                    url: "/Jornaleiros/Delete",
+                    method: "POST",
+                    data: { id: idJornaleiro },
+                    success: function (data) {
+                        $(".modal").modal('hide');
+                        location.reload(true);
+                    }
+                });
+            });
+        }
+
+
+    </script>
+}

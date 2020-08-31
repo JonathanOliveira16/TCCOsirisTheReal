@@ -212,3 +212,12 @@ body {
     width: 60%;
     margin-left: 20%
 }
+
+.searchBtn {
+    margin-left: 5%;
+    height: 5%;
+}
+
+.mlAddNew {
+    margin-left: 10%;
+}

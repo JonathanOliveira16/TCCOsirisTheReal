@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using OsirisPdvReal.Models;
+using ReflectionIT.Mvc.Paging;
 
 namespace OsirisPdvReal.Controllers
 {
@@ -19,10 +20,13 @@ namespace OsirisPdvReal.Controllers
         }
 
         // GET: Bancas
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1)
         {
-            var contexto = _context.Bancas.Include(b => b.Jornaleiro);
-            return View(await contexto.ToListAsync());
+            var query = _context.Bancas.Include(j => j.Jornaleiro).AsNoTracking().OrderBy(j => j.NomeBanca);
+            //var contexto = _context.Bancas.Include(b => b.Jornaleiro);
+            var model = await PagingList.CreateAsync(query, 5, page);
+
+            return View(model);
         }
 
         // GET: Bancas/Details/5
@@ -60,20 +64,12 @@ namespace OsirisPdvReal.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Bancas.Add(new Banca
+
+                var existe = _context.Bancas.Where(b => b.NomeBanca == banca.NomeBanca).Select(b => b.NomeBanca).FirstOrDefault();
+
+                if (existe != null)
                 {
-                    NomeBanca = banca.NomeBanca,
-
-
-                });
-
-                var existe = _context.Bancas.Any(x => x.NomeBanca.ToUpper() == banca.NomeBanca.ToUpper()) && _context.Bancas.Any(x => x.JornaleiroId == banca.JornaleiroId) ||
-                    _context.Bancas.Any(x => x.NomeBanca.ToLower() == banca.NomeBanca.ToLower()) && _context.Bancas.Any(x => x.JornaleiroId == banca.JornaleiroId);
-
-
-                if (!existe)
-                {
-
+                    _context.Add(banca);
                     _context.SaveChanges();
                     return RedirectToAction("Index");
 

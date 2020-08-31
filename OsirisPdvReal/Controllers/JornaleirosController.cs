@@ -140,7 +140,7 @@ namespace OsirisPdvReal.Controllers
         public async Task<IActionResult> Index(int page = 1)
         {
             //essas linhas sao necessarias para a paginaca so trocar o tipo de context, jornaleiro, produto etc
-            var query = _context.Jornaleiros.AsNoTracking().OrderBy(j => j.NomeJornaleiro);
+            var query = _context.Jornaleiros.Include(j => j.Status).AsNoTracking().OrderBy(j => j.NomeJornaleiro);
             var model = await PagingList.CreateAsync(query,5,page);
             return View(model);
         }
