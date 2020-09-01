@@ -29,6 +29,34 @@ namespace OsirisPdvReal.Controllers
             return View(model);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Index(string busca, int page=1)
+        {
+            try
+            {
+                if (busca == null)
+                {
+                    var query = _context.Bancas.Include(j => j.Jornaleiro).AsNoTracking().OrderBy(j => j.NomeBanca);
+                    var model = await PagingList.CreateAsync(query, 5, page);
+                    return View(model);
+                }
+                else
+                {
+                    List<Banca> listaDasBancas = new List<Banca>();
+                    var bancas = _context.Bancas.Include(j => j.Jornaleiro).Where(b => b.NomeBanca.Contains(busca)).OrderBy(b => b.NomeBanca);
+                    var model = await PagingList.CreateAsync(bancas, 5, page);
+                    return View(model);
+                }
+            }
+            catch (Exception)
+            {
+                TempData["msgSucesso"] = "Erro na sua solicitação, favor tentar novamente!";
+                return View();
+            }
+        
+            
+        }
+
         // GET: Bancas/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -62,25 +90,37 @@ namespace OsirisPdvReal.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("BancaId,NomeBanca,JornaleiroId")] Banca banca)
         {
-            if (ModelState.IsValid)
+            try
             {
-
-                var existe = _context.Bancas.Where(b => b.NomeBanca == banca.NomeBanca).Select(b => b.NomeBanca).FirstOrDefault();
-
-                if (existe != null)
+                if (ModelState.IsValid)
                 {
-                    _context.Add(banca);
-                    _context.SaveChanges();
-                    return RedirectToAction("Index");
+
+                    var existe = _context.Bancas.Where(b => b.NomeBanca == banca.NomeBanca).Select(b => b.NomeBanca).FirstOrDefault();
+
+                    if (existe == null)
+                    {
+                        _context.Add(banca);
+                        _context.SaveChanges();
+                        return RedirectToAction("Index");
+
+                    }
+                    else
+                    {
+                        ViewData["JornaleiroId"] = new SelectList(_context.Jornaleiros, "JornaleiroId", "EmailJornaleiro");
+          
+                        TempData["msgSucesso"] = "Nome já existente em nosso banco de dados!";
+                        return View();
+                    }
 
                 }
-                else
-                {
-                    TempData["Mensagem"] = "Essa Banca já existe, Por favor escolha outro Nome";
-                    return View();
-                }
-
             }
+            catch (Exception)
+            {
+                ViewData["JornaleiroId"] = new SelectList(_context.Jornaleiros, "JornaleiroId", "EmailJornaleiro");
+                TempData["msgSucesso"] = "Erro na sua solicitação, favor tentar novamente!";
+                return View();
+            }
+         
             return View();
         }
 
@@ -117,8 +157,18 @@ namespace OsirisPdvReal.Controllers
             {
                 try
                 {
-                    _context.Update(banca);
-                    await _context.SaveChangesAsync();
+                    var existe = _context.Bancas.Where(b => b.NomeBanca == banca.NomeBanca).Select(b => b.NomeBanca).FirstOrDefault();
+                    if (existe == null)
+                    {
+                        _context.Update(banca);
+                        await _context.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        TempData["msgSucesso"] = "Nome já existente em nosso banco de dados!";
+                        return View();
+                    }
+                    
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -137,30 +187,18 @@ namespace OsirisPdvReal.Controllers
             return View(banca);
         }
 
-        // GET: Bancas/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var banca = await _context.Bancas
-                .Include(b => b.Jornaleiro)
-                .FirstOrDefaultAsync(m => m.BancaId == id);
-            if (banca == null)
-            {
-                return NotFound();
-            }
-
-            return View(banca);
-        }
-
+      
         // POST: Bancas/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        [HttpPost]
+        public async Task<IActionResult> Delete(int id)
         {
+            var temCompra = _context.Bancas.Select(b => b.Vendas).ToList();
+            if (temCompra.Count() > 0)
+            {
+                TempData["msgSucesso"] = "Banca vinculada à uma venda, logo não é possivel realizar sua exclusão";
+                return RedirectToAction(nameof(Index));
+
+            }
             var banca = await _context.Bancas.FindAsync(id);
             _context.Bancas.Remove(banca);
             await _context.SaveChangesAsync();

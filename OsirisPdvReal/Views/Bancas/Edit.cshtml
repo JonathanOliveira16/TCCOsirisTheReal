@@ -4,35 +4,43 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
-
-<h4>Banca</h4>
+<div class="divBtn">
+    <h4>Editar Banca</h4>
+</div>
 <hr />
-<div class="row">
-    <div class="col-md-4">
+@if (TempData["msgSucesso"] != null)
+{
+    <div class="alert alert-danger alert-dismissable mt-2" style="margin-left:10%;margin-right:10%">
+        <strong>@TempData["msgSucesso"]</strong>
+    </div>
+}
+<div class=" borderPurple divBtn centerCreateOrEdit">
+    <div class="mt-3 mb-3">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="BancaId" />
             <div class="form-group">
-                <label asp-for="NomeBanca" class="control-label"></label>
-                <input asp-for="NomeBanca" class="form-control" />
+                <label asp-for="NomeBanca" style="margin-right:43%" class="font-weight-bold"></label>
+                <input asp-for="NomeBanca" class="w-50 centerText borderInput form-control" />
                 <span asp-validation-for="NomeBanca" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="JornaleiroId" class="control-label"></label>
-                <select asp-for="JornaleiroId" class="form-control" asp-items="ViewBag.JornaleiroId"></select>
+                <label asp-for="JornaleiroId" style="margin-right:43%" class="font-weight-bold"></label>
+                <select asp-for="JornaleiroId" class="w-50 centerText borderInput form-control" asp-items="ViewBag.JornaleiroId"></select>
                 <span asp-validation-for="JornaleiroId" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+            <div class="divBtn flex-row">
+
+                <input type="submit" value="Editar" class="btn btn-success btnSizeFontUpper" />
+
+
+                <a class="btn btn-info btnSizeFontUpper" asp-action="Index">Voltar</a>
+
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

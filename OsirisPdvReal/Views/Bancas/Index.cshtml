@@ -1,4 +1,4 @@
-﻿@model IEnumerable<OsirisPdvReal.Models.Banca>
+﻿@model ReflectionIT.Mvc.Paging.PagingList<OsirisPdvReal.Models.Banca>
 @using ReflectionIT.Mvc.Paging
 @addTagHelper *, ReflectionIT.Mvc.Paging
 @{
@@ -15,7 +15,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <p>Deseja realmente excluir esse jornaleiro?</p>
+                <p>Deseja realmente excluir essa banca?</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-success botaoDoId" style="font-size:10px;">Sim</button>
@@ -26,11 +26,21 @@
 </div>
 
 
+@if (TempData["msgSucesso"] != null)
+{
+    <div class="alert alert-danger alert-dismissable mt-2" style="margin-left:10%;margin-right:10%">
+        <strong>@TempData["msgSucesso"]</strong>
+    </div>
+}
+
+<form asp-action="Index">
     <div class="d-flex">
-        <input type="text" class="form-control borderInput w-25" placeholder="Pesquisar..." />
-        <a class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></a>
+        <input type="text" class="form-control borderInput w-25" name="busca" id="busca" placeholder="Pesquisar..." />
+        <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
         <a class="btn btnPage btn-success mlAddNew" style="margin-left:10%;" asp-action="Create">Nova banca</a>
     </div>
+</form>
+
 
 <table class="table mt-4">
     <thead class="tHeadPurple">
@@ -76,7 +86,7 @@
         function PassarDados(idJornaleiro) {
             $(".botaoDoId").on('click', function () {
                 $.ajax({
-                    url: "/Jornaleiros/Delete",
+                    url: "/Bancas/Delete",
                     method: "POST",
                     data: { id: idJornaleiro },
                     success: function (data) {
