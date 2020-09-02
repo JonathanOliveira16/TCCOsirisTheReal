@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -9,7 +10,8 @@ namespace OsirisPdvReal.Models
     public class Jornaleiro
     {
         [Key]
-        public int JornaleiroId { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public int CPF { get; set; }
         [Required(ErrorMessage = "Campo obrigatório")]
         [StringLength(100, ErrorMessage = "Limite de caracteres atingido")]
         [Display(Name = "Nome")]
@@ -32,6 +34,8 @@ namespace OsirisPdvReal.Models
         [Display(Name = "Status")]
         public int StatusId { get; set; }
         public Status Status { get; set; }
+        public int TipoId { get; set; }
+        public Tipo tipo { get; set; }
 
     }
 }

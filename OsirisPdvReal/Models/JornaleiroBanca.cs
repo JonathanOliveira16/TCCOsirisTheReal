@@ -9,7 +9,7 @@ namespace OsirisPdvReal.Models
     {
         public int BancaId { get; set; }
         public Banca Bancas { get; set; }
-        public int JornaleiroId { get; set; }
+        public int CPF { get; set; }
         public Jornaleiro Jornaleiro { get; set; }
 
     }

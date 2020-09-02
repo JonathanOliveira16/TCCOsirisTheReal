@@ -16,6 +16,7 @@ namespace OsirisPdvReal.Models
         public DbSet<Compras> Compras { get; set; }
         public DbSet<Status> Status { get; set; }
         public DbSet<Venda> Vendas { get; set; }
+        public DbSet<Tipo> Tipos { get; set; }
         public DbSet<CompraFornecedores> CompraFornecedores { get; set; }
         public DbSet<FornecedorBanca> FornecedorBanca { get; set; }
         public DbSet<JornaleiroBanca> JornaleiroBanca { get; set; }
@@ -38,6 +39,7 @@ namespace OsirisPdvReal.Models
             modelBuilder.Entity<Status>().HasMany(t => t.Jornaleiros).WithOne(t => t.Status);
             modelBuilder.Entity<Status>().HasMany(t => t.Vendas).WithOne(t => t.Status);
             modelBuilder.Entity<Banca>().HasMany(t => t.Vendas).WithOne(t => t.Bancas);
+            modelBuilder.Entity<Tipo>().HasMany(t => t.Jornaleiro).WithOne(t => t.tipo);
             modelBuilder.Entity<Cliente>().HasMany(t => t.Vendas).WithOne(t => t.Clientes);
 
             modelBuilder.Entity<Fornecedor>().HasOne(e => e.Status).WithMany(e => e.Fornecedores).HasForeignKey(e => e.StatusId);
@@ -45,6 +47,7 @@ namespace OsirisPdvReal.Models
             modelBuilder.Entity<Cliente>().HasOne(e => e.Status).WithMany(e => e.Clientes).HasForeignKey(e => e.StatusId);
             modelBuilder.Entity<Jornaleiro>().HasOne(e => e.Status).WithMany(e => e.Jornaleiros).HasForeignKey(e => e.StatusId);
             modelBuilder.Entity<Venda>().HasOne(e => e.Status).WithMany(e => e.Vendas).HasForeignKey(e => e.StatusId);
+            modelBuilder.Entity<Jornaleiro>().HasOne(e => e.tipo).WithMany(e => e.Jornaleiro).HasForeignKey(e => e.TipoId);
             modelBuilder.Entity<Venda>().HasOne(e => e.Bancas).WithMany(e => e.Vendas).HasForeignKey(e => e.BancaId);
             modelBuilder.Entity<Venda>().HasOne(e => e.Clientes).WithMany(e => e.Vendas).HasForeignKey(e => e.ClienteId);
 
@@ -52,7 +55,7 @@ namespace OsirisPdvReal.Models
             //many to many
             modelBuilder.Entity<ClienteBanca>().HasKey(x => new { x.BancaId, x.ClienteId });
             modelBuilder.Entity<FornecedorBanca>().HasKey(x => new { x.BancaId, x.FornecedorId });
-            modelBuilder.Entity<JornaleiroBanca>().HasKey(x => new { x.BancaId, x.JornaleiroId });
+            modelBuilder.Entity<JornaleiroBanca>().HasKey(x => new { x.BancaId, x.CPF });
             modelBuilder.Entity<CompraFornecedores>().HasKey(x => new { x.ComprasId, x.FornecedorId });
             modelBuilder.Entity<ProdutoCompras>().HasKey(x => new { x.ComprasId, x.ProdutoId });
             modelBuilder.Entity<VendaProduto>().HasKey(x => new { x.VendaId, x.ProdutoId });

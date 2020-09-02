@@ -221,3 +221,14 @@ body {
 .mlAddNew {
     margin-left: 10%;
 }
+
+.inputSearchCpf {
+    display: inline;
+    margin-left: 8%;
+}
+
+.readonly {
+    background: #eee; /*Simular campo inativo - Sugestão @GabrielRodrigues*/
+    pointer-events: none;
+    touch-action: none;
+}

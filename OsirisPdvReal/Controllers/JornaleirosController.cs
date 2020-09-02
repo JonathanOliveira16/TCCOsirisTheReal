@@ -16,6 +16,7 @@ namespace OsirisPdvReal.Controllers
         private readonly Contexto _context;
         private static String codeEmail;
         private static String emailParaReset;
+        private static int cpfUser;
 
         public IActionResult Login()
         {
@@ -24,7 +25,7 @@ namespace OsirisPdvReal.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Login([Bind("JornaleiroId,NomeJornaleiro,EmailJornaleiro,SenhaJornaleiro")] Jornaleiro jornaleiro)
+        public IActionResult Login([Bind("CPF,NomeJornaleiro,EmailJornaleiro,SenhaJornaleiro")] Jornaleiro jornaleiro)
         {
             var jornaleiroOk = _context.Jornaleiros.Where(j => j.EmailJornaleiro == jornaleiro.EmailJornaleiro && j.SenhaJornaleiro == jornaleiro.SenhaJornaleiro).Select(j => j.EmailJornaleiro).FirstOrDefault();
             if (jornaleiroOk != null)
@@ -48,7 +49,7 @@ namespace OsirisPdvReal.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult EnviarTokenSenha([Bind("JornaleiroId,NomeJornaleiro,EmailJornaleiro,SenhaJornaleiro")] Jornaleiro jornaleiro)
+        public IActionResult EnviarTokenSenha([Bind("CPF,NomeJornaleiro,EmailJornaleiro,SenhaJornaleiro")] Jornaleiro jornaleiro)
         {
             try
             {
@@ -141,7 +142,7 @@ namespace OsirisPdvReal.Controllers
         {
             //essas linhas sao necessarias para a paginaca so trocar o tipo de context, jornaleiro, produto etc
             var query = _context.Jornaleiros.Include(j => j.Status).AsNoTracking().OrderBy(j => j.NomeJornaleiro);
-            var model = await PagingList.CreateAsync(query,5,page);
+            var model = await PagingList.CreateAsync(query, 5, page);
             return View(model);
         }
 
@@ -155,7 +156,7 @@ namespace OsirisPdvReal.Controllers
 
             var jornaleiro = await _context.Jornaleiros
                 .Include(j => j.Status)
-                .FirstOrDefaultAsync(m => m.JornaleiroId == id);
+                .FirstOrDefaultAsync(m => m.CPF == id);
             if (jornaleiro == null)
             {
                 return NotFound();
@@ -167,17 +168,35 @@ namespace OsirisPdvReal.Controllers
         // GET: Jornaleiros/Create
         public IActionResult Create()
         {
+
             ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus");
+            ViewData["disable"] = "readonly";
+            ViewData["TipoId"] = new SelectList(_context.Tipos, "TipoId", "NomeTipo");
             return View();
         }
 
+        [HttpPost]
+        public string ValidateCpf(int id)
+        {
+            var cpfExist = _context.Jornaleiros.Where(j => j.CPF == id).Select(j => j.NomeJornaleiro).FirstOrDefault();
+            if (cpfExist == null)
+            {
+                cpfUser = id;
+                return "ok";
+            }
+            else
+            {
+                return "editar";
+            }
+        }
         // POST: Jornaleiros/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("JornaleiroId,NomeJornaleiro,EmailJornaleiro,TelefoneJornaleiro,SenhaJornaleiro,StatusId")] Jornaleiro jornaleiro)
+        public async Task<IActionResult> Create([Bind("CPF,NomeJornaleiro,EmailJornaleiro,TelefoneJornaleiro,SenhaJornaleiro,StatusId, TipoId")] Jornaleiro jornaleiro)
         {
+            ModelState.Remove("CPF");
             try
             {
                 if (ModelState.IsValid)
@@ -185,6 +204,7 @@ namespace OsirisPdvReal.Controllers
                     var emailOrName = _context.Jornaleiros.Where(j => j.EmailJornaleiro == jornaleiro.EmailJornaleiro || j.NomeJornaleiro == jornaleiro.NomeJornaleiro).Select(j => j.EmailJornaleiro).FirstOrDefault();
                     if (emailOrName == null)
                     {
+                        jornaleiro.CPF = cpfUser;
                         _context.Add(jornaleiro);
                         await _context.SaveChangesAsync();
                         return RedirectToAction(nameof(Index));
@@ -197,15 +217,19 @@ namespace OsirisPdvReal.Controllers
 
                 }
                 ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus", jornaleiro.StatusId);
+                ViewData["TipoId"] = new SelectList(_context.Tipos, "TipoId", "NomeTipo");
+
                 return View(jornaleiro);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 TempData["msgSucesso"] = "Erro na sua solicitação, favor tentar novamente!";
                 ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus", jornaleiro.StatusId);
+                ViewData["TipoId"] = new SelectList(_context.Tipos, "TipoId", "NomeTipo");
+
                 return View(jornaleiro);
             }
-          
+
         }
 
         // GET: Jornaleiros/Edit/5
@@ -222,6 +246,8 @@ namespace OsirisPdvReal.Controllers
                 return NotFound();
             }
             ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus", jornaleiro.StatusId);
+            ViewData["TipoId"] = new SelectList(_context.Tipos, "TipoId", "NomeTipo");
+
             return View(jornaleiro);
         }
 
@@ -230,12 +256,13 @@ namespace OsirisPdvReal.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("JornaleiroId,NomeJornaleiro,EmailJornaleiro,TelefoneJornaleiro,SenhaJornaleiro,StatusId")] Jornaleiro jornaleiro)
+        public async Task<IActionResult> Edit(int id, [Bind("CPF,NomeJornaleiro,EmailJornaleiro,TelefoneJornaleiro,SenhaJornaleiro,StatusId,TipoId")] Jornaleiro jornaleiro)
         {
-
+            ModelState.Remove("CPF");
+            ModelState.Remove("SenhaJornaleiro");
             try
             {
-                if (id != jornaleiro.JornaleiroId)
+                if (id != jornaleiro.CPF)
                 {
                     return NotFound();
                 }
@@ -244,9 +271,11 @@ namespace OsirisPdvReal.Controllers
                 {
                     try
                     {
-                        var emailOrName = _context.Jornaleiros.Where(j => j.EmailJornaleiro == jornaleiro.EmailJornaleiro || j.NomeJornaleiro == jornaleiro.NomeJornaleiro).Select(j => j.EmailJornaleiro).FirstOrDefault();
+
+                        var emailOrName = _context.Jornaleiros.Where(j => (j.EmailJornaleiro == jornaleiro.EmailJornaleiro || j.NomeJornaleiro == jornaleiro.NomeJornaleiro) && j.CPF != jornaleiro.CPF).Select(j => j.EmailJornaleiro).FirstOrDefault();
                         if (emailOrName == null)
                         {
+                            jornaleiro.SenhaJornaleiro = _context.Jornaleiros.Where(j => j.CPF == id).Select(j => j.SenhaJornaleiro).FirstOrDefault();
                             _context.Update(jornaleiro);
                             await _context.SaveChangesAsync();
                         }
@@ -254,13 +283,14 @@ namespace OsirisPdvReal.Controllers
                         {
                             TempData["msgSucesso"] = "E-mail ou nome de jornaleiro já cadastrado!";
                             ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus", jornaleiro.StatusId);
+                            ViewData["TipoId"] = new SelectList(_context.Tipos, "TipoId", "NomeTipo");
+
                             return View(jornaleiro);
                         }
-                     
                     }
                     catch (DbUpdateConcurrencyException)
                     {
-                        if (!JornaleiroExists(jornaleiro.JornaleiroId))
+                        if (!JornaleiroExists(jornaleiro.CPF))
                         {
                             return NotFound();
                         }
@@ -272,16 +302,21 @@ namespace OsirisPdvReal.Controllers
                     return RedirectToAction(nameof(Index));
                 }
                 ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus", jornaleiro.StatusId);
+                ViewData["TipoId"] = new SelectList(_context.Tipos, "TipoId", "NomeTipo");
+                TempData["msgSucesso"] = "Erro na sua solicitação, favor tentar novamente!";
+
                 return View(jornaleiro);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 TempData["msgSucesso"] = "Erro na sua solicitação, favor tentar novamente!";
 
                 ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus", jornaleiro.StatusId);
+                ViewData["TipoId"] = new SelectList(_context.Tipos, "TipoId", "NomeTipo");
+
                 return View(jornaleiro);
             }
-            
+
         }
 
         // GET: Jornaleiros/Delete/5
@@ -294,7 +329,7 @@ namespace OsirisPdvReal.Controllers
 
         //    var jornaleiro = await _context.Jornaleiros
         //        .Include(j => j.Status)
-        //        .FirstOrDefaultAsync(m => m.JornaleiroId == id);
+        //        .FirstOrDefaultAsync(m => m.CPF == id);
         //    if (jornaleiro == null)
         //    {
         //        return NotFound();
@@ -315,7 +350,7 @@ namespace OsirisPdvReal.Controllers
 
         private bool JornaleiroExists(int id)
         {
-            return _context.Jornaleiros.Any(e => e.JornaleiroId == id);
+            return _context.Jornaleiros.Any(e => e.CPF == id);
         }
     }
 }

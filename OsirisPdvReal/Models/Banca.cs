@@ -15,7 +15,7 @@ namespace OsirisPdvReal.Models
         [StringLength(100, ErrorMessage = "Limite de caracteres atingido")]
         [Display(Name = "Nome")]
         public String NomeBanca { get; set; }
-        public int? JornaleiroId { get; set; }
+        public int? CPF { get; set; }
         public Jornaleiro Jornaleiro { get; set; }
         public ICollection<Jornaleiro> Jornaleiros { get; set; }
         public ICollection<Venda> Vendas { get; set; }

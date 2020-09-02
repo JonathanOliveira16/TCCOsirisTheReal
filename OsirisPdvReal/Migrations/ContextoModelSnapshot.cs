@@ -26,7 +26,10 @@ namespace OsirisPdvReal.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("JornaleiroId")
+                    b.Property<int?>("CPF")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("JornaleiroCPF")
                         .HasColumnType("int");
 
                     b.Property<string>("NomeBanca")
@@ -36,7 +39,7 @@ namespace OsirisPdvReal.Migrations
 
                     b.HasKey("BancaId");
 
-                    b.HasIndex("JornaleiroId");
+                    b.HasIndex("JornaleiroCPF");
 
                     b.ToTable("Bancas");
                 });
@@ -202,10 +205,8 @@ namespace OsirisPdvReal.Migrations
 
             modelBuilder.Entity("OsirisPdvReal.Models.Jornaleiro", b =>
                 {
-                    b.Property<int>("JornaleiroId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<int>("CPF")
+                        .HasColumnType("int");
 
                     b.Property<int?>("BancaId")
                         .HasColumnType("int");
@@ -233,11 +234,16 @@ namespace OsirisPdvReal.Migrations
                         .HasColumnType("nvarchar(12)")
                         .HasMaxLength(12);
 
-                    b.HasKey("JornaleiroId");
+                    b.Property<int>("TipoId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CPF");
 
                     b.HasIndex("BancaId");
 
                     b.HasIndex("StatusId");
+
+                    b.HasIndex("TipoId");
 
                     b.ToTable("Jornaleiros");
                 });
@@ -247,10 +253,10 @@ namespace OsirisPdvReal.Migrations
                     b.Property<int>("BancaId")
                         .HasColumnType("int");
 
-                    b.Property<int>("JornaleiroId")
+                    b.Property<int>("CPF")
                         .HasColumnType("int");
 
-                    b.HasKey("BancaId", "JornaleiroId");
+                    b.HasKey("BancaId", "CPF");
 
                     b.ToTable("JornaleiroBanca");
                 });
@@ -317,6 +323,21 @@ namespace OsirisPdvReal.Migrations
                     b.ToTable("Status");
                 });
 
+            modelBuilder.Entity("OsirisPdvReal.Models.Tipo", b =>
+                {
+                    b.Property<int>("TipoId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("NomeTipo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("TipoId");
+
+                    b.ToTable("Tipos");
+                });
+
             modelBuilder.Entity("OsirisPdvReal.Models.Venda", b =>
                 {
                     b.Property<int?>("VendaId")
@@ -373,7 +394,7 @@ namespace OsirisPdvReal.Migrations
                 {
                     b.HasOne("OsirisPdvReal.Models.Jornaleiro", "Jornaleiro")
                         .WithMany()
-                        .HasForeignKey("JornaleiroId");
+                        .HasForeignKey("JornaleiroCPF");
                 });
 
             modelBuilder.Entity("OsirisPdvReal.Models.Cliente", b =>
@@ -457,6 +478,12 @@ namespace OsirisPdvReal.Migrations
                     b.HasOne("OsirisPdvReal.Models.Status", "Status")
                         .WithMany("Jornaleiros")
                         .HasForeignKey("StatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("OsirisPdvReal.Models.Tipo", "tipo")
+                        .WithMany("Jornaleiro")
+                        .HasForeignKey("TipoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

@@ -1,8 +1,158 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
+    Layout = null;
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>OSIRIS PDV</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="~/css/main.css" />
+</head>
+<body>
+
+    <!-- Header -->
+    <header id="header" class="alt">
+        <div class="logo"><a href="index.html">Transitive <span>Osiris PDV</span></a></div>
+    </header>
+
+
+
+    <!-- Banner -->
+    <!--
+        To use a video as your background, set data-video to the name of your video without
+        its extension (eg. images/banner). Your video must be available in both .mp4 and .webm
+        formats to work correctly.
+    -->
+    <section id="banner" data-video= src="@Url.Content("~/images/banner")">
+        <div class="inner">
+            <h1>OSIRIS PDV</h1>
+            <p>
+                Bem vindo ao melhor gerenciamento de bancas de jornais do mercado, com essa aplicação você irá poder gerenciar suas vendas, estoque e tudo de sua banca de jornal
+                de qualquer lugar!
+            </p>
+            <a href="#one" class="button special scrolly">Acessar aplicação</a>
+        </div>
+    </section>
+
+    <!-- One -->
+    <section id="one" class="wrapper style2">
+        <div class="inner">
+            <div>
+                <div class="box">
+                    <div class="image fit">
+                        <img src="images/picMaz.jpg" alt="" />
+                    </div>
+                    <div class="content">
+                        <header class="align-center">
+                            <h2>Nunca foi tão facil gerenciar!</h2>
+                        </header>
+                        <hr />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Two -->
+    <section id="two" class="wrapper style3">
+        <div class="inner">
+            <div id="flexgrid">
+                <div>
+                    <header>
+                        <h3>Visão da empresa</h3>
+                    </header>
+                    <p>Nossa visão é fornecer sistemas que atendam as expectativas de todos nossos clientes para que a empresa torne-se uma referência no cenário de desenvolvimento de softwares para microempresas</p>
+              
+                </div>
+                <div>
+                    <header>
+                        <h3>Missão da empresa</h3>
+                    </header>
+                    <p>Nossa missão é fornecer sistemas simples para todos os tipos de usuários e que façam o que foi solicitado</p>
+
+                </div>
+                <div>
+                    <header>
+                        <h3>Valores da empresa</h3>
+                    </header>
+                    <p>Nossos valores sNosso valor principal é a satisfação do cliente entregando produtos acimas da expectativa dos nossos clientes temos certeza que iremos crescer, também prezamos pela valorização e respeito às pessoas, sem o respeito não temos o reconhecimento.</p>
+                   
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Four -->
+    <section id="four" class="wrapper style3">
+        <div class="inner">
+
+            <header class="align-center">
+                <h2>Contatos!</h2>
+                <ul>
+                    <li>E-mail - osirispdv@gmail.com</li>
+                    <li>celular - (21)99775-2911</li>
+                </ul>
+            </header>
+
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="footer" class="wrapper">
+        <div class="inner">
+            <section>
+                <div class="box">
+                    <div class="content">
+                        <h2 class="align-center">Get in Touch</h2>
+                        <hr />
+                        <form action="#" method="post">
+                            <div class="field half first">
+                                <label for="name">Name</label>
+                                <input name="name" id="name" type="text" placeholder="Name">
+                            </div>
+                            <div class="field half">
+                                <label for="email">Email</label>
+                                <input name="email" id="email" type="email" placeholder="Email">
+                            </div>
+                            <div class="field">
+                                <label for="dept">Department</label>
+                                <div class="select-wrapper">
+                                    <select name="dept" id="dept">
+                                        <option value="">- Category -</option>
+                                        <option value="1">Manufacturing</option>
+                                        <option value="1">Shipping</option>
+                                        <option value="1">Administration</option>
+                                        <option value="1">Human Resources</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label for="message">Message</label>
+                                <textarea name="message" id="message" rows="6" placeholder="Message"></textarea>
+                            </div>
+                            <ul class="actions align-center">
+                                <li><input value="Send Message" class="button special" type="submit"></li>
+                            </ul>
+                        </form>
+                    </div>
+                </div>
+            </section>
+            <div class="copyright">
+                &copy; Untitled Design: <a href="https://templated.co/">TEMPLATED</a>. Images <a href="https://unsplash.com/">Unsplash</a>. Video <a href="http://coverr.co/">Coverr</a>.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="~/js/jquery.min.js"></script>
+    <script src="~/js/jquery.scrolly.min.js"></script>
+    <script src="~/js/jquery.scrollex.min.js"></script>
+    <script src="~/js/skel.min.js"></script>
+    <script src="~/js/util.js"></script>
+    <script src="~/js/main.js"></script>
+
+</body>
+</html>

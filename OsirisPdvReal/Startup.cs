@@ -63,7 +63,7 @@ namespace OsirisPdvReal
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Bancas}/{action=Index}/{id?}");
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }

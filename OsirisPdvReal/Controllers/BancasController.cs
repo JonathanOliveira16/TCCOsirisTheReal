@@ -79,7 +79,7 @@ namespace OsirisPdvReal.Controllers
         // GET: Bancas/Create
         public IActionResult Create()
         {
-            ViewData["JornaleiroId"] = new SelectList(_context.Jornaleiros, "JornaleiroId", "EmailJornaleiro");
+            ViewData["CPF"] = new SelectList(_context.Jornaleiros, "CPF", "EmailJornaleiro");
             return View();
         }
 
@@ -88,7 +88,7 @@ namespace OsirisPdvReal.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("BancaId,NomeBanca,JornaleiroId")] Banca banca)
+        public async Task<IActionResult> Create([Bind("BancaId,NomeBanca,CPF")] Banca banca)
         {
             try
             {
@@ -106,7 +106,7 @@ namespace OsirisPdvReal.Controllers
                     }
                     else
                     {
-                        ViewData["JornaleiroId"] = new SelectList(_context.Jornaleiros, "JornaleiroId", "EmailJornaleiro");
+                        ViewData["CPF"] = new SelectList(_context.Jornaleiros, "CPF", "EmailJornaleiro");
           
                         TempData["msgSucesso"] = "Nome já existente em nosso banco de dados!";
                         return View();
@@ -116,7 +116,7 @@ namespace OsirisPdvReal.Controllers
             }
             catch (Exception)
             {
-                ViewData["JornaleiroId"] = new SelectList(_context.Jornaleiros, "JornaleiroId", "EmailJornaleiro");
+                ViewData["CPF"] = new SelectList(_context.Jornaleiros, "CPF", "EmailJornaleiro");
                 TempData["msgSucesso"] = "Erro na sua solicitação, favor tentar novamente!";
                 return View();
             }
@@ -137,7 +137,7 @@ namespace OsirisPdvReal.Controllers
             {
                 return NotFound();
             }
-            ViewData["JornaleiroId"] = new SelectList(_context.Jornaleiros, "JornaleiroId", "EmailJornaleiro", banca.JornaleiroId);
+            ViewData["CPF"] = new SelectList(_context.Jornaleiros, "CPF", "EmailJornaleiro", banca.CPF);
             return View(banca);
         }
 
@@ -146,7 +146,7 @@ namespace OsirisPdvReal.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("BancaId,NomeBanca,JornaleiroId")] Banca banca)
+        public async Task<IActionResult> Edit(int id, [Bind("BancaId,NomeBanca,CPF")] Banca banca)
         {
             if (id != banca.BancaId)
             {
@@ -183,7 +183,7 @@ namespace OsirisPdvReal.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["JornaleiroId"] = new SelectList(_context.Jornaleiros, "JornaleiroId", "EmailJornaleiro", banca.JornaleiroId);
+            ViewData["CPF"] = new SelectList(_context.Jornaleiros, "CPF", "EmailJornaleiro", banca.CPF);
             return View(banca);
         }
 

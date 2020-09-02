@@ -16,32 +16,46 @@
 }
 <div class=" borderPurple divBtn centerCreateOrEdit">
     <div class="mt-3 mb-3">
+
+        <div class="form-group">
+            <label style="margin-right:43%" class="font-weight-bold">CPF</label>
+            <br />
+            <div>
+                <input class="w-50 centerText borderInput form-control" style=" display: inline; margin-left: 8%;" name="tes" id="tes" />
+                <button class="btn btn-success searchBtn cancel botaoDoId" type="button" onclick="Validar()" style="margin-left:1%;margin-bottom:1%;"><i class="fa fa-search text-white"></i></button>
+            </div>
+        </div>
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
             <div class="form-group">
                 <label style="margin-right:43%" class="font-weight-bold" asp-for="NomeJornaleiro"></label>
                 <br />
-                <input class="w-50 centerText borderInput form-control" asp-for="NomeJornaleiro" />
+                <input class="w-50 centerText borderInput form-control" id="inp1" readonly="readonly" asp-for="NomeJornaleiro" />
                 <span asp-validation-for="NomeJornaleiro" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label style="margin-right:43%" class="font-weight-bold" asp-for="EmailJornaleiro"></label>
-                <input class="w-50 centerText borderInput form-control" asp-for="EmailJornaleiro" />
+                <input class="w-50 centerText borderInput form-control" id="inp2" readonly="readonly" asp-for="EmailJornaleiro" />
                 <span asp-validation-for="EmailJornaleiro" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label style="margin-right:41%" class="font-weight-bold" asp-for="TelefoneJornaleiro"></label>
-                <input class="w-50 centerText borderInput form-control" asp-for="TelefoneJornaleiro" />
+                <input class="w-50 centerText borderInput form-control" id="inp3" readonly="readonly" asp-for="TelefoneJornaleiro" />
                 <span asp-validation-for="TelefoneJornaleiro" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label style="margin-right:43%" class="font-weight-bold" asp-for="SenhaJornaleiro"></label>
-                <input class="w-50 centerText borderInput form-control" asp-for="SenhaJornaleiro" />
+                <input class="w-50 centerText borderInput form-control" id="inp4" readonly="readonly" asp-for="SenhaJornaleiro" />
                 <span asp-validation-for="SenhaJornaleiro" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label style="margin-right:41%" class="font-weight-bold" asp-for="StatusId"></label>
-                <select class="w-50 centerText borderInput form-control" asp-for="StatusId" asp-items="ViewBag.StatusId"></select>
+                <select class="w-50 centerText borderInput form-control" disabled id="sel1"  asp-for="StatusId" asp-items="ViewBag.StatusId" ></select>
+            </div>
+            <div class="form-group">
+                <label style="margin-right:41%" class="font-weight-bold" asp-for="TipoId"></label>
+                <select class="w-50 centerText borderInput form-control " disabled id="sel2"  asp-for="TipoId" asp-items="ViewBag.TipoId"></select>
             </div>
             <div class="divBtn flex-row">
 
@@ -59,4 +73,50 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        function Validar() {
+            var cpf = document.getElementById("tes").value
+            console.log(cpf)
+
+            var data = { id: cpf };
+            $.ajax({
+                url: "/Jornaleiros/ValidateCpf",
+                type: "post",
+                contentType: 'application/x-www-form-urlencoded',
+                data: data,
+                success: function (result) {
+                    console.log(result)
+                    if (result == "ok") {
+                        document.getElementById("sel1").disabled = false;
+                        document.getElementById('inp1').removeAttribute('readonly');
+                        document.getElementById('inp2').removeAttribute('readonly');
+                        document.getElementById('inp3').removeAttribute('readonly');
+                        document.getElementById('inp4').removeAttribute('readonly');
+                        document.getElementById("sel2").disabled = false;
+                    } else {
+                        var data2 = { id: cpf };
+                        $.ajax({
+                            url: "/Jornaleiros/Edit",
+                            type: "get",
+                            contentType: 'application/x-www-form-urlencoded',
+                            data: data2,
+                            success: function () {
+                                window.location.href = '/Jornaleiros/Edit/' + cpf;
+                            }
+                        });
+                    }
+                }
+            });
+            //$.ajax({
+            //    url: "/Jornaleiros/ValidateCpf",
+            //    method: "POST",
+            //    data: { id: '15612118775' },
+            //    success: function (data) {
+
+            //    }
+            //});
+
+        }
+    </script>
 }
