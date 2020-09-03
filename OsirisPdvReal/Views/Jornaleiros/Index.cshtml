@@ -26,11 +26,20 @@
     </div>
 </div>
 
+@if (ViewBag.admin != null)
+{
+    <div class="divBtn">
+        <a class="btn btnPage btn-success mt-2" asp-action="Create">Novo Jornaleiro</a>
+    </div>
+}
 
-<div class="divBtn">
-    <a class="btn btnPage btn-success mt-2" asp-action="Create">Novo Jornaleiro</a>
-</div>
 
+@if (TempData["msgSucesso"] != null)
+{
+    <div class="alert alert-danger alert-dismissable mt-2" style="margin-left:10%;margin-right:10%">
+        <strong>@TempData["msgSucesso"]</strong>
+    </div>
+}
 
 <table class="table mt-4">
     <thead class="tHeadPurple">
@@ -105,6 +114,6 @@
             });
         }
 
-        
+
     </script>
 }

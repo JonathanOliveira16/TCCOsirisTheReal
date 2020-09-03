@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,8 @@ namespace OsirisPdvReal.Controllers
 
         public IActionResult Login()
         {
+            Response.Cookies.Delete("admin");
+
             return View();
         }
 
@@ -27,9 +30,22 @@ namespace OsirisPdvReal.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Login([Bind("CPF,NomeJornaleiro,EmailJornaleiro,SenhaJornaleiro")] Jornaleiro jornaleiro)
         {
-            var jornaleiroOk = _context.Jornaleiros.Where(j => j.EmailJornaleiro == jornaleiro.EmailJornaleiro && j.SenhaJornaleiro == jornaleiro.SenhaJornaleiro).Select(j => j.EmailJornaleiro).FirstOrDefault();
-            if (jornaleiroOk != null)
+            var jornaleiroOk = _context.Jornaleiros.Include(j=>j.tipo).Where(j => j.EmailJornaleiro.ToLower() == jornaleiro.EmailJornaleiro.ToLower() && j.SenhaJornaleiro == jornaleiro.SenhaJornaleiro).Select(j => j).FirstOrDefault();
+            if (jornaleiroOk.EmailJornaleiro != null)
             {
+                if (jornaleiroOk.tipo.NomeTipo.ToLower() == "admin")
+                {
+                    var option2 = new CookieOptions();
+                    Response.Cookies.Append("admin", "true", option2);
+
+                }
+                else
+                {
+                    var option2 = new CookieOptions();
+                    Response.Cookies.Append("admin", "false", option2);
+                }
+                var option = new CookieOptions();
+                Response.Cookies.Append("idDoUser", jornaleiroOk.CPF.ToString(), option);
                 return RedirectToAction("Index");
             }
             else
@@ -141,6 +157,8 @@ namespace OsirisPdvReal.Controllers
         public async Task<IActionResult> Index(int page = 1)
         {
             //essas linhas sao necessarias para a paginaca so trocar o tipo de context, jornaleiro, produto etc
+            ViewBag.admin = Request.Cookies["admin"];
+
             var query = _context.Jornaleiros.Include(j => j.Status).AsNoTracking().OrderBy(j => j.NomeJornaleiro);
             var model = await PagingList.CreateAsync(query, 5, page);
             return View(model);
@@ -235,20 +253,32 @@ namespace OsirisPdvReal.Controllers
         // GET: Jornaleiros/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
+            var idUserLogado = Request.Cookies["idDoUser"];
+            var eadmin = Request.Cookies["admin"];
+            if (id.ToString() == idUserLogado || eadmin.ToLower() == "true")
             {
-                return NotFound();
-            }
+                if (id == null)
+                {
+                    return NotFound();
+                }
 
-            var jornaleiro = await _context.Jornaleiros.FindAsync(id);
-            if (jornaleiro == null)
+                var jornaleiro = await _context.Jornaleiros.FindAsync(id);
+                if (jornaleiro == null)
+                {
+                    return NotFound();
+                }
+                ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus", jornaleiro.StatusId);
+                ViewData["TipoId"] = new SelectList(_context.Tipos, "TipoId", "NomeTipo");
+
+                return View(jornaleiro);
+            }
+            else if (id.ToString() != idUserLogado && eadmin.ToLower() != "true")
             {
-                return NotFound();
+                TempData["msgSucesso"] = "Não é possível editar dados de outros usuários!";
+                return RedirectToAction("Index");
             }
-            ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus", jornaleiro.StatusId);
-            ViewData["TipoId"] = new SelectList(_context.Tipos, "TipoId", "NomeTipo");
-
-            return View(jornaleiro);
+            return View();
+         
         }
 
         // POST: Jornaleiros/Edit/5

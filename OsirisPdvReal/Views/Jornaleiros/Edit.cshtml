@@ -4,6 +4,27 @@
     ViewData["Title"] = "Edit";
 }
 
+
+<div class="modal" id="visao" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="titleModal">Excluir</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Deseja realmente excluir essa banca?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success botaoDoId" style="font-size:10px;">Sim</button>
+                <button type="button" class="btn btn-danger" style="font-size:10px;" data-dismiss="modal">Não</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="divBtn">
     <h4>Editar jornaleiro</h4>
 </div>
@@ -53,7 +74,7 @@
 
 
                 <a class="btn btn-info btnSizeFontUpper" asp-action="Index">Voltar</a>
-
+                <a class="btn btn-danger btnSizeFontUpper text-white" data-toggle="modal" data-target="#visao" onclick="PassarDados(@Model.CPF)">Excluir</a>
             </div>
         </form>
     </div>
@@ -62,4 +83,21 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        function PassarDados(idJornaleiro) {
+            console.log(idJornaleiro)
+            $(".botaoDoId").on('click', function () {
+                $.ajax({
+                    url: "/Jornaleiros/Delete",
+                    method: "POST",
+                    data: { id: idJornaleiro },
+                    success: function (data) {
+                        $(".modal").modal('hide');
+                        location.reload(true);
+                    }
+                });
+            });
+        }
+    </script>
 }
