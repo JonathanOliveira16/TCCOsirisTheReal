@@ -31,7 +31,7 @@ namespace OsirisPdvReal.Controllers
         public IActionResult Login([Bind("CPF,NomeJornaleiro,EmailJornaleiro,SenhaJornaleiro")] Jornaleiro jornaleiro)
         {
             var jornaleiroOk = _context.Jornaleiros.Include(j=>j.tipo).Where(j => j.EmailJornaleiro.ToLower() == jornaleiro.EmailJornaleiro.ToLower() && j.SenhaJornaleiro == jornaleiro.SenhaJornaleiro).Select(j => j).FirstOrDefault();
-            if (jornaleiroOk.EmailJornaleiro != null)
+            if (!String.IsNullOrEmpty(jornaleiroOk.EmailJornaleiro))
             {
                 if (jornaleiroOk.tipo.NomeTipo.ToLower() == "admin")
                 {

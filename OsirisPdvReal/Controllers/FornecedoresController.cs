@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using OsirisPdvReal.Models;
+using ReflectionIT.Mvc.Paging;
 
 namespace OsirisPdvReal.Controllers
 {
@@ -19,10 +20,40 @@ namespace OsirisPdvReal.Controllers
         }
 
         // GET: Fornecedores
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1)
         {
-            var contexto = _context.Fornecedores.Include(f => f.Status);
-            return View(await contexto.ToListAsync());
+            var query = _context.Fornecedores.Include(j => j.Status).AsNoTracking().OrderBy(j => j.NomeFornecedor);
+            var model = await PagingList.CreateAsync(query, 5, page);
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Index(string busca, int page = 1)
+        {
+            try
+            {
+                if (busca == null)
+                {
+                    var query = _context.Fornecedores.Include(j => j.Status).AsNoTracking().OrderBy(j => j.NomeFornecedor);
+                    var model = await PagingList.CreateAsync(query, 5, page);
+                    return View(model);
+                }
+                else
+                {
+                    List<Fornecedor> listaDeFornecedor = new List<Fornecedor>();
+                    var fornecedor = _context.Fornecedores.Include(j => j.Status).Where(b => b.NomeFornecedor.Contains(busca)).OrderBy(b => b.NomeFornecedor);
+                    var model = await PagingList.CreateAsync(fornecedor, 5, page);
+                    return View(model);
+                }
+            }
+            catch (Exception)
+            {
+                TempData["msgSucesso"] = "Erro na sua solicitação, favor tentar novamente!";
+                return View();
+            }
+
+
         }
 
         // GET: Fornecedores/Details/5
@@ -60,9 +91,23 @@ namespace OsirisPdvReal.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(fornecedor);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                var existeForne = _context.Fornecedores.Where(f=>f.NomeFornecedor == fornecedor.NomeFornecedor).Select(b => b.NomeFornecedor).FirstOrDefault();
+                if (existeForne == null)
+                {
+                    var jornaleiro = _context.Fornecedores.Where(j => j.FornecedorId == fornecedor.FornecedorId).Select(j => j).FirstOrDefault();
+
+                    _context.Add(fornecedor);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+
+                    ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus", fornecedor.StatusId);
+
+                    TempData["msgSucesso"] = "Nome de fornecedor já existente em nosso banco de dados!";
+                    return View();
+                }
             }
             ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus", fornecedor.StatusId);
             return View(fornecedor);
@@ -101,19 +146,28 @@ namespace OsirisPdvReal.Controllers
             {
                 try
                 {
-                    _context.Update(fornecedor);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!FornecedorExists(fornecedor.FornecedorId))
+                    var existeFornce = _context.Fornecedores.Where(f => f.NomeFornecedor == fornecedor.NomeFornecedor && f.FornecedorId != fornecedor.FornecedorId).Select(f => f.NomeFornecedor).FirstOrDefault();
+                    if (existeFornce == null)
                     {
-                        return NotFound();
+                        _context.Update(fornecedor);
+                        await _context.SaveChangesAsync();
                     }
                     else
                     {
-                        throw;
+                        ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus", fornecedor.StatusId);
+
+                        TempData["msgSucesso"] = "Nome de fornecedor já existente em nosso banco de dados!";
+                        return View();
                     }
+                   
+                }
+                catch (Exception)
+                {
+
+                    ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus");
+
+                    TempData["msgSucesso"] = "Erro na sua solicitação, favor tentar novamente!";
+                    return View();
                 }
                 return RedirectToAction(nameof(Index));
             }
@@ -122,28 +176,27 @@ namespace OsirisPdvReal.Controllers
         }
 
         // GET: Fornecedores/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //public async Task<IActionResult> Delete(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var fornecedor = await _context.Fornecedores
-                .Include(f => f.Status)
-                .FirstOrDefaultAsync(m => m.FornecedorId == id);
-            if (fornecedor == null)
-            {
-                return NotFound();
-            }
+        //    var fornecedor = await _context.Fornecedores
+        //        .Include(f => f.Status)
+        //        .FirstOrDefaultAsync(m => m.FornecedorId == id);
+        //    if (fornecedor == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return View(fornecedor);
-        }
+        //    return View(fornecedor);
+        //}
 
         // POST: Fornecedores/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int? id)
+        [HttpPost]
+        public async Task<IActionResult> Delete(int? id)
         {
             var fornecedor = await _context.Fornecedores.FindAsync(id);
             _context.Fornecedores.Remove(fornecedor);

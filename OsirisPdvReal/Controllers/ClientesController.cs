@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using OsirisPdvReal.Models;
+using ReflectionIT.Mvc.Paging;
 
 namespace OsirisPdvReal.Controllers
 {
@@ -19,10 +20,39 @@ namespace OsirisPdvReal.Controllers
         }
 
         // GET: Clientes
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1)
         {
-            var contexto = _context.Clientes.Include(c => c.Status);
-            return View(await contexto.ToListAsync());
+            var query = _context.Clientes.Include(j => j.Status).AsNoTracking().OrderBy(j => j.NomeCliente);
+            var model = await PagingList.CreateAsync(query, 5, page);
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Index(string busca, int page = 1)
+        {
+            try
+            {
+                if (busca == null)
+                {
+                    var query = _context.Clientes.Include(j => j.Status).AsNoTracking().OrderBy(j => j.NomeCliente);
+                    var model = await PagingList.CreateAsync(query, 5, page);
+                    return View(model);
+                }
+                else
+                {
+                    List<Cliente> listadeClientes = new List<Cliente>();
+                    var clientes = _context.Clientes.Include(j => j.Status).Where(b => b.NomeCliente.Contains(busca)).OrderBy(b => b.NomeCliente);
+                    var model = await PagingList.CreateAsync(clientes, 5, page);
+                    return View(model);
+                }
+            }
+            catch (Exception)
+            {
+                TempData["msgSucesso"] = "Erro na sua solicitação, favor tentar novamente!";
+                return View();
+            }
+
+
         }
 
         // GET: Clientes/Details/5
@@ -58,12 +88,36 @@ namespace OsirisPdvReal.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ClienteId,NomeCliente,EmailCliente,TelefoneCliente,StatusId")] Cliente cliente)
         {
-            if (ModelState.IsValid)
+            try
             {
-                _context.Add(cliente);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    var existeCliente = _context.Clientes.Where(c => c.NomeCliente == cliente.NomeCliente).Select(c => c.NomeCliente).FirstOrDefault();
+                    if (existeCliente == null)
+                    {
+                        _context.Add(cliente);
+                        await _context.SaveChangesAsync();
+                        return RedirectToAction(nameof(Index));
+                    }
+                    else
+                    {
+                        ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus");
+
+                        TempData["msgSucesso"] = "Nome já existente em nosso banco de dados!";
+                        return View();
+                    }
+
+                }
             }
+            catch (Exception ex)
+            {
+
+                ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus");
+
+                TempData["msgSucesso"] = "Erro na sua solicitação, favor tentar novamente!";
+                return View();
+            }
+           
             ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus", cliente.StatusId);
             return View(cliente);
         }
@@ -99,21 +153,29 @@ namespace OsirisPdvReal.Controllers
 
             if (ModelState.IsValid)
             {
+                var existeCliente = _context.Clientes.Where(c => c.NomeCliente == cliente.NomeCliente).Select(c => c.NomeCliente).FirstOrDefault();
+
                 try
                 {
-                    _context.Update(cliente);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ClienteExists(cliente.ClienteId))
+                    if (existeCliente == null)
                     {
-                        return NotFound();
+                        _context.Update(cliente);
+                        await _context.SaveChangesAsync();
                     }
                     else
                     {
-                        throw;
+                        ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus");
+
+                        TempData["msgSucesso"] = "Nome já existente em nosso banco de dados!";
+                        return View();
                     }
+                }
+                catch (Exception ex)
+                {
+                    ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus");
+
+                    TempData["msgSucesso"] = "Erro na sua solicitação, favor tentar novamente!";
+                    return View();
                 }
                 return RedirectToAction(nameof(Index));
             }
@@ -122,28 +184,27 @@ namespace OsirisPdvReal.Controllers
         }
 
         // GET: Clientes/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //public async Task<IActionResult> Delete(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var cliente = await _context.Clientes
-                .Include(c => c.Status)
-                .FirstOrDefaultAsync(m => m.ClienteId == id);
-            if (cliente == null)
-            {
-                return NotFound();
-            }
+        //    var cliente = await _context.Clientes
+        //        .Include(c => c.Status)
+        //        .FirstOrDefaultAsync(m => m.ClienteId == id);
+        //    if (cliente == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return View(cliente);
-        }
+        //    return View(cliente);
+        //}
 
         // POST: Clientes/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        [HttpPost]
+        public async Task<IActionResult> Delete(int id)
         {
             var cliente = await _context.Clientes.FindAsync(id);
             _context.Clientes.Remove(cliente);

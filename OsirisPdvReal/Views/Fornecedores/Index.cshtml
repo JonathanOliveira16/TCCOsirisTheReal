@@ -1,71 +1,131 @@
-﻿@model IEnumerable<OsirisPdvReal.Models.Fornecedor>
+﻿@model ReflectionIT.Mvc.Paging.PagingList<OsirisPdvReal.Models.Fornecedor>
+@using ReflectionIT.Mvc.Paging
+@addTagHelper *, ReflectionIT.Mvc.Paging
 
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<div class="modal" id="visao" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="titleModal">Excluir</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Deseja realmente excluir essa banca?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success botaoDoId" style="font-size:10px;">Sim</button>
+                <button type="button" class="btn btn-danger" style="font-size:10px;" data-dismiss="modal">Não</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
+@if (TempData["msgSucesso"] != null)
+{
+    <div class="alert alert-danger alert-dismissable mt-2" style="margin-left:10%;margin-right:10%">
+        <strong>@TempData["msgSucesso"]</strong>
+    </div>
+}
+
+<form asp-action="Index">
+    <div class="d-flex">
+        <input type="text" class="form-control borderInput w-25" name="busca" id="busca" placeholder="Pesquisar..." />
+        <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
+        <a class="btn btnPage btn-success mlAddNew" style="margin-left:10%;" asp-action="Create">Novo fornecedor</a>
+    </div>
+</form>
+
+
+<table class="table mt-4">
+    <thead class="tHeadPurple">
         <tr>
-            <th>
+            <th class="text-white" style="font-size:12px;">
                 @Html.DisplayNameFor(model => model.NomeFornecedor)
             </th>
-            <th>
+            <th class="text-white" style="font-size:12px;">
                 @Html.DisplayNameFor(model => model.EmailFornecedor)
             </th>
-            <th>
+            <th class="text-white" style="font-size:12px;">
                 @Html.DisplayNameFor(model => model.TelefoneFornecedor)
             </th>
-            <th>
+            <th class="text-white" style="font-size:12px;">
                 @Html.DisplayNameFor(model => model.PontoFocalFornecedor)
             </th>
-            <th>
+            <th class="text-white" style="font-size:12px;">
                 @Html.DisplayNameFor(model => model.LogradouroFornecedor)
             </th>
-            <th>
+            <th class="text-white" style="font-size:12px;">
                 @Html.DisplayNameFor(model => model.CEPFornecedor)
             </th>
-            <th>
+            <th class="text-white" style="font-size:12px;">
                 @Html.DisplayNameFor(model => model.Status)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.NomeFornecedor)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EmailFornecedor)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TelefoneFornecedor)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PontoFocalFornecedor)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LogradouroFornecedor)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CEPFornecedor)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status.NomeStatus)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.FornecedorId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.FornecedorId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.FornecedorId">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td style="font-size:12px;">
+                    @Html.DisplayFor(modelItem => item.NomeFornecedor)
+                </td>
+                <td style="font-size:12px;">
+                    @Html.DisplayFor(modelItem => item.EmailFornecedor)
+                </td>
+                <td style="font-size:12px;">
+                    @Html.DisplayFor(modelItem => item.TelefoneFornecedor)
+                </td>
+                <td style="font-size:12px;">
+                    @Html.DisplayFor(modelItem => item.PontoFocalFornecedor)
+                </td>
+                <td style="font-size:12px;">
+                    @Html.DisplayFor(modelItem => item.LogradouroFornecedor)
+                </td>
+                <td style="font-size:12px;">
+                    @Html.DisplayFor(modelItem => item.CEPFornecedor)
+                </td>
+                <td style="font-size:12px;">
+                    @Html.DisplayFor(modelItem => item.Status.NomeStatus)
+                </td>
+                <td>
+                    <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.FornecedorId">Editar</a> |
+
+                    <a class="btn btn-danger" data-toggle="modal" data-target="#visao" onclick="PassarDados(@item.FornecedorId)">Excluir</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+
+<nav class="float-right">
+    @await this.Component.InvokeAsync("Pager", new { PagingList = this.Model })
+</nav>
+
+@section Scripts{
+    <script>
+        var idParaApagar
+
+        function PassarDados(idJornaleiro) {
+            $(".botaoDoId").on('click', function () {
+                $.ajax({
+                    url: "/fornecedores/Delete",
+                    method: "POST",
+                    data: { id: idJornaleiro },
+                    success: function (data) {
+                        $(".modal").modal('hide');
+                        location.reload(true);
+                    }
+                });
+            });
+        }
+
+
+    </script>
+}

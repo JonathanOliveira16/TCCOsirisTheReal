@@ -93,8 +93,13 @@
                     method: "POST",
                     data: { id: idJornaleiro },
                     success: function (data) {
-                        $(".modal").modal('hide');
-                        location.reload(true);
+                        $.ajax({
+                            url: "/Jornaleiros/Index",
+                            type: "get",
+                            success: function () {
+                                window.location.href = '/Jornaleiros/Index'
+                            }
+                        });
                     }
                 });
             });
