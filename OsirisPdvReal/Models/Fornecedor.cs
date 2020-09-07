@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -9,7 +10,9 @@ namespace OsirisPdvReal.Models
     public class Fornecedor
     {
         [Key]
-        public int? FornecedorId { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+
+        public int CNPJ { get; set; }
         [Required(ErrorMessage = "Campo obrigatório")]
         [StringLength(100, ErrorMessage = "Limite de caracteres atingido")]
         [Display(Name = "Nome fornecedor")]

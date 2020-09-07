@@ -54,9 +54,9 @@ namespace OsirisPdvReal.Models
 
             //many to many
             modelBuilder.Entity<ClienteBanca>().HasKey(x => new { x.BancaId, x.ClienteId });
-            modelBuilder.Entity<FornecedorBanca>().HasKey(x => new { x.BancaId, x.FornecedorId });
+            modelBuilder.Entity<FornecedorBanca>().HasKey(x => new { x.BancaId, x.CNPJ });
             modelBuilder.Entity<JornaleiroBanca>().HasKey(x => new { x.BancaId, x.CPF });
-            modelBuilder.Entity<CompraFornecedores>().HasKey(x => new { x.ComprasId, x.FornecedorId });
+            modelBuilder.Entity<CompraFornecedores>().HasKey(x => new { x.ComprasId, x.CNPJ });
             modelBuilder.Entity<ProdutoCompras>().HasKey(x => new { x.ComprasId, x.ProdutoId });
             modelBuilder.Entity<VendaProduto>().HasKey(x => new { x.VendaId, x.ProdutoId });
 
@@ -68,9 +68,9 @@ namespace OsirisPdvReal.Models
             modelBuilder.Entity<VendaProduto>().HasOne(x => x.Produtos).WithMany(x => x.VendaProduto).HasForeignKey(x => x.ProdutoId);
 
             modelBuilder.Entity<ClienteBanca>().HasOne(x => x.Clientes).WithMany(x => x.ClienteBancas).HasForeignKey(x => x.ClienteId);
-            modelBuilder.Entity<FornecedorBanca>().HasOne(x => x.Fornecedores).WithMany(x => x.FornecedorBanca).HasForeignKey(x => x.FornecedorId);
+            modelBuilder.Entity<FornecedorBanca>().HasOne(x => x.Fornecedores).WithMany(x => x.FornecedorBanca).HasForeignKey(x => x.CNPJ);
             modelBuilder.Entity<JornaleiroBanca>().HasOne(x => x.Jornaleiro).WithMany(x => x.JornaleiroBanca).HasForeignKey(x => x.BancaId);
-            modelBuilder.Entity<CompraFornecedores>().HasOne(x => x.Fornecedor).WithMany(x => x.ComprasFornecedor).HasForeignKey(x => x.FornecedorId).IsRequired().OnDelete(DeleteBehavior.Restrict) ;
+            modelBuilder.Entity<CompraFornecedores>().HasOne(x => x.Fornecedor).WithMany(x => x.ComprasFornecedor).HasForeignKey(x => x.CNPJ).IsRequired().OnDelete(DeleteBehavior.Restrict) ;
             modelBuilder.Entity<ProdutoCompras>().HasOne(x => x.Compras).WithMany(x => x.ProdutoCompras).HasForeignKey(x => x.ComprasId);
             modelBuilder.Entity<VendaProduto>().HasOne(x => x.Vendas).WithMany(x => x.VendaProduto).HasForeignKey(x => x.VendaId);
 

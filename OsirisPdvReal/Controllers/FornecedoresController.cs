@@ -13,6 +13,7 @@ namespace OsirisPdvReal.Controllers
     public class FornecedoresController : Controller
     {
         private readonly Contexto _context;
+        private static int CpnjFornece;
 
         public FornecedoresController(Contexto context)
         {
@@ -56,6 +57,21 @@ namespace OsirisPdvReal.Controllers
 
         }
 
+        [HttpPost]
+        public string ValidateFornecedor(int id)
+        {
+            var CNPJExist = _context.Fornecedores.Where(j => j.CNPJ == id).Select(j => j.NomeFornecedor).FirstOrDefault();
+            if (CNPJExist == null)
+            {
+                CpnjFornece = id;
+                return "ok";
+            }
+            else
+            {
+                return "editar";
+            }
+        }
+
         // GET: Fornecedores/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -66,7 +82,7 @@ namespace OsirisPdvReal.Controllers
 
             var fornecedor = await _context.Fornecedores
                 .Include(f => f.Status)
-                .FirstOrDefaultAsync(m => m.FornecedorId == id);
+                .FirstOrDefaultAsync(m => m.CNPJ == id);
             if (fornecedor == null)
             {
                 return NotFound();
@@ -87,15 +103,15 @@ namespace OsirisPdvReal.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("FornecedorId,NomeFornecedor,EmailFornecedor,TelefoneFornecedor,PontoFocalFornecedor,LogradouroFornecedor,CEPFornecedor,StatusId")] Fornecedor fornecedor)
+        public async Task<IActionResult> Create([Bind("CNPJ,NomeFornecedor,EmailFornecedor,TelefoneFornecedor,PontoFocalFornecedor,LogradouroFornecedor,CEPFornecedor,StatusId")] Fornecedor fornecedor)
         {
             if (ModelState.IsValid)
             {
                 var existeForne = _context.Fornecedores.Where(f=>f.NomeFornecedor == fornecedor.NomeFornecedor).Select(b => b.NomeFornecedor).FirstOrDefault();
                 if (existeForne == null)
                 {
-                    var jornaleiro = _context.Fornecedores.Where(j => j.FornecedorId == fornecedor.FornecedorId).Select(j => j).FirstOrDefault();
-
+                    //var forneceData = _context.Fornecedores.Where(j => j.CNPJ == fornecedor.CNPJ).Select(j => j).FirstOrDefault();
+                    fornecedor.CNPJ = CpnjFornece;
                     _context.Add(fornecedor);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
@@ -135,9 +151,9 @@ namespace OsirisPdvReal.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int? id, [Bind("FornecedorId,NomeFornecedor,EmailFornecedor,TelefoneFornecedor,PontoFocalFornecedor,LogradouroFornecedor,CEPFornecedor,StatusId")] Fornecedor fornecedor)
+        public async Task<IActionResult> Edit(int? id, [Bind("CNPJ,NomeFornecedor,EmailFornecedor,TelefoneFornecedor,PontoFocalFornecedor,LogradouroFornecedor,CEPFornecedor,StatusId")] Fornecedor fornecedor)
         {
-            if (id != fornecedor.FornecedorId)
+            if (id != fornecedor.CNPJ)
             {
                 return NotFound();
             }
@@ -146,7 +162,7 @@ namespace OsirisPdvReal.Controllers
             {
                 try
                 {
-                    var existeFornce = _context.Fornecedores.Where(f => f.NomeFornecedor == fornecedor.NomeFornecedor && f.FornecedorId != fornecedor.FornecedorId).Select(f => f.NomeFornecedor).FirstOrDefault();
+                    var existeFornce = _context.Fornecedores.Where(f => f.NomeFornecedor == fornecedor.NomeFornecedor && f.CNPJ != fornecedor.CNPJ).Select(f => f.NomeFornecedor).FirstOrDefault();
                     if (existeFornce == null)
                     {
                         _context.Update(fornecedor);
@@ -185,7 +201,7 @@ namespace OsirisPdvReal.Controllers
 
         //    var fornecedor = await _context.Fornecedores
         //        .Include(f => f.Status)
-        //        .FirstOrDefaultAsync(m => m.FornecedorId == id);
+        //        .FirstOrDefaultAsync(m => m.CNPJ == id);
         //    if (fornecedor == null)
         //    {
         //        return NotFound();
@@ -206,7 +222,7 @@ namespace OsirisPdvReal.Controllers
 
         private bool FornecedorExists(int? id)
         {
-            return _context.Fornecedores.Any(e => e.FornecedorId == id);
+            return _context.Fornecedores.Any(e => e.CNPJ == id);
         }
     }
 }

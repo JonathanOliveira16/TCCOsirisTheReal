@@ -99,7 +99,7 @@ namespace OsirisPdvReal.Migrations
                     b.Property<int?>("ComprasId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("FornecedorId")
+                    b.Property<int?>("CNPJ")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("DataCompra")
@@ -108,9 +108,9 @@ namespace OsirisPdvReal.Migrations
                     b.Property<double>("ValorCompra")
                         .HasColumnType("float");
 
-                    b.HasKey("ComprasId", "FornecedorId");
+                    b.HasKey("ComprasId", "CNPJ");
 
-                    b.HasIndex("FornecedorId");
+                    b.HasIndex("CNPJ");
 
                     b.ToTable("CompraFornecedores");
                 });
@@ -143,10 +143,8 @@ namespace OsirisPdvReal.Migrations
 
             modelBuilder.Entity("OsirisPdvReal.Models.Fornecedor", b =>
                 {
-                    b.Property<int?>("FornecedorId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<int>("CNPJ")
+                        .HasColumnType("int");
 
                     b.Property<string>("CEPFornecedor")
                         .IsRequired()
@@ -181,7 +179,7 @@ namespace OsirisPdvReal.Migrations
                         .HasColumnType("nvarchar(12)")
                         .HasMaxLength(12);
 
-                    b.HasKey("FornecedorId");
+                    b.HasKey("CNPJ");
 
                     b.HasIndex("StatusId");
 
@@ -193,12 +191,12 @@ namespace OsirisPdvReal.Migrations
                     b.Property<int>("BancaId")
                         .HasColumnType("int");
 
-                    b.Property<int>("FornecedorId")
+                    b.Property<int>("CNPJ")
                         .HasColumnType("int");
 
-                    b.HasKey("BancaId", "FornecedorId");
+                    b.HasKey("BancaId", "CNPJ");
 
-                    b.HasIndex("FornecedorId");
+                    b.HasIndex("CNPJ");
 
                     b.ToTable("FornecedorBanca");
                 });
@@ -423,15 +421,15 @@ namespace OsirisPdvReal.Migrations
 
             modelBuilder.Entity("OsirisPdvReal.Models.CompraFornecedores", b =>
                 {
-                    b.HasOne("OsirisPdvReal.Models.Compras", "Compras")
+                    b.HasOne("OsirisPdvReal.Models.Fornecedor", "Fornecedor")
                         .WithMany("ComprasFornecedor")
-                        .HasForeignKey("ComprasId")
+                        .HasForeignKey("CNPJ")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("OsirisPdvReal.Models.Fornecedor", "Fornecedor")
+                    b.HasOne("OsirisPdvReal.Models.Compras", "Compras")
                         .WithMany("ComprasFornecedor")
-                        .HasForeignKey("FornecedorId")
+                        .HasForeignKey("ComprasId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
@@ -464,7 +462,7 @@ namespace OsirisPdvReal.Migrations
 
                     b.HasOne("OsirisPdvReal.Models.Fornecedor", "Fornecedores")
                         .WithMany("FornecedorBanca")
-                        .HasForeignKey("FornecedorId")
+                        .HasForeignKey("CNPJ")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

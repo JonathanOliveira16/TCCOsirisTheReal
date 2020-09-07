@@ -31,7 +31,12 @@ namespace OsirisPdvReal.Controllers
         public IActionResult Login([Bind("CPF,NomeJornaleiro,EmailJornaleiro,SenhaJornaleiro")] Jornaleiro jornaleiro)
         {
             var jornaleiroOk = _context.Jornaleiros.Include(j=>j.tipo).Where(j => j.EmailJornaleiro.ToLower() == jornaleiro.EmailJornaleiro.ToLower() && j.SenhaJornaleiro == jornaleiro.SenhaJornaleiro).Select(j => j).FirstOrDefault();
-            if (!String.IsNullOrEmpty(jornaleiroOk.EmailJornaleiro))
+            String variavelDif = "";
+            if (jornaleiroOk == null)
+            {
+                variavelDif = "a";
+            }
+            if (variavelDif != "a")
             {
                 if (jornaleiroOk.tipo.NomeTipo.ToLower() == "admin")
                 {
@@ -378,7 +383,7 @@ namespace OsirisPdvReal.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool JornaleiroExists(int id)
+        private bool JornaleiroExists(long id)
         {
             return _context.Jornaleiros.Any(e => e.CPF == id);
         }

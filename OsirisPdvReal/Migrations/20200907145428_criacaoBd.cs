@@ -80,8 +80,7 @@ namespace OsirisPdvReal.Migrations
                 name: "Fornecedores",
                 columns: table => new
                 {
-                    FornecedorId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CNPJ = table.Column<int>(nullable: false),
                     NomeFornecedor = table.Column<string>(maxLength: 100, nullable: false),
                     EmailFornecedor = table.Column<string>(maxLength: 80, nullable: false),
                     TelefoneFornecedor = table.Column<string>(maxLength: 12, nullable: false),
@@ -92,7 +91,7 @@ namespace OsirisPdvReal.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Fornecedores", x => x.FornecedorId);
+                    table.PrimaryKey("PK_Fornecedores", x => x.CNPJ);
                     table.ForeignKey(
                         name: "FK_Fornecedores_Status_StatusId",
                         column: x => x.StatusId,
@@ -105,25 +104,25 @@ namespace OsirisPdvReal.Migrations
                 name: "CompraFornecedores",
                 columns: table => new
                 {
-                    FornecedorId = table.Column<int>(nullable: false),
+                    CNPJ = table.Column<int>(nullable: false),
                     ComprasId = table.Column<int>(nullable: false),
                     DataCompra = table.Column<DateTime>(nullable: false),
                     ValorCompra = table.Column<double>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CompraFornecedores", x => new { x.ComprasId, x.FornecedorId });
+                    table.PrimaryKey("PK_CompraFornecedores", x => new { x.ComprasId, x.CNPJ });
+                    table.ForeignKey(
+                        name: "FK_CompraFornecedores_Fornecedores_CNPJ",
+                        column: x => x.CNPJ,
+                        principalTable: "Fornecedores",
+                        principalColumn: "CNPJ",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_CompraFornecedores_Compras_ComprasId",
                         column: x => x.ComprasId,
                         principalTable: "Compras",
                         principalColumn: "ComprasId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_CompraFornecedores_Fornecedores_FornecedorId",
-                        column: x => x.FornecedorId,
-                        principalTable: "Fornecedores",
-                        principalColumn: "FornecedorId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -150,17 +149,17 @@ namespace OsirisPdvReal.Migrations
                 name: "FornecedorBanca",
                 columns: table => new
                 {
-                    FornecedorId = table.Column<int>(nullable: false),
+                    CNPJ = table.Column<int>(nullable: false),
                     BancaId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FornecedorBanca", x => new { x.BancaId, x.FornecedorId });
+                    table.PrimaryKey("PK_FornecedorBanca", x => new { x.BancaId, x.CNPJ });
                     table.ForeignKey(
-                        name: "FK_FornecedorBanca_Fornecedores_FornecedorId",
-                        column: x => x.FornecedorId,
+                        name: "FK_FornecedorBanca_Fornecedores_CNPJ",
+                        column: x => x.CNPJ,
                         principalTable: "Fornecedores",
-                        principalColumn: "FornecedorId",
+                        principalColumn: "CNPJ",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -349,9 +348,9 @@ namespace OsirisPdvReal.Migrations
                 column: "StatusId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CompraFornecedores_FornecedorId",
+                name: "IX_CompraFornecedores_CNPJ",
                 table: "CompraFornecedores",
-                column: "FornecedorId");
+                column: "CNPJ");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Compras_StatusId",
@@ -359,9 +358,9 @@ namespace OsirisPdvReal.Migrations
                 column: "StatusId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_FornecedorBanca_FornecedorId",
+                name: "IX_FornecedorBanca_CNPJ",
                 table: "FornecedorBanca",
-                column: "FornecedorId");
+                column: "CNPJ");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Fornecedores_StatusId",
