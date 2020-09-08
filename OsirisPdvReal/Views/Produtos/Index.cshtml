@@ -1,47 +1,105 @@
-﻿@model IEnumerable<OsirisPdvReal.Models.Produto>
+﻿@model ReflectionIT.Mvc.Paging.PagingList<OsirisPdvReal.Models.Produto>
+@using ReflectionIT.Mvc.Paging
+@addTagHelper *, ReflectionIT.Mvc.Paging
 
 @{
     ViewData["Title"] = "Index";
 }
+<div class="modal" id="visao" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="titleModal">Excluir</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Deseja realmente excluir essa banca?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success botaoDoId" style="font-size:10px;">Sim</button>
+                <button type="button" class="btn btn-danger" style="font-size:10px;" data-dismiss="modal">Não</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-<h1>Index</h1>
+@if (TempData["msgSucesso"] != null)
+{
+    <div class="alert alert-danger alert-dismissable mt-2" style="margin-left:10%;margin-right:10%">
+        <strong>@TempData["msgSucesso"]</strong>
+    </div>
+}
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
+<form asp-action="Index">
+    <div class="d-flex">
+        <input type="text" class="form-control borderInput w-25" name="busca" id="busca" placeholder="Pesquisar..." />
+        <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
+        <a class="btn btnPage btn-success mlAddNew" style="margin-left:10%;" asp-action="Create">Nova banca</a>
+    </div>
+</form>
+
+<table class="table mt-4">
+    <thead class="tHeadPurple">
         <tr>
-            <th>
+            <th class="text-white">
                 @Html.DisplayNameFor(model => model.NomeProduto)
             </th>
-            <th>
+            <th class="text-white">
                 @Html.DisplayNameFor(model => model.ValorProduto)
             </th>
-            <th>
+            <th class="text-white">
                 @Html.DisplayNameFor(model => model.QuantideProduto)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.NomeProduto)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ValorProduto)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.QuantideProduto)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.ProdutoId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ProdutoId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ProdutoId">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NomeProduto)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ValorProduto)
+                </td>
+                <td class="ml-2">
+                    @Html.DisplayFor(modelItem => item.QuantideProduto)
+                </td>
+                <td>
+                    <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.ProdutoId">Editar</a> |
+
+                    <a class="btn btn-danger" data-toggle="modal" data-target="#visao" onclick="PassarDados(@item.ProdutoId)">Excluir</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+
+<nav class="float-right">
+    @await this.Component.InvokeAsync("Pager", new { PagingList = this.Model })
+</nav>
+
+@section Scripts{
+    <script>
+        var idParaApagar
+
+        function PassarDados(idJornaleiro) {
+            $(".botaoDoId").on('click', function () {
+                $.ajax({
+                    url: "/Produtos/Delete",
+                    method: "POST",
+                    data: { id: idJornaleiro },
+                    success: function (data) {
+                        $(".modal").modal('hide');
+                        location.reload(true);
+                    }
+                });
+            });
+        }
+
+
+    </script>
+}

@@ -12,15 +12,13 @@ namespace OsirisPdvReal.Models
         public int ProdutoId { get; set; }
         [Required(ErrorMessage = "Campo obrigatório")]
         [StringLength(80, ErrorMessage = "Limite de caracteres atingido")]
-        [Display(Name = "Nome produto")]
+        [Display(Name = "Nome")]
         public string NomeProduto { get; set; }
         [Required(ErrorMessage = "Campo obrigatório")]
-        [StringLength(20, ErrorMessage = "Limite de caracteres atingido")]
-        [Display(Name = "Valor produto")]
+        [Display(Name = "Valor")]
         public double ValorProduto { get; set; }
         [Required(ErrorMessage = "Campo obrigatório")]
-        [StringLength(35, ErrorMessage = "Limite de caracteres atingido")]
-        [Display(Name = "Quantidade produto")]
+        [Display(Name = "Estoque")]
         public int QuantideProduto { get; set; }
         public ICollection<ProdutoCompras> ProdutoCompras { get; set; }
         public ICollection<VendaProduto> VendaProduto { get; set; }

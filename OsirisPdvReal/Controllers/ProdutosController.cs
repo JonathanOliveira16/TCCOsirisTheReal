@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using OsirisPdvReal.Models;
+using ReflectionIT.Mvc.Paging;
 
 namespace OsirisPdvReal.Controllers
 {
@@ -19,9 +20,40 @@ namespace OsirisPdvReal.Controllers
         }
 
         // GET: Produtos
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1)
         {
-            return View(await _context.Produto.ToListAsync());
+            var query = _context.Produto.AsNoTracking().OrderBy(j => j.NomeProduto);
+            //var contexto = _context.Bancas.Include(b => b.Jornaleiro);
+            var model = await PagingList.CreateAsync(query, 5, page);
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Index(string busca, int page = 1)
+        {
+            try
+            {
+                if (busca == null)
+                {
+                    var query = _context.Produto.AsNoTracking().OrderBy(j => j.NomeProduto);
+                    var model = await PagingList.CreateAsync(query, 5, page);
+                    return View(model);
+                }
+                else
+                {
+                    List<Produto> listaDeProdutos = new List<Produto>();
+                    var produtos = _context.Produto.Where(b => b.NomeProduto.Contains(busca)).OrderBy(b => b.NomeProduto);
+                    var model = await PagingList.CreateAsync(produtos, 5, page);
+                    return View(model);
+                }
+            }
+            catch (Exception)
+            {
+                TempData["msgSucesso"] = "Erro na sua solicitação, favor tentar novamente!";
+                return View();
+            }
+
+
         }
 
         // GET: Produtos/Details/5
@@ -55,12 +87,30 @@ namespace OsirisPdvReal.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ProdutoId,NomeProduto,ValorProduto,QuantideProduto")] Produto produto)
         {
-            if (ModelState.IsValid)
+            try
             {
-                _context.Add(produto);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    var produtoExist = _context.Produto.Where(p => p.NomeProduto == produto.NomeProduto).Select(p => p.NomeProduto).FirstOrDefault();
+                    if (produtoExist == null)
+                    {
+                        _context.Add(produto);
+                        await _context.SaveChangesAsync();
+                        return RedirectToAction(nameof(Index));
+                    }
+                    else
+                    {
+                        TempData["msgSucesso"] = "Nome de produto já existente!";
+                    }
+
+                }
             }
+            catch (Exception)
+            {
+                TempData["msgSucesso"] = "Erro na sua solicitação, favor tentar novamente!";
+
+            }
+
             return View(produto);
         }
 
@@ -96,19 +146,23 @@ namespace OsirisPdvReal.Controllers
             {
                 try
                 {
-                    _context.Update(produto);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ProdutoExists(produto.ProdutoId))
+                    var produtoExist = _context.Produto.Where(p => p.NomeProduto == produto.NomeProduto).Select(p => p.NomeProduto).FirstOrDefault();
+                    if (produtoExist == null)
                     {
-                        return NotFound();
+                        _context.Update(produto);
+                        await _context.SaveChangesAsync();
                     }
                     else
                     {
-                        throw;
+                        TempData["msgSucesso"] = "Nome de produto já existente!";
+
                     }
+
+                }
+                catch (Exception ex)
+                {
+                    TempData["msgSucesso"] = "Erro na sua solicitação, favor tentar novamente!";
+                    return View(produto);
                 }
                 return RedirectToAction(nameof(Index));
             }
@@ -116,27 +170,26 @@ namespace OsirisPdvReal.Controllers
         }
 
         // GET: Produtos/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //public async Task<IActionResult> Delete(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var produto = await _context.Produto
-                .FirstOrDefaultAsync(m => m.ProdutoId == id);
-            if (produto == null)
-            {
-                return NotFound();
-            }
+        //    var produto = await _context.Produto
+        //        .FirstOrDefaultAsync(m => m.ProdutoId == id);
+        //    if (produto == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return View(produto);
-        }
+        //    return View(produto);
+        //}
 
         // POST: Produtos/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        [HttpPost]
+        public async Task<IActionResult> Delete(int id)
         {
             var produto = await _context.Produto.FindAsync(id);
             _context.Produto.Remove(produto);

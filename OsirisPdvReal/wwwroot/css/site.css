@@ -208,6 +208,12 @@ body {
     font-weight: bold
 }
 
+.btnNewCreate {
+    width: 25%;
+    font-size: 13px;
+    font-weight: bold
+}
+
 .centerCreateOrEdit {
     width: 60%;
     margin-left: 20%

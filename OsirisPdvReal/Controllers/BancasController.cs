@@ -79,7 +79,7 @@ namespace OsirisPdvReal.Controllers
         // GET: Bancas/Create
         public IActionResult Create()
         {
-            ViewData["CPF"] = new SelectList(_context.Jornaleiros, "CPF", "EmailJornaleiro");
+            ViewData["CPF"] = new SelectList(_context.Jornaleiros, "CPF", "NomeJornaleiro");
             return View();
         }
 
@@ -109,7 +109,7 @@ namespace OsirisPdvReal.Controllers
                     }
                     else
                     {
-                        ViewData["CPF"] = new SelectList(_context.Jornaleiros, "CPF", "EmailJornaleiro");
+                        ViewData["CPF"] = new SelectList(_context.Jornaleiros, "CPF", "NomeJornaleiro");
 
                         TempData["msgSucesso"] = "Nome já existente em nosso banco de dados!";
                         return View();
@@ -119,7 +119,7 @@ namespace OsirisPdvReal.Controllers
             }
             catch (Exception ex)
             {
-                ViewData["CPF"] = new SelectList(_context.Jornaleiros, "CPF", "EmailJornaleiro");
+                ViewData["CPF"] = new SelectList(_context.Jornaleiros, "CPF", "NomeJornaleiro");
                 TempData["msgSucesso"] = "Erro na sua solicitação, favor tentar novamente!";
                 return View();
             }
@@ -140,7 +140,7 @@ namespace OsirisPdvReal.Controllers
             {
                 return NotFound();
             }
-            ViewData["CPF"] = new SelectList(_context.Jornaleiros, "CPF", "EmailJornaleiro", banca.CPF);
+            ViewData["CPF"] = new SelectList(_context.Jornaleiros, "CPF", "NomeJornaleiro", banca.CPF);
             return View(banca);
         }
 
@@ -170,7 +170,7 @@ namespace OsirisPdvReal.Controllers
                     }
                     else
                     {
-                        ViewData["CPF"] = new SelectList(_context.Jornaleiros, "CPF", "EmailJornaleiro");
+                        ViewData["CPF"] = new SelectList(_context.Jornaleiros, "CPF", "NomeJornaleiro");
 
                         TempData["msgSucesso"] = "Nome já existente em nosso banco de dados!";
                         return View();
@@ -186,7 +186,7 @@ namespace OsirisPdvReal.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CPF"] = new SelectList(_context.Jornaleiros, "CPF", "EmailJornaleiro", banca.CPF);
+            ViewData["CPF"] = new SelectList(_context.Jornaleiros, "CPF", "NomeJornaleiro", banca.CPF);
             return View(banca);
         }
 

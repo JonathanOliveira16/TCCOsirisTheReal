@@ -31,7 +31,7 @@ namespace OsirisPdvReal.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-           
+
             //one to many
             modelBuilder.Entity<Status>().HasMany(t => t.Fornecedores).WithOne(t => t.Status);
             modelBuilder.Entity<Status>().HasMany(t => t.Compras).WithOne(t => t.Status);
@@ -63,16 +63,49 @@ namespace OsirisPdvReal.Models
             modelBuilder.Entity<ClienteBanca>().HasOne(x => x.Bancas).WithMany(x => x.ClienteBancas).HasForeignKey(x => x.BancaId);
             modelBuilder.Entity<FornecedorBanca>().HasOne(x => x.Bancas).WithMany(x => x.FornecedorBanca).HasForeignKey(x => x.BancaId);
             modelBuilder.Entity<JornaleiroBanca>().HasOne(x => x.Bancas).WithMany(x => x.JornaleiroBanca).HasForeignKey(x => x.BancaId);
-            modelBuilder.Entity<CompraFornecedores>().HasOne(x => x.Compras).WithMany(x => x.ComprasFornecedor).HasForeignKey(x => x.ComprasId).IsRequired().OnDelete(DeleteBehavior.Restrict) ;
+            modelBuilder.Entity<CompraFornecedores>().HasOne(x => x.Compras).WithMany(x => x.ComprasFornecedor).HasForeignKey(x => x.ComprasId).IsRequired().OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<ProdutoCompras>().HasOne(x => x.Produtos).WithMany(x => x.ProdutoCompras).HasForeignKey(x => x.ProdutoId);
             modelBuilder.Entity<VendaProduto>().HasOne(x => x.Produtos).WithMany(x => x.VendaProduto).HasForeignKey(x => x.ProdutoId);
 
             modelBuilder.Entity<ClienteBanca>().HasOne(x => x.Clientes).WithMany(x => x.ClienteBancas).HasForeignKey(x => x.ClienteId);
             modelBuilder.Entity<FornecedorBanca>().HasOne(x => x.Fornecedores).WithMany(x => x.FornecedorBanca).HasForeignKey(x => x.CNPJ);
             modelBuilder.Entity<JornaleiroBanca>().HasOne(x => x.Jornaleiro).WithMany(x => x.JornaleiroBanca).HasForeignKey(x => x.BancaId);
-            modelBuilder.Entity<CompraFornecedores>().HasOne(x => x.Fornecedor).WithMany(x => x.ComprasFornecedor).HasForeignKey(x => x.CNPJ).IsRequired().OnDelete(DeleteBehavior.Restrict) ;
+            modelBuilder.Entity<CompraFornecedores>().HasOne(x => x.Fornecedor).WithMany(x => x.ComprasFornecedor).HasForeignKey(x => x.CNPJ).IsRequired().OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<ProdutoCompras>().HasOne(x => x.Compras).WithMany(x => x.ProdutoCompras).HasForeignKey(x => x.ComprasId);
             modelBuilder.Entity<VendaProduto>().HasOne(x => x.Vendas).WithMany(x => x.VendaProduto).HasForeignKey(x => x.VendaId);
+
+
+            modelBuilder.Entity<Tipo>().HasData(
+                  new Tipo
+                  {
+                      TipoId = 1,
+                      NomeTipo = "Admin"
+                  },
+                  new Tipo
+                  {
+                      TipoId = 2,
+                      NomeTipo = "User"
+                  }
+            );
+
+            modelBuilder.Entity<Status>().HasData(
+              new Status
+              {
+                  StatusId = 1,
+                  NomeStatus = "Ativo"
+              },
+              new Status
+              {
+                  StatusId = 2,
+                  NomeStatus = "Inativo"
+              },
+              new Status
+              {
+                  StatusId = 3,
+                  NomeStatus = "Cancelado"
+              }
+          );
+
 
         }
 
