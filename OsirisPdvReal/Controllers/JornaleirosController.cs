@@ -30,7 +30,7 @@ namespace OsirisPdvReal.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Login([Bind("CPF,NomeJornaleiro,EmailJornaleiro,SenhaJornaleiro")] Jornaleiro jornaleiro)
         {
-            var jornaleiroOk = _context.Jornaleiros.Include(j=>j.tipo).Where(j => j.EmailJornaleiro.ToLower() == jornaleiro.EmailJornaleiro.ToLower() && j.SenhaJornaleiro == jornaleiro.SenhaJornaleiro).Select(j => j).FirstOrDefault();
+            var jornaleiroOk = _context.Jornaleiros.Include(j=>j.tipo).Where(j => j.EmailJornaleiro.ToLower() == jornaleiro.EmailJornaleiro.ToLower() && j.SenhaJornaleiro == jornaleiro.SenhaJornaleiro && j.StatusId == 1).Select(j => j).FirstOrDefault();
             String variavelDif = "";
             if (jornaleiroOk == null)
             {
@@ -41,7 +41,7 @@ namespace OsirisPdvReal.Controllers
                 if (jornaleiroOk.tipo.NomeTipo.ToLower() == "admin")
                 {
                     var option2 = new CookieOptions();
-                    Response.Cookies.Append("admin", "true", option2);
+                    Response.Cookies.Append("admin", "admin", option2);
 
                 }
                 else
@@ -56,7 +56,7 @@ namespace OsirisPdvReal.Controllers
             else
             {
                 TempData["alertColor"] = "alert-danger";
-                TempData["msgSucesso"] = "E-mail ou senha inválida";
+                TempData["msgSucesso"] = "E-mail ou senha inválida / Usuário inativo";
                 return RedirectToAction("Login");
             }
         }
@@ -165,7 +165,7 @@ namespace OsirisPdvReal.Controllers
             //essas linhas sao necessarias para a paginaca so trocar o tipo de context, jornaleiro, produto etc
             ViewBag.admin = Request.Cookies["admin"];
 
-            var query = _context.Jornaleiros.Include(j => j.Status).AsNoTracking().OrderBy(j => j.NomeJornaleiro);
+            var query = _context.Jornaleiros.Include(j => j.Status).AsNoTracking().Where(j=>j.StatusId == 1).OrderBy(j => j.NomeJornaleiro);
             var model = await PagingList.CreateAsync(query, 5, page);
             return View(model);
         }
@@ -230,7 +230,7 @@ namespace OsirisPdvReal.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    var emailOrName = _context.Jornaleiros.Where(j => j.EmailJornaleiro == jornaleiro.EmailJornaleiro || j.NomeJornaleiro == jornaleiro.NomeJornaleiro).Select(j => j.EmailJornaleiro).FirstOrDefault();
+                    var emailOrName = _context.Jornaleiros.Where(j => j.EmailJornaleiro == jornaleiro.EmailJornaleiro || j.NomeJornaleiro == jornaleiro.NomeJornaleiro && j.StatusId == 1).Select(j => j.EmailJornaleiro).FirstOrDefault();
                     if (emailOrName == null)
                     {
                         jornaleiro.CPF = cpfUser;
@@ -264,6 +264,7 @@ namespace OsirisPdvReal.Controllers
         // GET: Jornaleiros/Edit/5
         public async Task<IActionResult> Edit(long? id)
         {
+            ViewBag.admin = Request.Cookies["admin"];
             var idUserLogado = Request.Cookies["idDoUser"];
             var eadmin = Request.Cookies["admin"];
             if (id.ToString() == idUserLogado || eadmin.ToLower() == "true")
@@ -313,7 +314,7 @@ namespace OsirisPdvReal.Controllers
                     try
                     {
 
-                        var emailOrName = _context.Jornaleiros.Where(j => (j.EmailJornaleiro == jornaleiro.EmailJornaleiro || j.NomeJornaleiro == jornaleiro.NomeJornaleiro) && j.CPF != jornaleiro.CPF).Select(j => j.EmailJornaleiro).FirstOrDefault();
+                        var emailOrName = _context.Jornaleiros.Where(j => (j.EmailJornaleiro == jornaleiro.EmailJornaleiro || j.NomeJornaleiro == jornaleiro.NomeJornaleiro && j.StatusId == 1) && j.CPF != jornaleiro.CPF).Select(j => j.EmailJornaleiro).FirstOrDefault();
                         if (emailOrName == null)
                         {
                             jornaleiro.SenhaJornaleiro = _context.Jornaleiros.Where(j => j.CPF == id).Select(j => j.SenhaJornaleiro).FirstOrDefault();
@@ -390,7 +391,10 @@ namespace OsirisPdvReal.Controllers
                 return "erro";
             }
             var jornaleiro = await _context.Jornaleiros.FindAsync(id);
-            _context.Jornaleiros.Remove(jornaleiro);
+            jornaleiro.StatusId = 2;
+            _context.Update(jornaleiro);
+            
+            //_context.Jornaleiros.Remove(jornaleiro);
             await _context.SaveChangesAsync();
             return "ok";
         }

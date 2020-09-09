@@ -12,7 +12,7 @@ namespace OsirisPdvReal.Models
         public int? ComprasId { get; set; }
         [Required(ErrorMessage = "Campo obrigatório")]
         [StringLength(80, ErrorMessage = "Limite de caracteres atingido")]
-        [Display(Name = "Nome")]
+        [Display(Name = "Nome Item")]
         public string NomeItemCompra { get; set; }
         [Required(ErrorMessage = "Campo obrigatório")]
         [StringLength(9, ErrorMessage = "Limite de caracteres atingido")]

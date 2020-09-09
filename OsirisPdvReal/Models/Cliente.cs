@@ -28,6 +28,7 @@ namespace OsirisPdvReal.Models
         [Display(Name = "Telefone")]
         public string TelefoneCliente { get; set; }
         public ICollection<ClienteBanca> ClienteBancas { get; set; }
+        [Display(Name = "Status")]
         public int StatusId { get; set; }
         public Status Status { get; set; }
         public ICollection<Venda> Vendas { get; set; }

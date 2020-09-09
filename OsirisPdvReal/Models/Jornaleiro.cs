@@ -22,7 +22,6 @@ namespace OsirisPdvReal.Models
         [Display(Name = "E-mail")]
         public string EmailJornaleiro { get; set; }
         [Required(ErrorMessage = "Campo obrigatório")]
-        [StringLength(12, ErrorMessage = "Limite de caracteres atingido")]
         [Display(Name = "Telefone")]
         public string TelefoneJornaleiro { get; set; }
         [Required(ErrorMessage = "Campo obrigatório")]
@@ -33,6 +32,7 @@ namespace OsirisPdvReal.Models
         [Display(Name = "Status")]
         public int StatusId { get; set; }
         public Status Status { get; set; }
+        [Display(Name = "Permissão")]
         public int TipoId { get; set; }
         public Tipo tipo { get; set; }
 

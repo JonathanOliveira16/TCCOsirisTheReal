@@ -40,6 +40,7 @@ namespace OsirisPdvReal.Models
         public string CEPFornecedor { get; set; }
         public ICollection<FornecedorBanca> FornecedorBanca { get; set; }
         public ICollection<CompraFornecedores> ComprasFornecedor { get; set; }
+        [Display(Name = "Status")]
         public int StatusId { get; set; }
         public Status Status { get; set; }
 

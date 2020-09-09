@@ -38,7 +38,7 @@ namespace OsirisPdvReal.Controllers
         // GET: Clientes
         public async Task<IActionResult> Index(int page = 1)
         {
-            var query = _context.Clientes.Include(j => j.Status).AsNoTracking().OrderBy(j => j.NomeCliente);
+            var query = _context.Clientes.Include(j => j.Status).AsNoTracking().Where(c=>c.StatusId ==1).OrderBy(j => j.NomeCliente);
             var model = await PagingList.CreateAsync(query, 5, page);
             return View(model);
         }
@@ -50,14 +50,14 @@ namespace OsirisPdvReal.Controllers
             {
                 if (busca == null)
                 {
-                    var query = _context.Clientes.Include(j => j.Status).AsNoTracking().OrderBy(j => j.NomeCliente);
+                    var query = _context.Clientes.Include(j => j.Status).AsNoTracking().Where(c => c.StatusId == 1).OrderBy(j => j.NomeCliente);
                     var model = await PagingList.CreateAsync(query, 5, page);
                     return View(model);
                 }
                 else
                 {
                     List<Cliente> listadeClientes = new List<Cliente>();
-                    var clientes = _context.Clientes.Include(j => j.Status).Where(b => b.NomeCliente.Contains(busca)).OrderBy(b => b.NomeCliente);
+                    var clientes = _context.Clientes.Include(j => j.Status).Where(b => b.NomeCliente.Contains(busca) && b.StatusId==1).OrderBy(b => b.NomeCliente);
                     var model = await PagingList.CreateAsync(clientes, 5, page);
                     return View(model);
                 }
@@ -223,7 +223,8 @@ namespace OsirisPdvReal.Controllers
         public async Task<IActionResult> Delete(long id)
         {
             var cliente = await _context.Clientes.FindAsync(id);
-            _context.Clientes.Remove(cliente);
+            cliente.StatusId = 2;
+            _context.Update(cliente);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
