@@ -50,7 +50,7 @@ namespace OsirisPdvReal.Controllers
         public IActionResult Create()
         {
             ViewData["BancaId"] = new SelectList(_context.Bancas, "BancaId", "NomeBanca");
-            ViewData["ClienteId"] = new SelectList(_context.Clientes, "ClienteId", "EmailCliente");
+            ViewData["CPFcliente"] = new SelectList(_context.Clientes, "CPFcliente", "EmailCliente");
             ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus");
             return View();
         }
@@ -60,7 +60,7 @@ namespace OsirisPdvReal.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("VendaId,DataVenda,ValorVenda,StatusId,BancaId,ClienteId")] Venda venda)
+        public async Task<IActionResult> Create([Bind("VendaId,DataVenda,ValorVenda,StatusId,BancaId,CPFcliente")] Venda venda)
         {
             if (ModelState.IsValid)
             {
@@ -69,7 +69,7 @@ namespace OsirisPdvReal.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["BancaId"] = new SelectList(_context.Bancas, "BancaId", "NomeBanca", venda.BancaId);
-            ViewData["ClienteId"] = new SelectList(_context.Clientes, "ClienteId", "EmailCliente", venda.ClienteId);
+            ViewData["CPFcliente"] = new SelectList(_context.Clientes, "CPFcliente", "EmailCliente", venda.CPFcliente);
             ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus", venda.StatusId);
             return View(venda);
         }
@@ -88,7 +88,7 @@ namespace OsirisPdvReal.Controllers
                 return NotFound();
             }
             ViewData["BancaId"] = new SelectList(_context.Bancas, "BancaId", "NomeBanca", venda.BancaId);
-            ViewData["ClienteId"] = new SelectList(_context.Clientes, "ClienteId", "EmailCliente", venda.ClienteId);
+            ViewData["CPFcliente"] = new SelectList(_context.Clientes, "CPFcliente", "EmailCliente", venda.CPFcliente);
             ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus", venda.StatusId);
             return View(venda);
         }
@@ -98,7 +98,7 @@ namespace OsirisPdvReal.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int? id, [Bind("VendaId,DataVenda,ValorVenda,StatusId,BancaId,ClienteId")] Venda venda)
+        public async Task<IActionResult> Edit(int? id, [Bind("VendaId,DataVenda,ValorVenda,StatusId,BancaId,CPFcliente")] Venda venda)
         {
             if (id != venda.VendaId)
             {
@@ -126,7 +126,7 @@ namespace OsirisPdvReal.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["BancaId"] = new SelectList(_context.Bancas, "BancaId", "NomeBanca", venda.BancaId);
-            ViewData["ClienteId"] = new SelectList(_context.Clientes, "ClienteId", "EmailCliente", venda.ClienteId);
+            ViewData["CPFcliente"] = new SelectList(_context.Clientes, "CPFcliente", "EmailCliente", venda.CPFcliente);
             ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus", venda.StatusId);
             return View(venda);
         }

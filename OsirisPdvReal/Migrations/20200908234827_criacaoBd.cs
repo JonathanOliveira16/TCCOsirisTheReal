@@ -37,8 +37,7 @@ namespace OsirisPdvReal.Migrations
                 name: "Clientes",
                 columns: table => new
                 {
-                    ClienteId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CPFcliente = table.Column<long>(nullable: false),
                     NomeCliente = table.Column<string>(maxLength: 80, nullable: false),
                     EmailCliente = table.Column<string>(maxLength: 80, nullable: false),
                     TelefoneCliente = table.Column<string>(maxLength: 12, nullable: false),
@@ -46,7 +45,7 @@ namespace OsirisPdvReal.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Clientes", x => x.ClienteId);
+                    table.PrimaryKey("PK_Clientes", x => x.CPFcliente);
                     table.ForeignKey(
                         name: "FK_Clientes_Status_StatusId",
                         column: x => x.StatusId,
@@ -80,7 +79,7 @@ namespace OsirisPdvReal.Migrations
                 name: "Fornecedores",
                 columns: table => new
                 {
-                    CNPJ = table.Column<int>(nullable: false),
+                    CNPJ = table.Column<long>(nullable: false),
                     NomeFornecedor = table.Column<string>(maxLength: 100, nullable: false),
                     EmailFornecedor = table.Column<string>(maxLength: 80, nullable: false),
                     TelefoneFornecedor = table.Column<string>(maxLength: 12, nullable: false),
@@ -104,7 +103,7 @@ namespace OsirisPdvReal.Migrations
                 name: "CompraFornecedores",
                 columns: table => new
                 {
-                    CNPJ = table.Column<int>(nullable: false),
+                    CNPJ = table.Column<long>(nullable: false),
                     ComprasId = table.Column<int>(nullable: false),
                     DataCompra = table.Column<DateTime>(nullable: false),
                     ValorCompra = table.Column<double>(nullable: false)
@@ -131,17 +130,17 @@ namespace OsirisPdvReal.Migrations
                 columns: table => new
                 {
                     BancaId = table.Column<int>(nullable: false),
-                    ClienteId = table.Column<int>(nullable: false),
+                    CPFcliente = table.Column<long>(nullable: false),
                     ValorTotal = table.Column<double>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ClienteBanca", x => new { x.BancaId, x.ClienteId });
+                    table.PrimaryKey("PK_ClienteBanca", x => new { x.BancaId, x.CPFcliente });
                     table.ForeignKey(
-                        name: "FK_ClienteBanca_Clientes_ClienteId",
-                        column: x => x.ClienteId,
+                        name: "FK_ClienteBanca_Clientes_CPFcliente",
+                        column: x => x.CPFcliente,
                         principalTable: "Clientes",
-                        principalColumn: "ClienteId",
+                        principalColumn: "CPFcliente",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -149,7 +148,7 @@ namespace OsirisPdvReal.Migrations
                 name: "FornecedorBanca",
                 columns: table => new
                 {
-                    CNPJ = table.Column<int>(nullable: false),
+                    CNPJ = table.Column<long>(nullable: false),
                     BancaId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -164,22 +163,10 @@ namespace OsirisPdvReal.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "JornaleiroBanca",
-                columns: table => new
-                {
-                    BancaId = table.Column<int>(nullable: false),
-                    CPF = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_JornaleiroBanca", x => new { x.BancaId, x.CPF });
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Jornaleiros",
                 columns: table => new
                 {
-                    CPF = table.Column<int>(nullable: false),
+                    CPF = table.Column<long>(nullable: false),
                     NomeJornaleiro = table.Column<string>(maxLength: 100, nullable: false),
                     EmailJornaleiro = table.Column<string>(maxLength: 80, nullable: false),
                     TelefoneJornaleiro = table.Column<string>(maxLength: 12, nullable: false),
@@ -212,8 +199,8 @@ namespace OsirisPdvReal.Migrations
                     BancaId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     NomeBanca = table.Column<string>(maxLength: 100, nullable: false),
-                    CPF = table.Column<int>(nullable: true),
-                    JornaleiroCPF = table.Column<int>(nullable: true)
+                    CPF = table.Column<long>(nullable: true),
+                    JornaleiroCPF = table.Column<long>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -236,7 +223,7 @@ namespace OsirisPdvReal.Migrations
                     ValorVenda = table.Column<double>(maxLength: 30, nullable: false),
                     StatusId = table.Column<int>(nullable: true),
                     BancaId = table.Column<int>(nullable: false),
-                    ClienteId = table.Column<int>(nullable: false)
+                    CPFcliente = table.Column<long>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -248,10 +235,10 @@ namespace OsirisPdvReal.Migrations
                         principalColumn: "BancaId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Vendas_Clientes_ClienteId",
-                        column: x => x.ClienteId,
+                        name: "FK_Vendas_Clientes_CPFcliente",
+                        column: x => x.CPFcliente,
                         principalTable: "Clientes",
-                        principalColumn: "ClienteId",
+                        principalColumn: "CPFcliente",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Vendas_Status_StatusId",
@@ -268,8 +255,8 @@ namespace OsirisPdvReal.Migrations
                     ProdutoId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     NomeProduto = table.Column<string>(maxLength: 80, nullable: false),
-                    ValorProduto = table.Column<double>(maxLength: 20, nullable: false),
-                    QuantideProduto = table.Column<int>(maxLength: 35, nullable: false),
+                    ValorProduto = table.Column<double>(nullable: false),
+                    QuantideProduto = table.Column<int>(nullable: false),
                     VendaId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
@@ -332,15 +319,34 @@ namespace OsirisPdvReal.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.InsertData(
+                table: "Status",
+                columns: new[] { "StatusId", "NomeStatus" },
+                values: new object[,]
+                {
+                    { 1, "Ativo" },
+                    { 2, "Inativo" },
+                    { 3, "Cancelado" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Tipos",
+                columns: new[] { "TipoId", "NomeTipo" },
+                values: new object[,]
+                {
+                    { 1, "Admin" },
+                    { 2, "User" }
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Bancas_JornaleiroCPF",
                 table: "Bancas",
                 column: "JornaleiroCPF");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ClienteBanca_ClienteId",
+                name: "IX_ClienteBanca_CPFcliente",
                 table: "ClienteBanca",
-                column: "ClienteId");
+                column: "CPFcliente");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Clientes_StatusId",
@@ -403,9 +409,9 @@ namespace OsirisPdvReal.Migrations
                 column: "BancaId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Vendas_ClienteId",
+                name: "IX_Vendas_CPFcliente",
                 table: "Vendas",
-                column: "ClienteId");
+                column: "CPFcliente");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Vendas_StatusId",
@@ -423,22 +429,6 @@ namespace OsirisPdvReal.Migrations
             migrationBuilder.AddForeignKey(
                 name: "FK_FornecedorBanca_Bancas_BancaId",
                 table: "FornecedorBanca",
-                column: "BancaId",
-                principalTable: "Bancas",
-                principalColumn: "BancaId",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_JornaleiroBanca_Jornaleiros_BancaId",
-                table: "JornaleiroBanca",
-                column: "BancaId",
-                principalTable: "Jornaleiros",
-                principalColumn: "CPF",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_JornaleiroBanca_Bancas_BancaId",
-                table: "JornaleiroBanca",
                 column: "BancaId",
                 principalTable: "Bancas",
                 principalColumn: "BancaId",
@@ -467,9 +457,6 @@ namespace OsirisPdvReal.Migrations
 
             migrationBuilder.DropTable(
                 name: "FornecedorBanca");
-
-            migrationBuilder.DropTable(
-                name: "JornaleiroBanca");
 
             migrationBuilder.DropTable(
                 name: "ProdutoCompras");

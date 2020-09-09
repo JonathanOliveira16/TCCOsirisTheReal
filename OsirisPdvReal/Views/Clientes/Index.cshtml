@@ -75,9 +75,9 @@
                     @Html.DisplayFor(modelItem => item.Status.NomeStatus)
                 </td>
                 <td>
-                    <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.ClienteId">Editar</a> |
+                    <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.CPFcliente">Editar</a> |
 
-                    <a class="btn btn-danger" data-toggle="modal" data-target="#visao" onclick="PassarDados(@item.ClienteId)">Excluir</a>
+                    <a class="btn btn-danger" data-toggle="modal" data-target="#visao" onclick="PassarDados(@item.CPFcliente)">Excluir</a>
                 </td>
             </tr>
         }

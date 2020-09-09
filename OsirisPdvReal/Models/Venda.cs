@@ -24,7 +24,7 @@ namespace OsirisPdvReal.Models
         public Status Status { get; set; }
         public int BancaId { get; set; }
         public Banca Bancas { get; set; }
-        public int ClienteId { get; set; }
+        public long CPFcliente { get; set; }
         public Cliente Clientes { get; set; }
         public ICollection<VendaProduto> VendaProduto { get; set; }
 

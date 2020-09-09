@@ -8,7 +8,7 @@ namespace OsirisPdvReal.Models
 {
     public class CompraFornecedores
     {
-        public int? CNPJ { get; set; }
+        public long? CNPJ { get; set; }
         public Fornecedor Fornecedor { get; set; }
         public int? ComprasId { get; set; }
         public Compras Compras { get; set; }

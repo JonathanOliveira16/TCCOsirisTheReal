@@ -9,7 +9,7 @@ namespace OsirisPdvReal.Models
     {
         public int BancaId { get; set; }
         public Banca Bancas { get; set; }
-        public int ClienteId { get; set; }
+        public long CPFcliente { get; set; }
         public Cliente Clientes { get; set; }
         public double ValorTotal { get; set; }
     }

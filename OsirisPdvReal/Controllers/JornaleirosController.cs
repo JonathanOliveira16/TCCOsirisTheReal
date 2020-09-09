@@ -17,7 +17,7 @@ namespace OsirisPdvReal.Controllers
         private readonly Contexto _context;
         private static String codeEmail;
         private static String emailParaReset;
-        private static int cpfUser;
+        private static long cpfUser;
 
         public IActionResult Login()
         {
@@ -199,7 +199,7 @@ namespace OsirisPdvReal.Controllers
         }
 
         [HttpPost]
-        public string ValidateCpf(int id)
+        public string ValidateCpf(long id)
         {
             var cpfExist = _context.Jornaleiros.Where(j => j.CPF == id).Select(j => j.NomeJornaleiro).FirstOrDefault();
             if (cpfExist == null)
@@ -256,7 +256,7 @@ namespace OsirisPdvReal.Controllers
         }
 
         // GET: Jornaleiros/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(long? id)
         {
             var idUserLogado = Request.Cookies["idDoUser"];
             var eadmin = Request.Cookies["admin"];
@@ -291,7 +291,7 @@ namespace OsirisPdvReal.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CPF,NomeJornaleiro,EmailJornaleiro,TelefoneJornaleiro,SenhaJornaleiro,StatusId,TipoId")] Jornaleiro jornaleiro)
+        public async Task<IActionResult> Edit(long id, [Bind("CPF,NomeJornaleiro,EmailJornaleiro,TelefoneJornaleiro,SenhaJornaleiro,StatusId,TipoId")] Jornaleiro jornaleiro)
         {
             ModelState.Remove("CPF");
             ModelState.Remove("SenhaJornaleiro");

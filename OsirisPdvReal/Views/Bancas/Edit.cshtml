@@ -34,28 +34,31 @@
         <strong>@TempData["msgSucesso"]</strong>
     </div>
 }
-<div class=" borderPurple divBtn centerCreateOrEdit">
-    <div class="mt-3 mb-3">
+<div class="row">
+    <div class="col-md-4">
+
+    </div>
+    <div class="col-md-4 borderPurple">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" id="valueId" asp-for="BancaId" />
             <div class="form-group">
-                <label asp-for="NomeBanca" style="margin-right:43%" class="font-weight-bold"></label>
-                <input asp-for="NomeBanca" class="w-50 centerText borderInput form-control" />
+                <label asp-for="NomeBanca" class="control-label font-weight-bold"></label>
+                <input asp-for="NomeBanca" class="form-control borderInput" />
                 <span asp-validation-for="NomeBanca" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label style="margin-right:39%" class="font-weight-bold">Jornaleiro</label>
-                <select asp-for="CPF" class="w-50 centerText borderInput form-control" asp-items="ViewBag.CPF"></select>
+                <label class="control-label font-weight-bold">Jornaleiro</label>
+                <select asp-for="CPF" class="form-control borderInput" asp-items="ViewBag.CPF"></select>
                 <span asp-validation-for="CPF" class="text-danger"></span>
             </div>
-            <div class="divBtn flex-row">
+            <div class="divBtn flex-row mt-2 mb-2">
 
-                <input type="submit" value="salvar" class="btn btn-success btnSizeFontUpper" />
+                <input type="submit" value="salvar" class="btn btn-success btnNewCreate" />
 
 
-                <a class="btn btn-info btnSizeFontUpper" asp-action="Index">Voltar</a>
-                <a class="btn btn-danger btnSizeFontUpper text-white" data-toggle="modal" data-target="#visao" onclick="PassarDados()">Excluir</a>
+                <a class="btn btn-info btnNewCreate ml-2 mr-2" asp-action="Index">Voltar</a>
+                <a class="btn btn-danger btnNewCreate text-white" data-toggle="modal" data-target="#visao" onclick="PassarDados()">Excluir</a>
 
             </div>
         </form>

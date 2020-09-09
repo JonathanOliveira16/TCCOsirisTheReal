@@ -65,7 +65,7 @@ namespace OsirisPdvReal.Controllers
 
             var cliente = await _context.Clientes
                 .Include(c => c.Status)
-                .FirstOrDefaultAsync(m => m.ClienteId == id);
+                .FirstOrDefaultAsync(m => m.CPFcliente == id);
             if (cliente == null)
             {
                 return NotFound();
@@ -86,7 +86,7 @@ namespace OsirisPdvReal.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ClienteId,NomeCliente,EmailCliente,TelefoneCliente,StatusId")] Cliente cliente)
+        public async Task<IActionResult> Create([Bind("CPFcliente,NomeCliente,EmailCliente,TelefoneCliente,StatusId")] Cliente cliente)
         {
             try
             {
@@ -144,9 +144,9 @@ namespace OsirisPdvReal.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ClienteId,NomeCliente,EmailCliente,TelefoneCliente,StatusId")] Cliente cliente)
+        public async Task<IActionResult> Edit(int id, [Bind("CPFcliente,NomeCliente,EmailCliente,TelefoneCliente,StatusId")] Cliente cliente)
         {
-            if (id != cliente.ClienteId)
+            if (id != cliente.CPFcliente)
             {
                 return NotFound();
             }
@@ -193,7 +193,7 @@ namespace OsirisPdvReal.Controllers
 
         //    var cliente = await _context.Clientes
         //        .Include(c => c.Status)
-        //        .FirstOrDefaultAsync(m => m.ClienteId == id);
+        //        .FirstOrDefaultAsync(m => m.CPFcliente == id);
         //    if (cliente == null)
         //    {
         //        return NotFound();
@@ -214,7 +214,7 @@ namespace OsirisPdvReal.Controllers
 
         private bool ClienteExists(int id)
         {
-            return _context.Clientes.Any(e => e.ClienteId == id);
+            return _context.Clientes.Any(e => e.CPFcliente == id);
         }
     }
 }

@@ -12,7 +12,7 @@ namespace OsirisPdvReal.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
 
-        public int CNPJ { get; set; }
+        public long CNPJ { get; set; }
         [Required(ErrorMessage = "Campo obrigatório")]
         [StringLength(100, ErrorMessage = "Limite de caracteres atingido")]
         [Display(Name = "Nome fornecedor")]

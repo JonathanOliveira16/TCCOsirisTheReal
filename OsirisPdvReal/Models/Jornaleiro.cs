@@ -11,7 +11,7 @@ namespace OsirisPdvReal.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public int CPF { get; set; }
+        public long CPF { get; set; }
         [Required(ErrorMessage = "Campo obrigatório")]
         [StringLength(100, ErrorMessage = "Limite de caracteres atingido")]
         [Display(Name = "Nome")]
@@ -30,7 +30,6 @@ namespace OsirisPdvReal.Models
         [StringLength(400, ErrorMessage = "Limite de caracteres atingido")]
         [Display(Name = "Senha")]
         public string SenhaJornaleiro { get; set; }
-        public ICollection<JornaleiroBanca> JornaleiroBanca { get; set; }
         [Display(Name = "Status")]
         public int StatusId { get; set; }
         public Status Status { get; set; }

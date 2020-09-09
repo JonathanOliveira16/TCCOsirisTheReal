@@ -26,11 +26,11 @@ namespace OsirisPdvReal.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("CPF")
-                        .HasColumnType("int");
+                    b.Property<long?>("CPF")
+                        .HasColumnType("bigint");
 
-                    b.Property<int?>("JornaleiroCPF")
-                        .HasColumnType("int");
+                    b.Property<long?>("JornaleiroCPF")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("NomeBanca")
                         .IsRequired()
@@ -46,10 +46,8 @@ namespace OsirisPdvReal.Migrations
 
             modelBuilder.Entity("OsirisPdvReal.Models.Cliente", b =>
                 {
-                    b.Property<int>("ClienteId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<long>("CPFcliente")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("EmailCliente")
                         .IsRequired()
@@ -69,7 +67,7 @@ namespace OsirisPdvReal.Migrations
                         .HasColumnType("nvarchar(12)")
                         .HasMaxLength(12);
 
-                    b.HasKey("ClienteId");
+                    b.HasKey("CPFcliente");
 
                     b.HasIndex("StatusId");
 
@@ -81,15 +79,15 @@ namespace OsirisPdvReal.Migrations
                     b.Property<int>("BancaId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ClienteId")
-                        .HasColumnType("int");
+                    b.Property<long>("CPFcliente")
+                        .HasColumnType("bigint");
 
                     b.Property<double>("ValorTotal")
                         .HasColumnType("float");
 
-                    b.HasKey("BancaId", "ClienteId");
+                    b.HasKey("BancaId", "CPFcliente");
 
-                    b.HasIndex("ClienteId");
+                    b.HasIndex("CPFcliente");
 
                     b.ToTable("ClienteBanca");
                 });
@@ -99,8 +97,8 @@ namespace OsirisPdvReal.Migrations
                     b.Property<int?>("ComprasId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CNPJ")
-                        .HasColumnType("int");
+                    b.Property<long?>("CNPJ")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime>("DataCompra")
                         .HasColumnType("datetime2");
@@ -143,8 +141,8 @@ namespace OsirisPdvReal.Migrations
 
             modelBuilder.Entity("OsirisPdvReal.Models.Fornecedor", b =>
                 {
-                    b.Property<int>("CNPJ")
-                        .HasColumnType("int");
+                    b.Property<long>("CNPJ")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("CEPFornecedor")
                         .IsRequired()
@@ -191,8 +189,8 @@ namespace OsirisPdvReal.Migrations
                     b.Property<int>("BancaId")
                         .HasColumnType("int");
 
-                    b.Property<int>("CNPJ")
-                        .HasColumnType("int");
+                    b.Property<long>("CNPJ")
+                        .HasColumnType("bigint");
 
                     b.HasKey("BancaId", "CNPJ");
 
@@ -203,8 +201,8 @@ namespace OsirisPdvReal.Migrations
 
             modelBuilder.Entity("OsirisPdvReal.Models.Jornaleiro", b =>
                 {
-                    b.Property<int>("CPF")
-                        .HasColumnType("int");
+                    b.Property<long>("CPF")
+                        .HasColumnType("bigint");
 
                     b.Property<int?>("BancaId")
                         .HasColumnType("int");
@@ -246,19 +244,6 @@ namespace OsirisPdvReal.Migrations
                     b.ToTable("Jornaleiros");
                 });
 
-            modelBuilder.Entity("OsirisPdvReal.Models.JornaleiroBanca", b =>
-                {
-                    b.Property<int>("BancaId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CPF")
-                        .HasColumnType("int");
-
-                    b.HasKey("BancaId", "CPF");
-
-                    b.ToTable("JornaleiroBanca");
-                });
-
             modelBuilder.Entity("OsirisPdvReal.Models.Produto", b =>
                 {
                     b.Property<int>("ProdutoId")
@@ -272,12 +257,10 @@ namespace OsirisPdvReal.Migrations
                         .HasMaxLength(80);
 
                     b.Property<int>("QuantideProduto")
-                        .HasColumnType("int")
-                        .HasMaxLength(35);
+                        .HasColumnType("int");
 
                     b.Property<double>("ValorProduto")
-                        .HasColumnType("float")
-                        .HasMaxLength(20);
+                        .HasColumnType("float");
 
                     b.Property<int?>("VendaId")
                         .HasColumnType("int");
@@ -375,8 +358,8 @@ namespace OsirisPdvReal.Migrations
                     b.Property<int>("BancaId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ClienteId")
-                        .HasColumnType("int");
+                    b.Property<long>("CPFcliente")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime>("DataVenda")
                         .HasColumnType("datetime2");
@@ -392,7 +375,7 @@ namespace OsirisPdvReal.Migrations
 
                     b.HasIndex("BancaId");
 
-                    b.HasIndex("ClienteId");
+                    b.HasIndex("CPFcliente");
 
                     b.HasIndex("StatusId");
 
@@ -443,7 +426,7 @@ namespace OsirisPdvReal.Migrations
 
                     b.HasOne("OsirisPdvReal.Models.Cliente", "Clientes")
                         .WithMany("ClienteBancas")
-                        .HasForeignKey("ClienteId")
+                        .HasForeignKey("CPFcliente")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -515,21 +498,6 @@ namespace OsirisPdvReal.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("OsirisPdvReal.Models.JornaleiroBanca", b =>
-                {
-                    b.HasOne("OsirisPdvReal.Models.Banca", "Bancas")
-                        .WithMany("JornaleiroBanca")
-                        .HasForeignKey("BancaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("OsirisPdvReal.Models.Jornaleiro", "Jornaleiro")
-                        .WithMany("JornaleiroBanca")
-                        .HasForeignKey("BancaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("OsirisPdvReal.Models.Produto", b =>
                 {
                     b.HasOne("OsirisPdvReal.Models.Venda", null)
@@ -562,7 +530,7 @@ namespace OsirisPdvReal.Migrations
 
                     b.HasOne("OsirisPdvReal.Models.Cliente", "Clientes")
                         .WithMany("Vendas")
-                        .HasForeignKey("ClienteId")
+                        .HasForeignKey("CPFcliente")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

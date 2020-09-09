@@ -13,7 +13,7 @@ namespace OsirisPdvReal.Controllers
     public class FornecedoresController : Controller
     {
         private readonly Contexto _context;
-        private static int CpnjFornece;
+        private static long CpnjFornece;
 
         public FornecedoresController(Contexto context)
         {
@@ -58,7 +58,7 @@ namespace OsirisPdvReal.Controllers
         }
 
         [HttpPost]
-        public string ValidateFornecedor(int id)
+        public string ValidateFornecedor(long id)
         {
             var CNPJExist = _context.Fornecedores.Where(j => j.CNPJ == id).Select(j => j.NomeFornecedor).FirstOrDefault();
             if (CNPJExist == null)
@@ -130,7 +130,7 @@ namespace OsirisPdvReal.Controllers
         }
 
         // GET: Fornecedores/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(long? id)
         {
             if (id == null)
             {
@@ -151,7 +151,7 @@ namespace OsirisPdvReal.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int? id, [Bind("CNPJ,NomeFornecedor,EmailFornecedor,TelefoneFornecedor,PontoFocalFornecedor,LogradouroFornecedor,CEPFornecedor,StatusId")] Fornecedor fornecedor)
+        public async Task<IActionResult> Edit(long? id, [Bind("CNPJ,NomeFornecedor,EmailFornecedor,TelefoneFornecedor,PontoFocalFornecedor,LogradouroFornecedor,CEPFornecedor,StatusId")] Fornecedor fornecedor)
         {
             if (id != fornecedor.CNPJ)
             {

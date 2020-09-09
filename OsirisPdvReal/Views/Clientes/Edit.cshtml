@@ -34,38 +34,41 @@
         <strong>@TempData["msgSucesso"]</strong>
     </div>
 }
-<div class=" borderPurple divBtn centerCreateOrEdit">
-    <div class="mt-3 mb-3">
+<div class="row">
+    <div class="col-md-4">
+
+    </div>
+    <div class="col-md-4 borderPurple">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" id="valueId" asp-for="ClienteId" />
+            <input type="hidden" id="valueId" asp-for="CPFcliente" />
             <div class="form-group">
-                <label asp-for="NomeCliente" style="margin-right:35%" class="font-weight-bold"></label>
-                <input asp-for="NomeCliente" class="w-50 centerText borderInput form-control" />
+                <label asp-for="NomeCliente" class="control-label font-weight-bold"></label>
+                <input asp-for="NomeCliente" class="form-control borderInput" />
                 <span asp-validation-for="NomeCliente" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="EmailCliente" style="margin-right:35%" class="font-weight-bold"></label>
-                <input asp-for="EmailCliente" class="w-50 centerText borderInput form-control" />
+                <label asp-for="EmailCliente" class="control-label font-weight-bold"></label>
+                <input asp-for="EmailCliente" class="form-control borderInput" />
                 <span asp-validation-for="EmailCliente" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="TelefoneCliente" style="margin-right:41%" class="font-weight-bold"></label>
-                <input asp-for="TelefoneCliente" class="w-50 centerText borderInput form-control" />
+                <label asp-for="TelefoneCliente" class="control-label font-weight-bold"></label>
+                <input asp-for="TelefoneCliente" class="form-control borderInput" />
                 <span asp-validation-for="TelefoneCliente" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="StatusId" style="margin-right:41%" class="font-weight-bold"></label>
-                <select asp-for="StatusId" class="w-50 centerText borderInput form-control" asp-items="ViewBag.StatusId"></select>
+                <label asp-for="StatusId" class="control-label font-weight-bold"></label>
+                <select asp-for="StatusId" class="form-control borderInput" asp-items="ViewBag.StatusId"></select>
                 <span asp-validation-for="StatusId" class="text-danger"></span>
             </div>
-            <div class="divBtn flex-row">
+            <div class="divBtn flex-row mt-2 mb-2">
 
-                <input type="submit" value="salvar" class="btn btn-success btnSizeFontUpper" />
+                <input type="submit" value="salvar" class="btn btn-success btnNewCreate" />
 
 
-                <a class="btn btn-info btnSizeFontUpper" asp-action="Index">Voltar</a>
-                <a class="btn btn-danger btnSizeFontUpper text-white" data-toggle="modal" data-target="#visao" onclick="PassarDados()">Excluir</a>
+                <a class="btn btn-info btnNewCreate ml-2 mr-2" asp-action="Index">Voltar</a>
+                <a class="btn btn-danger btnNewCreate text-white" data-toggle="modal" data-target="#visao" onclick="PassarDados()">Excluir</a>
 
             </div>
         </form>
