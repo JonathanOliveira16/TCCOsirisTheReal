@@ -212,7 +212,7 @@ namespace OsirisPdvReal.Controllers
 
         // POST: Fornecedores/Delete/5
         [HttpPost]
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(long? id)
         {
             var fornecedor = await _context.Fornecedores.FindAsync(id);
             _context.Fornecedores.Remove(fornecedor);

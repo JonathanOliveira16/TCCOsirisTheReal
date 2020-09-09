@@ -27,7 +27,7 @@ namespace OsirisPdvReal.Models
         public string TelefoneJornaleiro { get; set; }
         [Required(ErrorMessage = "Campo obrigatório")]
         [DataType(DataType.Password)]
-        [StringLength(400, ErrorMessage = "Limite de caracteres atingido")]
+        [StringLength(20, MinimumLength = 6, ErrorMessage = "Tamanho de senha inválido")]
         [Display(Name = "Senha")]
         public string SenhaJornaleiro { get; set; }
         [Display(Name = "Status")]

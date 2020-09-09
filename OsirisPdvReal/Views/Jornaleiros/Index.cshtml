@@ -26,7 +26,7 @@
     </div>
 </div>
 
-@if (ViewBag.admin != null)
+@if (ViewBag.admin == "admin")
 {
     <div class="divBtn">
         <a class="btn btnPage btn-success mt-2" asp-action="Create">Novo Jornaleiro</a>
@@ -76,9 +76,11 @@
                     @Html.DisplayFor(modelItem => item.Status.NomeStatus)
                 </td>
                 <td>
-                    <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.CPF">Editar</a> |
-
-                    <a class="btn btn-danger" data-toggle="modal" data-target="#visao" onclick="PassarDados(@item.CPF)">Excluir</a>
+                    <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.CPF">Editar</a>
+                    @if (ViewBag.admin == "admin")
+                    {
+                        <a class="btn btn-danger" data-toggle="modal" data-target="#visao" onclick="PassarDados(@item.CPF)">Excluir</a>
+                    }
                 </td>
             </tr>
         }
@@ -101,8 +103,13 @@
                     method: "POST",
                     data: { id: idJornaleiro },
                     success: function (data) {
-                        $(".modal").modal('hide');
-                        location.reload(true);
+                        if (data == "ok") {
+                            $(".modal").modal('hide');
+                            location.reload(true);
+                        } else {
+                            $(".modal").modal('hide');
+                            alert("Jornaleiro vinculado à uma banca logo sua exclusão é inválida!")
+                        }
                     }
                 });
             });

@@ -18,7 +18,7 @@ namespace OsirisPdvReal.Controllers
         private static String codeEmail;
         private static String emailParaReset;
         private static long cpfUser;
-
+        private static int deuErro;
         public IActionResult Login()
         {
             Response.Cookies.Delete("admin");
@@ -161,6 +161,7 @@ namespace OsirisPdvReal.Controllers
         // GET: Jornaleiros
         public async Task<IActionResult> Index(int page = 1)
         {
+            
             //essas linhas sao necessarias para a paginaca so trocar o tipo de context, jornaleiro, produto etc
             ViewBag.admin = Request.Cookies["admin"];
 
@@ -201,6 +202,11 @@ namespace OsirisPdvReal.Controllers
         [HttpPost]
         public string ValidateCpf(long id)
         {
+            if (id.ToString().Length < 11)
+            {
+                TempData["msgSucesso"] = "Tamanho de CPF inválido!";
+                return "nada";
+            }
             var cpfExist = _context.Jornaleiros.Where(j => j.CPF == id).Select(j => j.NomeJornaleiro).FirstOrDefault();
             if (cpfExist == null)
             {
@@ -375,12 +381,18 @@ namespace OsirisPdvReal.Controllers
 
         // POST: Jornaleiros/Delete/5
         [HttpPost]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<String> Delete(long id)
         {
+            var temBanca = _context.Bancas.Include(j => j.Jornaleiro).Where(j => j.Jornaleiro.CPF == id).Select(b => b.NomeBanca).FirstOrDefault();
+            if (temBanca != null)
+            {
+                
+                return "erro";
+            }
             var jornaleiro = await _context.Jornaleiros.FindAsync(id);
             _context.Jornaleiros.Remove(jornaleiro);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return "ok";
         }
 
         private bool JornaleiroExists(long id)

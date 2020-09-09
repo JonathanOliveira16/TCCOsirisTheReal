@@ -13,10 +13,26 @@ namespace OsirisPdvReal.Controllers
     public class ClientesController : Controller
     {
         private readonly Contexto _context;
-
+        private static long cpfUser; 
         public ClientesController(Contexto context)
         {
             _context = context;
+        }
+
+
+        [HttpPost]
+        public string ValidateCpf(long id)
+        {
+            var cpfExist = _context.Clientes.Where(j => j.CPFcliente == id).Select(j => j.NomeCliente).FirstOrDefault();
+            if (cpfExist == null)
+            {
+                cpfUser = id;
+                return "ok";
+            }
+            else
+            {
+                return "editar";
+            }
         }
 
         // GET: Clientes
@@ -123,7 +139,7 @@ namespace OsirisPdvReal.Controllers
         }
 
         // GET: Clientes/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(long? id)
         {
             if (id == null)
             {
@@ -204,7 +220,7 @@ namespace OsirisPdvReal.Controllers
 
         // POST: Clientes/Delete/5
         [HttpPost]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(long id)
         {
             var cliente = await _context.Clientes.FindAsync(id);
             _context.Clientes.Remove(cliente);

@@ -70,11 +70,14 @@
             </div>
             <div class="divBtn flex-row">
 
-                <input type="submit" value="Editar" class="btn btn-success btnSizeFontUpper" />
+                <input type="submit" value="Salvar" class="btn btn-success btnSizeFontUpper" />
 
 
                 <a class="btn btn-info btnSizeFontUpper" asp-action="Index">Voltar</a>
-                <a class="btn btn-danger btnSizeFontUpper text-white" data-toggle="modal" data-target="#visao" onclick="PassarDados(@Model.CPF)">Excluir</a>
+                @if (ViewBag.admin == "admin")
+                {
+                    <a class="btn btn-danger btnSizeFontUpper text-white" data-toggle="modal" data-target="#visao" onclick="PassarDados(@Model.CPF)">Excluir</a>
+                }
             </div>
         </form>
     </div>
@@ -93,13 +96,19 @@
                     method: "POST",
                     data: { id: idJornaleiro },
                     success: function (data) {
-                        $.ajax({
-                            url: "/Jornaleiros/Index",
-                            type: "get",
-                            success: function () {
-                                window.location.href = '/Jornaleiros/Index'
-                            }
-                        });
+                        if (data == "ok") {
+                            $.ajax({
+                                url: "/Jornaleiros/Index",
+                                type: "get",
+                                success: function () {
+                                    window.location.href = '/Jornaleiros/Index'
+                                }
+                            });
+                        } else {
+                            $(".modal").modal('hide');
+                            alert("Jornaleiro vinculado à uma banca logo sua exclusão é inválida!")
+                        }
+                      
                     }
                 });
             });
