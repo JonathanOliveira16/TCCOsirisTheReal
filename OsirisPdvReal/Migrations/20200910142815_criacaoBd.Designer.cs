@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OsirisPdvReal.Models;
 
 namespace OsirisPdvReal.Migrations
 {
     [DbContext(typeof(Contexto))]
-    partial class ContextoModelSnapshot : ModelSnapshot
+    [Migration("20200910142815_criacaoBd")]
+    partial class criacaoBd
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -64,8 +66,8 @@ namespace OsirisPdvReal.Migrations
 
                     b.Property<string>("TelefoneCliente")
                         .IsRequired()
-                        .HasColumnType("nvarchar(15)")
-                        .HasMaxLength(15);
+                        .HasColumnType("nvarchar(12)")
+                        .HasMaxLength(12);
 
                     b.HasKey("CPFcliente");
 
@@ -135,14 +137,14 @@ namespace OsirisPdvReal.Migrations
                         .HasMaxLength(80);
 
                     b.Property<int>("QuantidadeCompra")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasMaxLength(9);
 
                     b.Property<int>("StatusId")
                         .HasColumnType("int");
 
-                    b.Property<string>("ValorCompra")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<double>("ValorCompra")
+                        .HasColumnType("float");
 
                     b.HasKey("ComprasId");
 
@@ -188,8 +190,8 @@ namespace OsirisPdvReal.Migrations
 
                     b.Property<string>("TelefoneFornecedor")
                         .IsRequired()
-                        .HasColumnType("nvarchar(16)")
-                        .HasMaxLength(16);
+                        .HasColumnType("nvarchar(12)")
+                        .HasMaxLength(12);
 
                     b.HasKey("CNPJ");
 
@@ -285,9 +287,8 @@ namespace OsirisPdvReal.Migrations
                     b.Property<int>("QuantideProduto")
                         .HasColumnType("int");
 
-                    b.Property<string>("ValorProduto")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<double>("ValorProduto")
+                        .HasColumnType("float");
 
                     b.Property<int?>("VendaId")
                         .HasColumnType("int");

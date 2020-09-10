@@ -12,7 +12,7 @@ namespace OsirisPdvReal.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
 
-        public long CNPJ { get; set; }
+        public long? CNPJ { get; set; }
         [Required(ErrorMessage = "Campo obrigatório")]
         [StringLength(100, ErrorMessage = "Limite de caracteres atingido")]
         [Display(Name = "Nome fornecedor")]
@@ -23,7 +23,7 @@ namespace OsirisPdvReal.Models
         [Display(Name = "E-mail fornecedor")]
         public string EmailFornecedor { get; set; }
         [Required(ErrorMessage = "Campo obrigatório")]
-        [StringLength(12, ErrorMessage = "Limite de caracteres atingido")]
+        [StringLength(16, ErrorMessage = "Limite de caracteres atingido")]
         [Display(Name = "Telefone fornecedor")]
         public string TelefoneFornecedor { get; set; }
         [Required(ErrorMessage = "Campo obrigatório")]
@@ -35,11 +35,12 @@ namespace OsirisPdvReal.Models
         [Display(Name = "Logradouro")]
         public string LogradouroFornecedor { get; set; }
         [Required(ErrorMessage = "Campo obrigatório")]
-        [StringLength(100, ErrorMessage = "Limite de caracteres atingido")]
+        [StringLength(9, ErrorMessage = "Limite de caracteres atingido")]
         [Display(Name = "CEP")]
         public string CEPFornecedor { get; set; }
         public ICollection<FornecedorBanca> FornecedorBanca { get; set; }
-        public ICollection<CompraFornecedores> ComprasFornecedor { get; set; }
+        public ICollection<Compras> Compras { get; set; }
+
         [Display(Name = "Status")]
         public int StatusId { get; set; }
         public Status Status { get; set; }

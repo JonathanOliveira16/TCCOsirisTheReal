@@ -41,7 +41,7 @@
     </div>
 }
 
-<table class="table mt-4">
+<table class="table mt-4 table-striped">
     <thead class="tHeadPurple">
         <tr>
             <th class="text-white">
@@ -75,7 +75,7 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Status.NomeStatus)
                 </td>
-                <td>
+                <td class="float-right">
                     <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.CPF">Editar</a>
                     @if (ViewBag.admin == "admin")
                     {

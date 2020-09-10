@@ -28,7 +28,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="ValorProduto" class="control-label font-weight-bold"></label>
-                <input asp-for="ValorProduto" class="form-control borderInput" />
+                <input asp-for="ValorProduto" id="inp1" class="form-control borderInput" />
                 <span asp-validation-for="ValorProduto" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -57,5 +57,20 @@
         $.validator.methods.number = function (value, element) {
             return this.optional(element) || /^-?(?:\d+|\d{1,3}(?:\.\d{3})+)?(?:,\d+)?$/.test(value);
         }
+
+        var currencyMask = IMask(
+            document.getElementById('inp1'),
+            {
+                mask: 'R$num',
+                blocks: {
+                    num: {
+                        // nested masks are available!
+                        scale: 2,  // digits after point, 0 for integers
+                        mask: Number,
+                        thousandsSeparator: '',  // any single char
+                        radix: ',',  // fractional delimiter
+                    }
+                }
+            });
     </script>
 }

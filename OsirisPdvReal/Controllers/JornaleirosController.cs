@@ -267,7 +267,7 @@ namespace OsirisPdvReal.Controllers
             ViewBag.admin = Request.Cookies["admin"];
             var idUserLogado = Request.Cookies["idDoUser"];
             var eadmin = Request.Cookies["admin"];
-            if (id.ToString() == idUserLogado || eadmin.ToLower() == "true")
+            if (id.ToString() == idUserLogado || eadmin.ToLower() == "admin")
             {
                 if (id == null)
                 {

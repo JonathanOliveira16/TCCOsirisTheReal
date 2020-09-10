@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OsirisPdvReal.Models;
 
 namespace OsirisPdvReal.Migrations
 {
     [DbContext(typeof(Contexto))]
-    partial class ContextoModelSnapshot : ModelSnapshot
+    [Migration("20200910200813_changeLenghtTelefone")]
+    partial class changeLenghtTelefone
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -188,8 +190,8 @@ namespace OsirisPdvReal.Migrations
 
                     b.Property<string>("TelefoneFornecedor")
                         .IsRequired()
-                        .HasColumnType("nvarchar(16)")
-                        .HasMaxLength(16);
+                        .HasColumnType("nvarchar(12)")
+                        .HasMaxLength(12);
 
                     b.HasKey("CNPJ");
 

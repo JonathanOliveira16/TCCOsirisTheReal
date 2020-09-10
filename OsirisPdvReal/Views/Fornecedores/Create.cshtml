@@ -23,7 +23,7 @@
             <label  class="control-label font-weight-bold">CNPJ</label>
             <br />
             <div>
-                <input class="form-control w-75 borderInput" style=" display: inline;" name="tes" id="tes" />
+                <input class="form-control w-75 borderInput"  oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" type = "number" maxlength = "14" style=" display: inline;" name="tes" id="tes" />
                 <button class="btn btn-success searchBtn cancel botaoDoId" type="button" onclick="Validar()" style="margin-left:1%;margin-bottom:1%;"><i class="fa fa-search text-white"></i></button>
             </div>
         </div>
@@ -85,6 +85,20 @@
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
     <script>
+        var currencyMask = IMask(
+            document.getElementById('inp3'),
+            {
+                mask: '(00)00000-0000',
+
+            });
+
+        var currencyMask2 = IMask(
+            document.getElementById('inp6'),
+            {
+                mask: '00000-000',
+
+            });
+
         function Validar() {
             var cnpj = document.getElementById("tes").value
             console.log(cnpj)
@@ -106,7 +120,7 @@
                         document.getElementById('inp5').removeAttribute('readonly');
                         document.getElementById('inp6').removeAttribute('readonly');
                
-                    } else {
+                    } else if(result = "editar"){
                         var data2 = { id: cnpj };
                         $.ajax({
                             url: "/Fornecedores/Edit",
@@ -117,6 +131,8 @@
                                 window.location.href = '/Fornecedores/Edit/' + cnpj;
                             }
                         });
+                    } else if (result == "nada") {
+                        location.reload()
                     }
                 }
             });

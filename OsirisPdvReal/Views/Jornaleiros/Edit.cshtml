@@ -15,7 +15,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <p>Deseja realmente excluir essa banca?</p>
+                <p>Deseja realmente excluir esse jornaleiro?</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-success botaoDoId" style="font-size:10px;">Sim</button>
@@ -55,7 +55,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="TelefoneJornaleiro" style="margin-right:41%" class="font-weight-bold"></label>
-                <input asp-for="TelefoneJornaleiro" maxlength="11" minLenght="11" class="w-50 centerText borderInput form-control" />
+                <input asp-for="TelefoneJornaleiro" id="inp3" class="w-50 centerText borderInput form-control" />
                 <span asp-validation-for="TelefoneJornaleiro" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -88,6 +88,13 @@
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
     <script>
+
+        var currencyMask = IMask(
+            document.getElementById('inp3'),
+            {
+                mask: '(00)00000-0000',
+
+            });
         function PassarDados(idJornaleiro) {
             console.log(idJornaleiro)
             $(".botaoDoId").on('click', function () {

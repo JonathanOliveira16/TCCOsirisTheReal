@@ -24,7 +24,7 @@ namespace OsirisPdvReal.Models
         [Display(Name = "E-mail cliente")]
         public string EmailCliente { get; set; }
         [Required(ErrorMessage = "Campo obrigatório")]
-        [StringLength(12, ErrorMessage = "Limite de caracteres atingido")]
+        [StringLength(15, ErrorMessage = "Limite de caracteres atingido")]
         [Display(Name = "Telefone")]
         public string TelefoneCliente { get; set; }
         public ICollection<ClienteBanca> ClienteBancas { get; set; }

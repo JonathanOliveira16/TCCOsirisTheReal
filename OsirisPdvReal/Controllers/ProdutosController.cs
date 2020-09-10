@@ -146,7 +146,7 @@ namespace OsirisPdvReal.Controllers
             {
                 try
                 {
-                    var produtoExist = _context.Produto.Where(p => p.NomeProduto == produto.NomeProduto).Select(p => p.NomeProduto).FirstOrDefault();
+                    var produtoExist = _context.Produto.Where(p => p.NomeProduto == produto.NomeProduto && p.ProdutoId != produto.ProdutoId).Select(p => p.NomeProduto).FirstOrDefault();
                     if (produtoExist == null)
                     {
                         _context.Update(produto);

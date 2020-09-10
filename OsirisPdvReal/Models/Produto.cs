@@ -16,7 +16,7 @@ namespace OsirisPdvReal.Models
         public string NomeProduto { get; set; }
         [Required(ErrorMessage = "Campo obrigatório")]
         [Display(Name = "Valor")]
-        public double ValorProduto { get; set; }
+        public String ValorProduto { get; set; }
         [Required(ErrorMessage = "Campo obrigatório")]
         [Display(Name = "Estoque")]
         public int QuantideProduto { get; set; }

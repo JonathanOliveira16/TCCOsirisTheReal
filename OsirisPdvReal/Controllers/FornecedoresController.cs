@@ -23,7 +23,7 @@ namespace OsirisPdvReal.Controllers
         // GET: Fornecedores
         public async Task<IActionResult> Index(int page = 1)
         {
-            var query = _context.Fornecedores.Include(j => j.Status).AsNoTracking().OrderBy(j => j.NomeFornecedor);
+            var query = _context.Fornecedores.Include(j => j.Status).AsNoTracking().Where(f=>f.StatusId == 1).OrderBy(j => j.NomeFornecedor);
             var model = await PagingList.CreateAsync(query, 5, page);
 
             return View(model);
@@ -36,14 +36,14 @@ namespace OsirisPdvReal.Controllers
             {
                 if (busca == null)
                 {
-                    var query = _context.Fornecedores.Include(j => j.Status).AsNoTracking().OrderBy(j => j.NomeFornecedor);
+                    var query = _context.Fornecedores.Include(j => j.Status).AsNoTracking().Where(f=>f.StatusId == 1).OrderBy(j => j.NomeFornecedor);
                     var model = await PagingList.CreateAsync(query, 5, page);
                     return View(model);
                 }
                 else
                 {
                     List<Fornecedor> listaDeFornecedor = new List<Fornecedor>();
-                    var fornecedor = _context.Fornecedores.Include(j => j.Status).Where(b => b.NomeFornecedor.Contains(busca)).OrderBy(b => b.NomeFornecedor);
+                    var fornecedor = _context.Fornecedores.Include(j => j.Status).Where(b => b.NomeFornecedor.Contains(busca) && b.StatusId == 1).OrderBy(b => b.NomeFornecedor);
                     var model = await PagingList.CreateAsync(fornecedor, 5, page);
                     return View(model);
                 }
@@ -60,6 +60,11 @@ namespace OsirisPdvReal.Controllers
         [HttpPost]
         public string ValidateFornecedor(long id)
         {
+            if (id.ToString().Length < 14)
+            {
+                TempData["msgSucesso"] = "Tamanho de CNPJ inválido!";
+                return "nada";
+            }
             var CNPJExist = _context.Fornecedores.Where(j => j.CNPJ == id).Select(j => j.NomeFornecedor).FirstOrDefault();
             if (CNPJExist == null)
             {
@@ -105,9 +110,10 @@ namespace OsirisPdvReal.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("CNPJ,NomeFornecedor,EmailFornecedor,TelefoneFornecedor,PontoFocalFornecedor,LogradouroFornecedor,CEPFornecedor,StatusId")] Fornecedor fornecedor)
         {
+            fornecedor.CNPJ = CpnjFornece;
             if (ModelState.IsValid)
             {
-                var existeForne = _context.Fornecedores.Where(f=>f.NomeFornecedor == fornecedor.NomeFornecedor).Select(b => b.NomeFornecedor).FirstOrDefault();
+                var existeForne = _context.Fornecedores.Where(f=>f.NomeFornecedor == fornecedor.NomeFornecedor && f.StatusId == 1).Select(b => b.NomeFornecedor).FirstOrDefault();
                 if (existeForne == null)
                 {
                     //var forneceData = _context.Fornecedores.Where(j => j.CNPJ == fornecedor.CNPJ).Select(j => j).FirstOrDefault();
@@ -162,7 +168,7 @@ namespace OsirisPdvReal.Controllers
             {
                 try
                 {
-                    var existeFornce = _context.Fornecedores.Where(f => f.NomeFornecedor == fornecedor.NomeFornecedor && f.CNPJ != fornecedor.CNPJ).Select(f => f.NomeFornecedor).FirstOrDefault();
+                    var existeFornce = _context.Fornecedores.Where(f => f.NomeFornecedor == fornecedor.NomeFornecedor && f.CNPJ != fornecedor.CNPJ && f.StatusId == 1).Select(f => f.NomeFornecedor).FirstOrDefault();
                     if (existeFornce == null)
                     {
                         _context.Update(fornecedor);
@@ -215,7 +221,8 @@ namespace OsirisPdvReal.Controllers
         public async Task<IActionResult> Delete(long? id)
         {
             var fornecedor = await _context.Fornecedores.FindAsync(id);
-            _context.Fornecedores.Remove(fornecedor);
+            fornecedor.StatusId = 2;
+            _context.Update(fornecedor);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

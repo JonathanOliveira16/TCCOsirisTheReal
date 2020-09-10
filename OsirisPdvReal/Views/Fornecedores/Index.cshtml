@@ -16,7 +16,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <p>Deseja realmente excluir essa banca?</p>
+                <p>Deseja realmente excluir esse fornecedor?</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-success botaoDoId" style="font-size:10px;">Sim</button>
@@ -42,7 +42,7 @@
 </form>
 
 
-<table class="table mt-4">
+<table class="table mt-4 table-striped">
     <thead class="tHeadPurple">
         <tr>
             <th class="text-white" style="font-size:12px;">
@@ -94,7 +94,7 @@
                 <td style="font-size:12px;">
                     @Html.DisplayFor(modelItem => item.Status.NomeStatus)
                 </td>
-                <td>
+                <td class="float-right">
                     <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.CNPJ">Editar</a> |
 
                     <a class="btn btn-danger" data-toggle="modal" data-target="#visao" onclick="PassarDados(@item.CNPJ)">Excluir</a>

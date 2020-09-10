@@ -10,8 +10,8 @@ using OsirisPdvReal.Models;
 namespace OsirisPdvReal.Migrations
 {
     [DbContext(typeof(Contexto))]
-    [Migration("20200908234827_criacaoBd")]
-    partial class criacaoBd
+    [Migration("20200910192952_changeFloatToStrinValor")]
+    partial class changeFloatToStrinValor
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -105,12 +105,15 @@ namespace OsirisPdvReal.Migrations
                     b.Property<DateTime>("DataCompra")
                         .HasColumnType("datetime2");
 
+                    b.Property<long?>("FornecedorCNPJ")
+                        .HasColumnType("bigint");
+
                     b.Property<double>("ValorCompra")
                         .HasColumnType("float");
 
                     b.HasKey("ComprasId", "CNPJ");
 
-                    b.HasIndex("CNPJ");
+                    b.HasIndex("FornecedorCNPJ");
 
                     b.ToTable("CompraFornecedores");
                 });
@@ -122,19 +125,29 @@ namespace OsirisPdvReal.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<long?>("CNPJ")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("DataCompra")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("NomeItemCompra")
                         .IsRequired()
                         .HasColumnType("nvarchar(80)")
                         .HasMaxLength(80);
 
                     b.Property<int>("QuantidadeCompra")
-                        .HasColumnType("int")
-                        .HasMaxLength(9);
+                        .HasColumnType("int");
 
                     b.Property<int>("StatusId")
                         .HasColumnType("int");
 
+                    b.Property<string>("ValorCompra")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("ComprasId");
+
+                    b.HasIndex("CNPJ");
 
                     b.HasIndex("StatusId");
 
@@ -143,7 +156,7 @@ namespace OsirisPdvReal.Migrations
 
             modelBuilder.Entity("OsirisPdvReal.Models.Fornecedor", b =>
                 {
-                    b.Property<long>("CNPJ")
+                    b.Property<long?>("CNPJ")
                         .HasColumnType("bigint");
 
                     b.Property<string>("CEPFornecedor")
@@ -184,6 +197,19 @@ namespace OsirisPdvReal.Migrations
                     b.HasIndex("StatusId");
 
                     b.ToTable("Fornecedores");
+
+                    b.HasData(
+                        new
+                        {
+                            CNPJ = 12345678912L,
+                            CEPFornecedor = "123456789",
+                            EmailFornecedor = "no@gmail.com",
+                            LogradouroFornecedor = "sem endereço",
+                            NomeFornecedor = "Sem fornecedor",
+                            PontoFocalFornecedor = "Sem ponto",
+                            StatusId = 1,
+                            TelefoneFornecedor = "11111111"
+                        });
                 });
 
             modelBuilder.Entity("OsirisPdvReal.Models.FornecedorBanca", b =>
@@ -221,16 +247,15 @@ namespace OsirisPdvReal.Migrations
 
                     b.Property<string>("SenhaJornaleiro")
                         .IsRequired()
-                        .HasColumnType("nvarchar(400)")
-                        .HasMaxLength(400);
+                        .HasColumnType("nvarchar(20)")
+                        .HasMaxLength(20);
 
                     b.Property<int>("StatusId")
                         .HasColumnType("int");
 
                     b.Property<string>("TelefoneJornaleiro")
                         .IsRequired()
-                        .HasColumnType("nvarchar(12)")
-                        .HasMaxLength(12);
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("TipoId")
                         .HasColumnType("int");
@@ -435,21 +460,24 @@ namespace OsirisPdvReal.Migrations
 
             modelBuilder.Entity("OsirisPdvReal.Models.CompraFornecedores", b =>
                 {
-                    b.HasOne("OsirisPdvReal.Models.Fornecedor", "Fornecedor")
-                        .WithMany("ComprasFornecedor")
-                        .HasForeignKey("CNPJ")
-                        .OnDelete(DeleteBehavior.Restrict)
+                    b.HasOne("OsirisPdvReal.Models.Compras", "Compras")
+                        .WithMany()
+                        .HasForeignKey("ComprasId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("OsirisPdvReal.Models.Compras", "Compras")
-                        .WithMany("ComprasFornecedor")
-                        .HasForeignKey("ComprasId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                    b.HasOne("OsirisPdvReal.Models.Fornecedor", "Fornecedor")
+                        .WithMany()
+                        .HasForeignKey("FornecedorCNPJ");
                 });
 
             modelBuilder.Entity("OsirisPdvReal.Models.Compras", b =>
                 {
+                    b.HasOne("OsirisPdvReal.Models.Fornecedor", "fornecedor")
+                        .WithMany("Compras")
+                        .HasForeignKey("CNPJ")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("OsirisPdvReal.Models.Status", "Status")
                         .WithMany("Compras")
                         .HasForeignKey("StatusId")

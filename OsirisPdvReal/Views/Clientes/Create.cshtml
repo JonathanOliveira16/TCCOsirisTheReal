@@ -23,7 +23,7 @@
             <label class="control-label font-weight-bold">CPF</label>
             <br />
             <div>
-                <input class="form-control w-75 borderInput" style=" display: inline;" name="tes" id="tes" />
+                <input class="form-control w-75 borderInput" style=" display: inline;"  oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" type = "number" maxlength = "11" name="tes" id="tes" />
                 <button class="btn btn-success searchBtn cancel botaoDoId" type="button" onclick="Validar()" style="margin-left:1%;margin-bottom:1%;"><i class="fa fa-search text-white"></i></button>
             </div>
         </div>
@@ -67,9 +67,17 @@
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
 <script>
+
+    var currencyMask = IMask(
+        document.getElementById('inp3'),
+        {
+            mask: '(00)00000-0000',
+          
+        });
     function Validar() {
         var cpf = document.getElementById("tes").value
         console.log(cpf)
+
 
         var data = { id: cpf };
         $.ajax({
@@ -86,7 +94,7 @@
                     document.getElementById('inp3').removeAttribute('readonly');
                 
 
-                } else {
+                }else if(result == "editar"){
                     var data2 = { id: cpf };
                     $.ajax({
                         url: "/Clientes/Edit",
@@ -97,6 +105,8 @@
                             window.location.href = '/Clientes/Edit/' + cpf;
                         }
                     });
+                }else if(result == "nada") {
+                    location.reload()
                 }
             }
         });

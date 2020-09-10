@@ -15,14 +15,19 @@ namespace OsirisPdvReal.Models
         [Display(Name = "Nome Item")]
         public string NomeItemCompra { get; set; }
         [Required(ErrorMessage = "Campo obrigatório")]
-        [StringLength(9, ErrorMessage = "Limite de caracteres atingido")]
         [Display(Name = "Quantidade")]
         public int QuantidadeCompra { get; set; }
-        public ICollection<CompraFornecedores> ComprasFornecedor { get; set; }
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        [Required(ErrorMessage = "Campo obrigatório")]
+        public DateTime DataCompra { get; set; }
+        [Required(ErrorMessage = "Campo obrigatório")]
+        public String ValorCompra { get; set; }
         public ICollection<ProdutoCompras> ProdutoCompras { get; set; }
-
         public int StatusId { get; set; }
         public Status Status { get; set; }
+
+        public long? CNPJ { get; set; }
+        public Fornecedor fornecedor { get; set; }
 
 
     }

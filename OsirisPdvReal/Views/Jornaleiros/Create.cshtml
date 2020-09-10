@@ -44,7 +44,7 @@
             </div>
             <div class="form-group">
                 <label class="control-label font-weight-bold" asp-for="TelefoneJornaleiro"></label>
-                <input class="form-control borderInput" maxlength="11" minLenght="11"  id="inp3" readonly="readonly" asp-for="TelefoneJornaleiro" />
+                <input class="form-control borderInput"   id="inp3" readonly="readonly" asp-for="TelefoneJornaleiro" />
                 <span asp-validation-for="TelefoneJornaleiro" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -80,6 +80,13 @@
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
     <script>
+
+        var currencyMask = IMask(
+            document.getElementById('inp3'),
+            {
+                mask: '(00)00000-0000',
+
+            });
         function Validar() {
             var cpf = document.getElementById("tes").value
             console.log(cpf)

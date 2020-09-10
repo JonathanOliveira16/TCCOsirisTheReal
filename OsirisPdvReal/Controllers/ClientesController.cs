@@ -23,6 +23,11 @@ namespace OsirisPdvReal.Controllers
         [HttpPost]
         public string ValidateCpf(long id)
         {
+            if (id.ToString().Length < 11)
+            {
+                TempData["msgSucesso"] = "Tamanho de CPF inválido!";
+                return "nada";
+            }
             var cpfExist = _context.Clientes.Where(j => j.CPFcliente == id).Select(j => j.NomeCliente).FirstOrDefault();
             if (cpfExist == null)
             {
@@ -104,11 +109,12 @@ namespace OsirisPdvReal.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("CPFcliente,NomeCliente,EmailCliente,TelefoneCliente,StatusId")] Cliente cliente)
         {
+            cliente.CPFcliente = cpfUser;
             try
             {
                 if (ModelState.IsValid)
                 {
-                    var existeCliente = _context.Clientes.Where(c => c.NomeCliente == cliente.NomeCliente).Select(c => c.NomeCliente).FirstOrDefault();
+                    var existeCliente = _context.Clientes.Where(c => c.NomeCliente == cliente.NomeCliente && c.StatusId == 1).Select(c => c.NomeCliente).FirstOrDefault();
                     if (existeCliente == null)
                     {
                         _context.Add(cliente);
@@ -160,7 +166,7 @@ namespace OsirisPdvReal.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CPFcliente,NomeCliente,EmailCliente,TelefoneCliente,StatusId")] Cliente cliente)
+        public async Task<IActionResult> Edit(long id, [Bind("CPFcliente,NomeCliente,EmailCliente,TelefoneCliente,StatusId")] Cliente cliente)
         {
             if (id != cliente.CPFcliente)
             {
@@ -169,7 +175,7 @@ namespace OsirisPdvReal.Controllers
 
             if (ModelState.IsValid)
             {
-                var existeCliente = _context.Clientes.Where(c => c.NomeCliente == cliente.NomeCliente).Select(c => c.NomeCliente).FirstOrDefault();
+                var existeCliente = _context.Clientes.Where(c => c.NomeCliente == cliente.NomeCliente && c.StatusId == 1).Select(c => c.NomeCliente).FirstOrDefault();
 
                 try
                 {
