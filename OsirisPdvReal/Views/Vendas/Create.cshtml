@@ -4,13 +4,58 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
-
-<h4>Venda</h4>
+<h5 class="divBtn fontTitles">REALIZAR VENDA</h5>
 <hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
+    <div class="col-md-6">
+        <div>
+            <form asp-action="SearchProduto">
+                <div class="d-flex">
+                    <input type="text" class="form-control borderInput w-50" name="busca" id="busca" placeholder="Pesquisar produto..." />
+                    <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
+                </div>
+            </form>
+            <table class="table mt-4 table-striped">
+                <thead class="tHeadPurple">
+                    <tr>
+                        <th class="text-white" style="font-size:13px;">
+                            Nome Produto
+                        </th>
+                        <th class="text-white" style="font-size:13px;">
+                            Quantidade
+                        </th>
+                        <th class="text-white" style="font-size:13px;">
+                            Valor
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in ViewBag.produtos)
+                    {
+                        <tr>
+                            <td style="font-size:13px;">
+                                @item.NomeProduto
+                            </td>
+                            <td style="font-size:13px;">
+                                @item.QuantideProduto
+                            </td>
+                            <td style="font-size:13px;">
+                                @item.ValorProduto
+                            </td>
+                            <td class="float-right">
+                                <a class="btn-sm btn-success text-white btnVenda" asp-action="Edit" asp-route-id="@item.ProdutoId">Adicionar</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            @*<nav class="float-right">
+                @await this.Component.InvokeAsync("Pager", new { PagingList = ViewBag.produtos })
+            </nav>*@
+        </div>
+
+        @*<form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="DataVenda" class="control-label"></label>
@@ -37,13 +82,11 @@
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
-        </form>
+        </form>*@
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

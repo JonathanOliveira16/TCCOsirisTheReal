@@ -32,7 +32,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="DataCompra" class="control-label font-weight-bold"></label>
-                <input asp-for="DataCompra" type="date" class="form-control borderInput" />
+                <input asp-for="DataCompra" id="busca" type="date" class="form-control borderInput" />
                 <span asp-validation-for="DataCompra" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -63,13 +63,25 @@
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
+        $(function () {
+            var dtToday = new Date();
+
+            var month = dtToday.getMonth() + 1;
+            var day = dtToday.getDate();
+            var year = dtToday.getFullYear();
+            if (month < 10)
+                month = '0' + month.toString();
+            if (day < 10)
+                day = '0' + day.toString();
+
+            var maxDate = year + '-' + month + '-' + day;
+            $('#busca').attr('max', maxDate);
+        });
+
         var currencyMask = IMask(
             document.getElementById('inp1'),
             {

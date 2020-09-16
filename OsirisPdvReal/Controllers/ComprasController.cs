@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using OsirisPdvReal.Models;
+using ReflectionIT.Mvc.Paging;
 
 namespace OsirisPdvReal.Controllers
 {
@@ -19,11 +20,25 @@ namespace OsirisPdvReal.Controllers
         }
 
         // GET: Compras
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1)
         {
+            var query = _context.Compras.Include(c => c.Status).Include(c => c.fornecedor).OrderBy(c=>c.DataCompra);
+            var model = await PagingList.CreateAsync(query, 5, page);
+            return View(model);
+        }
 
-            var contexto = _context.Compras.Include(c => c.Status).Include(c => c.fornecedor);
-            return View(await contexto.ToListAsync());
+        [HttpPost]
+        public async Task<IActionResult> Index(DateTime busca, int page = 1)
+        {
+            if (busca == DateTime.MinValue)
+            {
+                var query2 = _context.Compras.Include(c => c.Status).Include(c => c.fornecedor).OrderBy(c => c.DataCompra);
+                var model2 = await PagingList.CreateAsync(query2, 5, page);
+                return View(model2);
+            }
+            var query = _context.Compras.Include(c => c.Status).Include(c => c.fornecedor).Where(c => c.DataCompra == busca).OrderBy(c=>c.DataCompra);
+            var model = await PagingList.CreateAsync(query, 5, page);
+            return View(model);
         }
 
         // GET: Compras/Details/5
@@ -113,9 +128,21 @@ namespace OsirisPdvReal.Controllers
             {
                 try
                 {
+                    var compraQuantidade = _context.Compras.Where(c => c.ComprasId == compras.ComprasId).Select(c => c.QuantidadeCompra).FirstOrDefault();
+                    if (compraQuantidade != compras.QuantidadeCompra)
+                    {
+                        var produtoComprado = _context.Produto.Where(p => p.NomeProduto == compras.NomeItemCompra).FirstOrDefault();
+                        produtoComprado.QuantideProduto = produtoComprado.QuantideProduto - compraQuantidade;
+                        _context.Update(produtoComprado);
+                        await _context.SaveChangesAsync();
+                    }
                     _context.Update(compras);
                     await _context.SaveChangesAsync();
-                 
+                    var prod = _context.Produto.Where(p => p.NomeProduto == compras.NomeItemCompra).FirstOrDefault();
+                    prod.QuantideProduto = prod.QuantideProduto + compras.QuantidadeCompra;
+                    _context.Update(prod);
+                    await _context.SaveChangesAsync();
+
                 }
                 catch (DbUpdateConcurrencyException)
                 {

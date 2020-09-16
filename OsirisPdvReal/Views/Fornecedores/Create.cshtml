@@ -4,7 +4,7 @@
     ViewData["Title"] = "Create";
 }
 
-<div class="divBtn">
+<div class="divBtn fontTitles">
     <h4>Adicionar fornecedor</h4>
 </div>
 <hr />
@@ -120,7 +120,18 @@
                         document.getElementById('inp5').removeAttribute('readonly');
                         document.getElementById('inp6').removeAttribute('readonly');
                
-                    } else if(result = "editar"){
+                    } else if (result == "nada") {
+                        location.reload()
+                        //alert('CNPJ inválido')
+                        //document.getElementById("sel1").disabled = true;
+                        //document.getElementById('inp1').setAttribute('readonly');
+                        //document.getElementById('inp2').setAttribute('readonly');
+                        //document.getElementById('inp3').setAttribute('readonly');
+                        //document.getElementById('inp4').setAttribute('readonly');
+                        //document.getElementById('inp5').setAttribute('readonly');
+                        //document.getElementById('inp6').setAttribute('readonly');
+                    }
+                    else if (result = "editar") {
                         var data2 = { id: cnpj };
                         $.ajax({
                             url: "/Fornecedores/Edit",
@@ -131,9 +142,7 @@
                                 window.location.href = '/Fornecedores/Edit/' + cnpj;
                             }
                         });
-                    } else if (result == "nada") {
-                        location.reload()
-                    }
+                    } 
                 }
             });
             //$.ajax({

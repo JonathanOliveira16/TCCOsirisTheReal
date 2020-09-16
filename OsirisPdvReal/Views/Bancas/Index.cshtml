@@ -25,7 +25,7 @@
     </div>
 </div>
 
-
+<h5 class="divBtn fontTitles">LISTAGEM DE BANCAS</h5>
 @if (TempData["msgSucesso"] != null)
 {
     <div class="alert alert-danger alert-dismissable mt-2" style="margin-left:10%;margin-right:10%">
@@ -64,7 +64,7 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Jornaleiro.NomeJornaleiro)
                 </td>
-                <td>
+                <td class="float-right">
                     <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.BancaId">Editar</a> |
 
                     <a class="btn btn-danger" data-toggle="modal" data-target="#visao" onclick="PassarDados(@item.BancaId)">Excluir</a>

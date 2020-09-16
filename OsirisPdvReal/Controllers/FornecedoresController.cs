@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using OsirisPdvReal.Models;
+using OsirisPdvReal.Utils;
 using ReflectionIT.Mvc.Paging;
 
 namespace OsirisPdvReal.Controllers
@@ -60,9 +61,16 @@ namespace OsirisPdvReal.Controllers
         [HttpPost]
         public string ValidateFornecedor(long id)
         {
+          
             if (id.ToString().Length < 14)
             {
                 TempData["msgSucesso"] = "Tamanho de CNPJ inválido!";
+                return "nada";
+            }
+            var isValid = Validadores.IsCnpj(id.ToString());
+            if (isValid == false)
+            {
+                TempData["msgSucesso"] = "CNPJ inválido!";
                 return "nada";
             }
             var CNPJExist = _context.Fornecedores.Where(j => j.CNPJ == id).Select(j => j.NomeFornecedor).FirstOrDefault();

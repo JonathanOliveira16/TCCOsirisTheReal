@@ -1,0 +1,55 @@
+﻿@model IEnumerable<OsirisPdvReal.Models.Cliente>
+
+@{
+    ViewData["Title"] = "InativosClientes";
+}
+
+    <h5 class="divBtn fontTitles">CLIENTES INATIVOS</h5>
+
+@if (TempData["msgSucesso"] != null)
+{
+    <div class="alert @TempData["color"] alert-dismissable mt-2" style="margin-left:10%;margin-right:10%">
+        <strong>@TempData["msgSucesso"]</strong>
+    </div>
+}
+<table class="table mt-4 table-striped">
+    <thead class="tHeadPurple">
+        <tr>
+            <th class="text-white">
+                @Html.DisplayNameFor(model => model.NomeCliente)
+            </th>
+            <th class="text-white">
+                @Html.DisplayNameFor(model => model.EmailCliente)
+            </th>
+            <th class="text-white">
+                @Html.DisplayNameFor(model => model.TelefoneCliente)
+            </th>
+            <th class="text-white">
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.NomeCliente)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EmailCliente)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TelefoneCliente)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status.NomeStatus)
+            </td>
+            <td class="float-right">
+                <a class="btn btn-info" asp-action="AtivarClientes" asp-route-id="@item.CPFcliente">Ativar</a>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>

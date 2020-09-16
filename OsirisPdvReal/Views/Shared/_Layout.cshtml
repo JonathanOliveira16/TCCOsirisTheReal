@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="~/css/site.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Balsamiq+Sans:wght@700&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
@@ -26,15 +27,21 @@
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle fontSizeDezoito" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Vendas</a>
                             <div class="dropdown-menu">
-                                <a class="dropdown-item" href="#">Action</a>
-                                <a class="dropdown-item" href="#">Another action</a>
-                                <a class="dropdown-item" href="#">Something else here</a>
+                                <a class="dropdown-item" asp-controller="Status" asp-action="AtivarJornaleiro">Ativar jornaleiro</a>
+                                <a class="dropdown-item" asp-controller="Status" asp-action="AtivarFornecedores">Ativar fornecedor</a>
+                                <a class="dropdown-item" asp-controller="Status" asp-action="AtivarClientes">Ativar cliente</a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="#">Separated link</a>
                             </div>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link fontSizeDezoito" asp-area="" asp-controller="Status" asp-action="Index">Status</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle fontSizeDezoito" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Status</a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" asp-controller="Status" asp-action="Index">Status</a>
+                                <a class="dropdown-item" asp-controller="Status" asp-action="InativosJornaleiros">Ativar jornaleiro</a>
+                                <a class="dropdown-item" asp-controller="Status" asp-action="InativosFornecedores">Ativar fornecedor</a>
+                                <a class="dropdown-item" asp-controller="Status" asp-action="InativosClientes">Ativar cliente</a>
+                            </div>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link fontSizeDezoito" asp-area="" asp-controller="Produtos" asp-action="Index">Produtos</a>

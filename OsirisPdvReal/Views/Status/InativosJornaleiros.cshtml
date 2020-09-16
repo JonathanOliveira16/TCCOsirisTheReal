@@ -1,0 +1,70 @@
+﻿@model IEnumerable<OsirisPdvReal.Models.Jornaleiro>
+
+@{
+    ViewData["Title"] = "InativosJornaleiros";
+}
+
+
+
+<h5 class="divBtn fontTitles">JORNALEIROS INATIVOS</h5>
+
+@if (TempData["msgSucesso"] != null)
+{
+    <div class="alert  @TempData["color"] alert-dismissable mt-2" style="margin-left:10%;margin-right:10%">
+        <strong>@TempData["msgSucesso"]</strong>
+    </div>
+}
+
+<table class="table mt-4 table-striped">
+    <thead class="tHeadPurple">
+        <tr>
+            <th class="text-white">
+                @Html.DisplayNameFor(model => model.NomeJornaleiro)
+            </th>
+            <th class="text-white">
+                @Html.DisplayNameFor(model => model.EmailJornaleiro)
+            </th>
+            <th class="text-white">
+                @Html.DisplayNameFor(model => model.TelefoneJornaleiro)
+            </th>
+            <th class="text-white">
+                @Html.DisplayNameFor(model => model.SenhaJornaleiro)
+            </th>
+            <th class="text-white">
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th class="text-white">
+                @Html.DisplayNameFor(model => model.tipo)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.NomeJornaleiro)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EmailJornaleiro)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TelefoneJornaleiro)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SenhaJornaleiro)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status.NomeStatus)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.tipo.TipoId)
+            </td>
+            <td class="float-right">
+                <a class="btn btn-info" asp-action="AtivarJornaleiro" asp-route-id="@item.CPF">Ativar</a>             
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>

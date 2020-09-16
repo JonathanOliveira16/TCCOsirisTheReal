@@ -1,4 +1,6 @@
-﻿@model IEnumerable<OsirisPdvReal.Models.Compras>
+﻿@model ReflectionIT.Mvc.Paging.PagingList<OsirisPdvReal.Models.Compras>
+@using ReflectionIT.Mvc.Paging
+@addTagHelper *, ReflectionIT.Mvc.Paging
 
 @{
     ViewData["Title"] = "Index";
@@ -24,7 +26,7 @@
     </div>
 </div>
 
-
+<h5 class="divBtn fontTitles">LISTAGEM DE COMPRAS</h5>
 @if (TempData["msgSucesso"] != null)
 {
     <div class="alert alert-danger alert-dismissable mt-2" style="margin-left:10%;margin-right:10%">
@@ -33,9 +35,9 @@
 }
 <form asp-action="Index">
     <div class="d-flex">
-        <input type="text" class="form-control borderInput w-25" name="busca" id="busca" placeholder="Pesquisar..." />
+        <input type="date" class="form-control borderInput w-25" name="busca" id="busca" placeholder="Pesquisar por data..." />
         <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
-        <a class="btn btnPage btn-success mlAddNew" style="margin-left:10%;" asp-action="Create">Novo cliente</a>
+        <a class="btn btnPage btn-success mlAddNew" style="margin-left:10%;" asp-action="Create">Novo compra</a>
     </div>
 </form>
 <table class="table mt-4 table-striped">
@@ -85,16 +87,34 @@
                     @Html.DisplayFor(modelItem => item.fornecedor.NomeFornecedor)
                 </td>
                 <td class="float-right">
+                    <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.ComprasId">Editar</a> |
                     <a class="btn btn-danger" data-toggle="modal" data-target="#visao" onclick="PassarDados(@item.ComprasId)">Excluir</a>
                 </td>
             </tr>
         }
     </tbody>
 </table>
-
+<nav class="float-right">
+    @await this.Component.InvokeAsync("Pager", new { PagingList = this.Model })
+</nav>
 @section Scripts{
     <script>
         var idParaApagar
+        $(function () {
+            var dtToday = new Date();
+
+            var month = dtToday.getMonth() + 1;
+            var day = dtToday.getDate();
+            var year = dtToday.getFullYear();
+            if (month < 10)
+                month = '0' + month.toString();
+            if (day < 10)
+                day = '0' + day.toString();
+
+            var maxDate = year + '-' + month + '-' + day;
+            $('#busca').attr('max', maxDate);
+        });
+
 
         function PassarDados(idJornaleiro) {
             $(".botaoDoId").on('click', function () {

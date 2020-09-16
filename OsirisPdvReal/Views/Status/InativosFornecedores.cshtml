@@ -1,0 +1,73 @@
+﻿@model IEnumerable<OsirisPdvReal.Models.Fornecedor>
+
+@{
+    ViewData["Title"] = "InativosFornecedores";
+}
+
+    <h5 class="divBtn fontTitles">FORNECEDORES INATIVOS</h5>
+
+@if (TempData["msgSucesso"] != null)
+{
+    <div class="alert  @TempData["color"] alert-dismissable mt-2" style="margin-left:10%;margin-right:10%">
+        <strong>@TempData["msgSucesso"]</strong>
+    </div>
+}
+<table class="table mt-4 table-striped">
+    <thead class="tHeadPurple">
+        <tr>
+            <th class="text-white" style="font-size:12px;">
+                @Html.DisplayNameFor(model => model.NomeFornecedor)
+            </th>
+            <th class="text-white" style="font-size:12px;">
+                @Html.DisplayNameFor(model => model.EmailFornecedor)
+            </th>
+            <th class="text-white" style="font-size:12px;">
+                @Html.DisplayNameFor(model => model.TelefoneFornecedor)
+            </th>
+            <th class="text-white" style="font-size:12px;">
+                @Html.DisplayNameFor(model => model.PontoFocalFornecedor)
+            </th>
+            <th class="text-white" style="font-size:12px;">
+                @Html.DisplayNameFor(model => model.LogradouroFornecedor)
+            </th>
+            <th class="text-white" style="font-size:12px;">
+                @Html.DisplayNameFor(model => model.CEPFornecedor)
+            </th>
+            <th class="text-white" style="font-size:12px;">
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td style="font-size:12px;">
+                @Html.DisplayFor(modelItem => item.NomeFornecedor)
+            </td>
+            <td style="font-size:12px;">
+                @Html.DisplayFor(modelItem => item.EmailFornecedor)
+            </td>
+            <td style="font-size:12px;">
+                @Html.DisplayFor(modelItem => item.TelefoneFornecedor)
+            </td>
+            <td style="font-size:12px;">
+                @Html.DisplayFor(modelItem => item.PontoFocalFornecedor)
+            </td>
+            <td style="font-size:12px;">
+                @Html.DisplayFor(modelItem => item.LogradouroFornecedor)
+            </td>
+            <td style="font-size:12px;">
+                @Html.DisplayFor(modelItem => item.CEPFornecedor)
+            </td>
+            <td style="font-size:12px;">
+                @Html.DisplayFor(modelItem => item.Status.NomeStatus)
+            </td>
+            <td class="float-right">
+                <a class="btn btn-info" asp-action="AtivarFornecedores" asp-route-id="@item.CNPJ">Ativar</a>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>

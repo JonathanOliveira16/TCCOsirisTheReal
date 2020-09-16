@@ -186,6 +186,11 @@ body {
     color: #7433FF;
 }
 
+.fontTitles {
+    font-family: 'Balsamiq Sans', cursive;
+    color: #7433FF;
+}
+
 .tHeadPurple {
     background-color: #7433FF;
 }
@@ -210,6 +215,12 @@ body {
 
 .btnNewCreate {
     width: 25%;
+    font-size: 13px;
+    font-weight: bold
+}
+
+.btnVenda {
+    width:15%;
     font-size: 13px;
     font-weight: bold
 }

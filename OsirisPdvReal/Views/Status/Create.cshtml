@@ -4,21 +4,36 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
-
-<h4>Status</h4>
+<div class="divBtn fontTitles">
+    <h4>Adicionar Status</h4>
+</div>
 <hr />
+
+@if (TempData["msgSucesso"] != null)
+{
+    <div class="alert alert-danger alert-dismissable mt-2" style="margin-left:10%;margin-right:10%">
+        <strong>@TempData["msgSucesso"]</strong>
+    </div>
+}
 <div class="row">
     <div class="col-md-4">
+
+    </div>
+    <div class="col-md-4  borderPurple">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="NomeStatus" class="control-label"></label>
-                <input asp-for="NomeStatus" class="form-control" />
+                <label asp-for="NomeStatus" class="control-label font-weight-bold"></label>
+                <input asp-for="NomeStatus" class="form-control borderInput" />
                 <span asp-validation-for="NomeStatus" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+            <div class="divBtn flex-row mt-2 mb-2">
+
+                <input type="submit" value="Adicionar" class="btn mr-3 btn-success btnNewCreate" />
+
+
+                <a class="btn btn-info btnNewCreate ml-3" asp-action="Index">Voltar</a>
+
             </div>
         </form>
     </div>

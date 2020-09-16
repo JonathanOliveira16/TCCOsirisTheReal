@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using OsirisPdvReal.Models;
+using ReflectionIT.Mvc.Paging;
 
 namespace OsirisPdvReal.Controllers
 {
@@ -21,6 +22,8 @@ namespace OsirisPdvReal.Controllers
         // GET: Vendas
         public async Task<IActionResult> Index()
         {
+
+            ViewBag.produtos =  _context.Produto.AsNoTracking().OrderBy(c => c.NomeProduto);
             var contexto = _context.Vendas.Include(v => v.Bancas).Include(v => v.Clientes).Include(v => v.Status);
             return View(await contexto.ToListAsync());
         }
@@ -47,8 +50,9 @@ namespace OsirisPdvReal.Controllers
         }
 
         // GET: Vendas/Create
-        public IActionResult Create()
+        public IActionResult Create(int page = 1)
         {
+            ViewBag.produtos = _context.Produto.AsNoTracking().OrderBy(c => c.NomeProduto);
             ViewData["BancaId"] = new SelectList(_context.Bancas, "BancaId", "NomeBanca");
             ViewData["CPFcliente"] = new SelectList(_context.Clientes, "CPFcliente", "EmailCliente");
             ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus");
