@@ -36,6 +36,10 @@
                 <input asp-for="QuantideProduto" class="form-control borderInput" />
                 <span asp-validation-for="QuantideProduto" class="text-danger"></span>
             </div>
+            <div class="form-group">
+                <label class="control-label font-weight-bold" asp-for="TipoProdId"></label>
+                <select class="form-control borderInput" id="sel1" asp-for="TipoProdId" asp-items="ViewBag.TipoProdId"></select>
+            </div>
             <div class="divBtn flex-row mt-2 mb-2">
 
                 <input type="submit" value="Adicionar" class="btn mr-3 btn-success btnNewCreate" />

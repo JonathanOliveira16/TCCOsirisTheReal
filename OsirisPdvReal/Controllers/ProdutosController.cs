@@ -22,7 +22,7 @@ namespace OsirisPdvReal.Controllers
         // GET: Produtos
         public async Task<IActionResult> Index(int page = 1)
         {
-            var query = _context.Produto.AsNoTracking().OrderBy(j => j.NomeProduto);
+            var query = _context.Produto.Include(p => p.tipoProduto).AsNoTracking().OrderBy(j => j.NomeProduto);
             //var contexto = _context.Bancas.Include(b => b.Jornaleiro);
             var model = await PagingList.CreateAsync(query, 5, page);
             return View(model);
@@ -35,14 +35,14 @@ namespace OsirisPdvReal.Controllers
             {
                 if (busca == null)
                 {
-                    var query = _context.Produto.AsNoTracking().OrderBy(j => j.NomeProduto);
+                    var query = _context.Produto.Include(p=>p.tipoProduto).AsNoTracking().OrderBy(j => j.NomeProduto);
                     var model = await PagingList.CreateAsync(query, 5, page);
                     return View(model);
                 }
                 else
                 {
                     List<Produto> listaDeProdutos = new List<Produto>();
-                    var produtos = _context.Produto.Where(b => b.NomeProduto.Contains(busca)).OrderBy(b => b.NomeProduto);
+                    var produtos = _context.Produto.Include(p => p.tipoProduto).Where(b => b.NomeProduto.Contains(busca)).OrderBy(b => b.NomeProduto);
                     var model = await PagingList.CreateAsync(produtos, 5, page);
                     return View(model);
                 }
@@ -77,6 +77,8 @@ namespace OsirisPdvReal.Controllers
         // GET: Produtos/Create
         public IActionResult Create()
         {
+            ViewData["TipoProdId"] = new SelectList(_context.TipoProdutos, "TipoProdId", "NomeTipoProduto");
+
             return View();
         }
 
@@ -85,7 +87,7 @@ namespace OsirisPdvReal.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProdutoId,NomeProduto,ValorProduto,QuantideProduto")] Produto produto)
+        public async Task<IActionResult> Create([Bind("ProdutoId,NomeProduto,ValorProduto,QuantideProduto,TipoProdId")] Produto produto)
         {
             try
             {
@@ -100,6 +102,8 @@ namespace OsirisPdvReal.Controllers
                     }
                     else
                     {
+                        ViewData["TipoProdId"] = new SelectList(_context.TipoProdutos, "TipoProdId", "NomeTipoProduto");
+
                         TempData["msgSucesso"] = "Nome de produto já existente!";
                     }
 
@@ -107,6 +111,8 @@ namespace OsirisPdvReal.Controllers
             }
             catch (Exception)
             {
+                ViewData["TipoProdId"] = new SelectList(_context.TipoProdutos, "TipoProdId", "NomeTipoProduto");
+
                 TempData["msgSucesso"] = "Erro na sua solicitação, favor tentar novamente!";
 
             }
@@ -127,6 +133,8 @@ namespace OsirisPdvReal.Controllers
             {
                 return NotFound();
             }
+            ViewData["TipoProdId"] = new SelectList(_context.TipoProdutos, "TipoProdId", "NomeTipoProduto");
+
             return View(produto);
         }
 
@@ -135,7 +143,7 @@ namespace OsirisPdvReal.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ProdutoId,NomeProduto,ValorProduto,QuantideProduto")] Produto produto)
+        public async Task<IActionResult> Edit(int id, [Bind("ProdutoId,NomeProduto,ValorProduto,QuantideProduto,TipoProdId")] Produto produto)
         {
             if (id != produto.ProdutoId)
             {
@@ -154,6 +162,7 @@ namespace OsirisPdvReal.Controllers
                     }
                     else
                     {
+                        ViewData["TipoProdId"] = new SelectList(_context.TipoProdutos, "TipoProdId", "NomeTipoProduto");
                         TempData["msgSucesso"] = "Nome de produto já existente!";
 
                     }
@@ -161,6 +170,7 @@ namespace OsirisPdvReal.Controllers
                 }
                 catch (Exception ex)
                 {
+                    ViewData["TipoProdId"] = new SelectList(_context.TipoProdutos, "TipoProdId", "NomeTipoProduto");
                     TempData["msgSucesso"] = "Erro na sua solicitação, favor tentar novamente!";
                     return View(produto);
                 }

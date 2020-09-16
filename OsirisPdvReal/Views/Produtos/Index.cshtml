@@ -52,28 +52,34 @@
             <th class="text-white">
                 @Html.DisplayNameFor(model => model.QuantideProduto)
             </th>
+            <th class="text-white">
+                Categoria
+            </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.NomeProduto)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ValorProduto)
-                </td>
-                <td class="ml-2">
-                    @Html.DisplayFor(modelItem => item.QuantideProduto)
-                </td>
-                <td class="float-right">
-                    <a class="btn btn-warning text-white" asp-action="Edit" asp-route-id="@item.ProdutoId">Editar</a> |
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.NomeProduto)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ValorProduto)
+            </td>
+            <td class="ml-2">
+                @Html.DisplayFor(modelItem => item.QuantideProduto)
+            </td>
+            <td class="ml-2">
+                @Html.DisplayFor(modelItem => item.tipoProduto.NomeTipoProduto)
+            </td>
+            <td class="float-right">
+                <a class="btn btn-warning text-white" asp-action="Edit" asp-route-id="@item.ProdutoId">Editar</a> |
 
-                    <a class="btn btn-danger text-white" data-toggle="modal" data-target="#visao" onclick="PassarDados(@item.ProdutoId)">Excluir</a>
-                </td>
-            </tr>
+                <a class="btn btn-danger text-white" data-toggle="modal" data-target="#visao" onclick="PassarDados(@item.ProdutoId)">Excluir</a>
+            </td>
+        </tr>
         }
     </tbody>
 </table>
