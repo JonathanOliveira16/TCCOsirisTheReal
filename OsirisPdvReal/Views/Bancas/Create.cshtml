@@ -30,6 +30,15 @@
                 <label class="control-label font-weight-bold">Jornaleiro</label>
                 <select asp-for="CPF" class="form-control borderInput" asp-items="ViewBag.CPF"></select>
             </div>
+            <div class="form-group">
+                <label class="control-label font-weight-bold">Bairro</label>
+                <select asp-for="Bairro" class="form-control borderInput">
+                    @foreach(var y in ViewBag.bairros)
+                    {
+                        <option value="@y">@y</option>
+                    }
+                </select>
+            </div>
             <div class="divBtn flex-row mt-2 mb-2">
 
                 <input type="submit" value="Adicionar" class="btn mr-3 btn-success btnNewCreate" />

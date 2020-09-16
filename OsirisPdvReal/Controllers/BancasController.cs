@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using OsirisPdvReal.Models;
+using OsirisPdvReal.Utils;
 using ReflectionIT.Mvc.Paging;
 
 namespace OsirisPdvReal.Controllers
@@ -22,6 +23,8 @@ namespace OsirisPdvReal.Controllers
         // GET: Bancas
         public async Task<IActionResult> Index(int page = 1)
         {
+            List<String> Bairros = BairroUtil.GetBairros();
+            ViewBag.bairros = Bairros.OrderBy(b => b).ToList();
             var query = _context.Bancas.Include(j => j.Jornaleiro).AsNoTracking().OrderBy(j => j.NomeBanca);
             //var contexto = _context.Bancas.Include(b => b.Jornaleiro);
             var model = await PagingList.CreateAsync(query, 5, page);
@@ -38,6 +41,8 @@ namespace OsirisPdvReal.Controllers
                 {
                     var query = _context.Bancas.Include(j => j.Jornaleiros).AsNoTracking().OrderBy(j => j.NomeBanca);
                     var model = await PagingList.CreateAsync(query, 5, page);
+                    List<String> Bairros = BairroUtil.GetBairros();
+                    ViewBag.bairros = Bairros.OrderBy(b => b).ToList();
                     return View(model);
                 }
                 else
@@ -45,6 +50,8 @@ namespace OsirisPdvReal.Controllers
                     List<Banca> listaDasBancas = new List<Banca>();
                     var bancas = _context.Bancas.Include(j => j.Jornaleiros).Where(b => b.NomeBanca.Contains(busca)).OrderBy(b => b.NomeBanca);
                     var model = await PagingList.CreateAsync(bancas, 5, page);
+                    List<String> Bairros = BairroUtil.GetBairros();
+                    ViewBag.bairros = Bairros.OrderBy(b => b).ToList();
                     return View(model);
                 }
             }
@@ -55,6 +62,38 @@ namespace OsirisPdvReal.Controllers
             }
         
             
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> BuscarBairro(string bairroBusca, int page = 1)
+        {
+            try
+            {
+                if (bairroBusca == null)
+                {
+                    var query = _context.Bancas.Include(j => j.Jornaleiros).AsNoTracking().OrderBy(j => j.NomeBanca);
+                    var model = await PagingList.CreateAsync(query, 5, page);
+                    List<String> Bairros = BairroUtil.GetBairros();
+                    ViewBag.bairros = Bairros.OrderBy(b => b).ToList();
+                    return View("Index",model);
+                }
+                else
+                {
+                    List<Banca> listaDasBancas = new List<Banca>();
+                    var bancas = _context.Bancas.Include(j => j.Jornaleiros).Where(b => b.Bairro.Contains(bairroBusca)).OrderBy(b => b.NomeBanca);
+                    var model = await PagingList.CreateAsync(bancas, 5, page);
+                    List<String> Bairros = BairroUtil.GetBairros();
+                    ViewBag.bairros = Bairros.OrderBy(b => b).ToList();
+                    return View("Index",model);
+                }
+            }
+            catch (Exception)
+            {
+                TempData["msgSucesso"] = "Erro na sua solicitação, favor tentar novamente!";
+                return View("Index");
+            }
+
+
         }
 
         // GET: Bancas/Details/5
@@ -79,6 +118,8 @@ namespace OsirisPdvReal.Controllers
         // GET: Bancas/Create
         public IActionResult Create()
         {
+            List<String> Bairros = BairroUtil.GetBairros();
+            ViewBag.bairros = Bairros.OrderBy(b=>b).ToList();
             ViewData["CPF"] = new SelectList(_context.Jornaleiros, "CPF", "NomeJornaleiro");
             return View();
         }
@@ -88,7 +129,7 @@ namespace OsirisPdvReal.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("BancaId,NomeBanca,CPF")] Banca banca)
+        public async Task<IActionResult> Create([Bind("BancaId,NomeBanca,CPF, Bairro")] Banca banca)
         {
             try
             {
@@ -110,7 +151,8 @@ namespace OsirisPdvReal.Controllers
                     else
                     {
                         ViewData["CPF"] = new SelectList(_context.Jornaleiros, "CPF", "NomeJornaleiro");
-
+                        List<String> Bairros = BairroUtil.GetBairros();
+                        ViewBag.bairros = Bairros.OrderBy(b => b).ToList();
                         TempData["msgSucesso"] = "Nome já existente em nosso banco de dados!";
                         return View();
                     }
@@ -120,6 +162,8 @@ namespace OsirisPdvReal.Controllers
             catch (Exception ex)
             {
                 ViewData["CPF"] = new SelectList(_context.Jornaleiros, "CPF", "NomeJornaleiro");
+                List<String> Bairros = BairroUtil.GetBairros();
+                ViewBag.bairros = Bairros.OrderBy(b => b).ToList();
                 TempData["msgSucesso"] = "Erro na sua solicitação, favor tentar novamente!";
                 return View();
             }
@@ -140,6 +184,8 @@ namespace OsirisPdvReal.Controllers
             {
                 return NotFound();
             }
+            List<String> Bairros = BairroUtil.GetBairros();
+            ViewBag.bairros = Bairros.OrderBy(b => b).ToList();
             ViewData["CPF"] = new SelectList(_context.Jornaleiros, "CPF", "NomeJornaleiro", banca.CPF);
             return View(banca);
         }
@@ -149,7 +195,7 @@ namespace OsirisPdvReal.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("BancaId,NomeBanca,CPF")] Banca banca)
+        public async Task<IActionResult> Edit(int id, [Bind("BancaId,NomeBanca,CPF,Bairro")] Banca banca)
         {
             if (id != banca.BancaId)
             {
@@ -171,7 +217,8 @@ namespace OsirisPdvReal.Controllers
                     else
                     {
                         ViewData["CPF"] = new SelectList(_context.Jornaleiros, "CPF", "NomeJornaleiro");
-
+                        List<String> Bairros3 = BairroUtil.GetBairros();
+                        ViewBag.bairros = Bairros3.OrderBy(b => b).ToList();
                         TempData["msgSucesso"] = "Nome já existente em nosso banco de dados!";
                         return View();
                     }
@@ -179,13 +226,16 @@ namespace OsirisPdvReal.Controllers
                 }
                 catch (Exception ex)
                 {
-                    ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus");
-
+                    ViewData["CPF"] = new SelectList(_context.Jornaleiros, "CPF", "NomeJornaleiro");
+                    List<String> Bairros2 = BairroUtil.GetBairros();
+                    ViewBag.bairros = Bairros2.OrderBy(b => b).ToList();
                     TempData["msgSucesso"] = "Erro na sua solicitação, favor tentar novamente!";
                     return View();
                 }
                 return RedirectToAction(nameof(Index));
             }
+            List<String> Bairros = BairroUtil.GetBairros();
+            ViewBag.bairros = Bairros.OrderBy(b => b).ToList();
             ViewData["CPF"] = new SelectList(_context.Jornaleiros, "CPF", "NomeJornaleiro", banca.CPF);
             return View(banca);
         }

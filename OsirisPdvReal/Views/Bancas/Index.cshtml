@@ -33,16 +33,37 @@
     </div>
 }
 
-<form asp-action="Index">
-    <div class="d-flex">
-        <input type="text" class="form-control borderInput w-25" name="busca" id="busca" placeholder="Pesquisar..." />
-        <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
-        <a class="btn btnPage btn-success mlAddNew" style="margin-left:10%;" asp-action="Create">Nova banca</a>
-    </div>
-</form>
+<div class="d-flex">
+    <form asp-action="Index">
+        <div class="d-flex">
+            <input type="text" class="form-control borderInput" name="busca" id="busca" placeholder="Pesquisar por nome..." />
+            <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
+         
+        </div>
+    </form>
+
+    <form class="ml-4" asp-action="BuscarBairro">
+        <div class="d-flex">
+            <select id="bairroBusca" name="bairroBusca" class="form-control borderInput">
+                @foreach (var y in ViewBag.bairros)
+                {
+                    <option value="@y">@y</option>
+                }
+            </select>
+            <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
+        </div>
+    </form>
+
+    <form class="ml-4" asp-action="Index">
+        <a class="btn btn-success" asp-action="Create">Nova banca</a>
+    </form>
+</div>
 
 
-<table class="table mt-4">
+
+
+
+<table class="table mt-4 table-striped">
     <thead class="tHeadPurple">
         <tr>
             <th class="text-white">
@@ -51,26 +72,32 @@
             <th class="text-white">
                 @Html.DisplayNameFor(model => model.Jornaleiro)
             </th>
+            <th class="text-white">
+                @Html.DisplayNameFor(model => model.Bairro)
+            </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.NomeBanca)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Jornaleiro.NomeJornaleiro)
-                </td>
-                <td class="float-right">
-                    <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.BancaId">Editar</a> |
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.NomeBanca)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Jornaleiro.NomeJornaleiro)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Bairro)
+            </td>
+            <td class="float-right">
+                <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.BancaId">Editar</a> |
 
-                    <a class="btn btn-danger" data-toggle="modal" data-target="#visao" onclick="PassarDados(@item.BancaId)">Excluir</a>
-                </td>
+                <a class="btn btn-danger" data-toggle="modal" data-target="#visao" onclick="PassarDados(@item.BancaId)">Excluir</a>
+            </td>
 
-            </tr>
+        </tr>
         }
     </tbody>
 </table>

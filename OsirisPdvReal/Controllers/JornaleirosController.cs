@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Caelum.Stella.CSharp.Validation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -200,17 +201,26 @@ namespace OsirisPdvReal.Controllers
         }
 
         [HttpPost]
-        public string ValidateCpf(long id)
+        public string ValidateCpf(string id)
         {
             if (id.ToString().Length < 11)
             {
                 TempData["msgSucesso"] = "Tamanho de CPF inválido!";
                 return "nada";
             }
-            var cpfExist = _context.Jornaleiros.Where(j => j.CPF == id).Select(j => j.NomeJornaleiro).FirstOrDefault();
+            try
+            {
+                new CPFValidator().AssertValid(id.ToString());
+            }
+            catch (Exception ex)
+            {
+                TempData["msgSucesso"] = "CPF inválido!";
+                return "nada";
+            }
+            var cpfExist = _context.Jornaleiros.Where(j => j.CPF == Convert.ToInt64(id)).Select(j => j.NomeJornaleiro).FirstOrDefault();
             if (cpfExist == null)
             {
-                cpfUser = id;
+                cpfUser = Convert.ToInt64(id);
                 return "ok";
             }
             else
@@ -314,7 +324,7 @@ namespace OsirisPdvReal.Controllers
                     try
                     {
 
-                        var emailOrName = _context.Jornaleiros.Where(j => (j.EmailJornaleiro == jornaleiro.EmailJornaleiro || j.NomeJornaleiro == jornaleiro.NomeJornaleiro && j.StatusId == 1) && j.CPF != jornaleiro.CPF).Select(j => j.EmailJornaleiro).FirstOrDefault();
+                        var emailOrName = _context.Jornaleiros.Where(j => (j.EmailJornaleiro == jornaleiro.EmailJornaleiro || j.NomeJornaleiro == jornaleiro.NomeJornaleiro && j.StatusId == 1 && j.CPF != jornaleiro.CPF) && j.CPF != jornaleiro.CPF).Select(j => j.EmailJornaleiro).FirstOrDefault();
                         if (emailOrName == null)
                         {
                             jornaleiro.SenhaJornaleiro = _context.Jornaleiros.Where(j => j.CPF == id).Select(j => j.SenhaJornaleiro).FirstOrDefault();

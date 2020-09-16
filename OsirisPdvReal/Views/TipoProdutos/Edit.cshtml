@@ -1,4 +1,4 @@
-﻿@model OsirisPdvReal.Models.Banca
+﻿@model OsirisPdvReal.Models.TipoProduto
 
 @{
     ViewData["Title"] = "Edit";
@@ -14,7 +14,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <p>Deseja realmente excluir essa banca?</p>
+                <p>Deseja realmente excluir esse produto?</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-success botaoDoId" style="font-size:10px;">Sim</button>
@@ -25,7 +25,7 @@
 </div>
 
 <div class="divBtn fontTitles">
-    <h4>Editar Banca</h4>
+    <h4>Editar tipo de produto</h4>
 </div>
 <hr />
 @if (TempData["msgSucesso"] != null)
@@ -41,28 +41,12 @@
     <div class="col-md-4 borderPurple">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" id="valueId" asp-for="BancaId" />
+            <input type="hidden" id="valueId" asp-for="TipoProdId" />
             <div class="form-group">
-                <label asp-for="NomeBanca" class="control-label font-weight-bold"></label>
-                <input asp-for="NomeBanca" class="form-control borderInput" />
-                <span asp-validation-for="NomeBanca" class="text-danger"></span>
+                <label asp-for="NomeTipoProduto" class="control-label font-weight-bold"></label>
+                <input asp-for="NomeTipoProduto" class="form-control borderInput" />
+                <span asp-validation-for="NomeTipoProduto" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label class="control-label font-weight-bold">Jornaleiro</label>
-                <select asp-for="CPF" class="form-control borderInput" asp-items="ViewBag.CPF"></select>
-                <span asp-validation-for="CPF" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label class="control-label font-weight-bold">Bairro</label>
-                <select asp-for="Bairro" class="form-control borderInput">
-                    @foreach (var y in ViewBag.bairros)
-                    {
-                        <option value="@y">@y</option>
-                    }
-                </select>
-                <span asp-validation-for="Bairro" class="text-danger"></span>
-            </div>
-          
             <div class="divBtn flex-row mt-2 mb-2">
 
                 <input type="submit" value="salvar" class="btn btn-success btnNewCreate" />
@@ -76,25 +60,23 @@
     </div>
 </div>
 
-
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-
     <script>
         function PassarDados() {
             var idJornaleiro = document.getElementById("valueId").value
             console.log(idJornaleiro)
             $(".botaoDoId").on('click', function () {
                 $.ajax({
-                    url: "/Bancas/Delete",
+                    url: "/TipoProdutos/Delete",
                     method: "POST",
                     data: { id: idJornaleiro },
                     success: function (data) {
                         $.ajax({
-                            url: "/Bancas/Index",
+                            url: "/TipoProdutos/Index",
                             type: "get",
                             success: function () {
-                                window.location.href = '/Bancas/Index'
+                                window.location.href = '/TipoProdutos/Index'
 
                             }
                         });

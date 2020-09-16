@@ -27,11 +27,9 @@
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle fontSizeDezoito" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Vendas</a>
                             <div class="dropdown-menu">
-                                <a class="dropdown-item" asp-controller="Status" asp-action="AtivarJornaleiro">Ativar jornaleiro</a>
-                                <a class="dropdown-item" asp-controller="Status" asp-action="AtivarFornecedores">Ativar fornecedor</a>
-                                <a class="dropdown-item" asp-controller="Status" asp-action="AtivarClientes">Ativar cliente</a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#">Separated link</a>
+                                <a class="dropdown-item" asp-controller="Status" asp-action="AtivarJornaleiro">Vender</a>
+                                <a class="dropdown-item" asp-controller="Status" asp-action="AtivarFornecedores">Editar venda</a>
+                                <a class="dropdown-item" asp-controller="Status" asp-action="AtivarClientes">Listar vendas</a>
                             </div>
                         </li>
                         <li class="nav-item dropdown">
@@ -43,8 +41,14 @@
                                 <a class="dropdown-item" asp-controller="Status" asp-action="InativosClientes">Ativar cliente</a>
                             </div>
                         </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle fontSizeDezoito" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Produtos</a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" asp-controller="Produtos" asp-action="Index">Produtos</a>
+                                <a class="dropdown-item" asp-controller="TipoProdutos" asp-action="Index">Tipo de produtos</a>
+                            </div>
+                        </li>
                         <li class="nav-item">
-                            <a class="nav-link fontSizeDezoito" asp-area="" asp-controller="Produtos" asp-action="Index">Produtos</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link fontSizeDezoito" asp-area="" asp-controller="Jornaleiros" asp-action="Index">Jornaleiro</a>

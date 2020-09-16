@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Caelum.Stella.CSharp.Validation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using OsirisPdvReal.Models;
+using OsirisPdvReal.Utils;
 using ReflectionIT.Mvc.Paging;
 
 namespace OsirisPdvReal.Controllers
@@ -21,17 +23,26 @@ namespace OsirisPdvReal.Controllers
 
 
         [HttpPost]
-        public string ValidateCpf(long id)
+        public string ValidateCpf(string id)
         {
-            if (id.ToString().Length < 11)
+            if (id.Length < 11)
             {
                 TempData["msgSucesso"] = "Tamanho de CPF inválido!";
                 return "nada";
             }
-            var cpfExist = _context.Clientes.Where(j => j.CPFcliente == id).Select(j => j.NomeCliente).FirstOrDefault();
+            try
+            {
+                new CPFValidator().AssertValid(id);
+            }
+            catch (Exception ex)
+            {
+                TempData["msgSucesso"] = "CPF inválido!";
+                return "nada";
+            }
+            var cpfExist = _context.Clientes.Where(j => j.CPFcliente == Convert.ToInt64(id)).Select(j => j.NomeCliente).FirstOrDefault();
             if (cpfExist == null)
             {
-                cpfUser = id;
+                cpfUser = Convert.ToInt64(id);
                 return "ok";
             }
             else

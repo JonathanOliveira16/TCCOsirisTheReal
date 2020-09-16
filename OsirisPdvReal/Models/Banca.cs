@@ -15,6 +15,8 @@ namespace OsirisPdvReal.Models
         [StringLength(100, ErrorMessage = "Limite de caracteres atingido")]
         [Display(Name = "Nome")]
         public String NomeBanca { get; set; }
+        [Required(ErrorMessage = "Campo obrigatório")]
+        public String Bairro { get; set; }
         public long? CPF { get; set; }
         public Jornaleiro Jornaleiro { get; set; }
         public ICollection<Jornaleiro> Jornaleiros { get; set; }

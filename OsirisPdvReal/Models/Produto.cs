@@ -22,7 +22,7 @@ namespace OsirisPdvReal.Models
         public int QuantideProduto { get; set; }
         public ICollection<ProdutoCompras> ProdutoCompras { get; set; }
         public ICollection<VendaProduto> VendaProduto { get; set; }
-
-
+        public int TipoProdId { get; set; }
+        public TipoProduto tipoProduto { get; set; }
     }
 }

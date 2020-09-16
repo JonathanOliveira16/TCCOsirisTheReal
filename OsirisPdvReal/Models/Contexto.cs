@@ -17,6 +17,7 @@ namespace OsirisPdvReal.Models
         public DbSet<Status> Status { get; set; }
         public DbSet<Venda> Vendas { get; set; }
         public DbSet<Tipo> Tipos { get; set; }
+        public DbSet<TipoProduto> TipoProdutos { get; set; }
         public DbSet<CompraFornecedores> CompraFornecedores { get; set; }
         public DbSet<FornecedorBanca> FornecedorBanca { get; set; }
         public DbSet<ProdutoCompras> ProdutoCompras { get; set; }
@@ -37,12 +38,14 @@ namespace OsirisPdvReal.Models
             modelBuilder.Entity<Status>().HasMany(t => t.Clientes).WithOne(t => t.Status);
             modelBuilder.Entity<Status>().HasMany(t => t.Jornaleiros).WithOne(t => t.Status);
             modelBuilder.Entity<Status>().HasMany(t => t.Vendas).WithOne(t => t.Status);
+            modelBuilder.Entity<TipoProduto>().HasMany(t => t.Produtos).WithOne(t => t.tipoProduto);
             modelBuilder.Entity<Fornecedor>().HasMany(t => t.Compras).WithOne(t => t.fornecedor).OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<Banca>().HasMany(t => t.Vendas).WithOne(t => t.Bancas);
             modelBuilder.Entity<Tipo>().HasMany(t => t.Jornaleiro).WithOne(t => t.tipo);
             modelBuilder.Entity<Cliente>().HasMany(t => t.Vendas).WithOne(t => t.Clientes);
 
             modelBuilder.Entity<Fornecedor>().HasOne(e => e.Status).WithMany(e => e.Fornecedores).HasForeignKey(e => e.StatusId);
+            modelBuilder.Entity<Produto>().HasOne(e => e.tipoProduto).WithMany(e => e.Produtos).HasForeignKey(e => e.TipoProdId);
             modelBuilder.Entity<Compras>().HasOne(e => e.fornecedor).WithMany(e => e.Compras).HasForeignKey(e => e.CNPJ).OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<Compras>().HasOne(e => e.Status).WithMany(e => e.Compras).HasForeignKey(e => e.StatusId);
             modelBuilder.Entity<Cliente>().HasOne(e => e.Status).WithMany(e => e.Clientes).HasForeignKey(e => e.StatusId);

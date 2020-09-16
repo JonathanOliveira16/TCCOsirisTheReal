@@ -59,7 +59,7 @@ namespace OsirisPdvReal.Controllers
         }
 
         [HttpPost]
-        public string ValidateFornecedor(long id)
+        public string ValidateFornecedor(string id)
         {
           
             if (id.ToString().Length < 14)
@@ -73,10 +73,10 @@ namespace OsirisPdvReal.Controllers
                 TempData["msgSucesso"] = "CNPJ inválido!";
                 return "nada";
             }
-            var CNPJExist = _context.Fornecedores.Where(j => j.CNPJ == id).Select(j => j.NomeFornecedor).FirstOrDefault();
+            var CNPJExist = _context.Fornecedores.Where(j => j.CNPJ == Convert.ToInt64(id)).Select(j => j.NomeFornecedor).FirstOrDefault();
             if (CNPJExist == null)
             {
-                CpnjFornece = id;
+                CpnjFornece = Convert.ToInt64(id);
                 return "ok";
             }
             else
