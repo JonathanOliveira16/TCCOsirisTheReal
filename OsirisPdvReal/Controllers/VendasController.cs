@@ -28,6 +28,8 @@ namespace OsirisPdvReal.Controllers
             return View(await contexto.ToListAsync());
         }
 
+
+
         // GET: Vendas/Details/5
         public async Task<IActionResult> Details(int? id)
         {

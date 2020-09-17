@@ -249,3 +249,13 @@ body {
     pointer-events: none;
     touch-action: none;
 }
+
+/*.example .pagination > li > a,
+.example .pagination > li > span {
+    border: 1px solid purple;
+}
+
+.pagination > li.active > a {
+    background: purple;
+    color: #fff;
+}*/
