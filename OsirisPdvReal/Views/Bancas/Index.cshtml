@@ -45,6 +45,7 @@
     <form class="ml-4" asp-action="BuscarBairro">
         <div class="d-flex">
             <select id="bairroBusca" name="bairroBusca" class="form-control borderInput">
+                <option value="" disabled selected>Bairros Rio de Janeiro...</option>
                 @foreach (var y in ViewBag.bairros)
                 {
                     <option value="@y">@y</option>

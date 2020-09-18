@@ -23,11 +23,116 @@ namespace OsirisPdvReal.Controllers
         public async Task<IActionResult> Index()
         {
 
-            ViewBag.produtos =  _context.Produto.AsNoTracking().OrderBy(c => c.NomeProduto);
+          
             var contexto = _context.Vendas.Include(v => v.Bancas).Include(v => v.Clientes).Include(v => v.Status);
             return View(await contexto.ToListAsync());
         }
 
+        [HttpPost]
+        public async Task<IActionResult> SearchProduto(string busca, int page = 1)
+        {
+            try
+            {
+                if (busca == null)
+                {
+                    var prods = _context.Produto.Include(p => p.tipoProduto).AsNoTracking().OrderBy(c => c.NomeProduto);
+                    ViewBag.produtos = prods;
+                    ViewBag.Tipos = _context.TipoProdutos.Select(t => t.NomeTipoProduto).OrderBy(t => t);
+                    ViewBag.countCli = _context.Clientes.Where(c => c.StatusId == 1).AsNoTracking().Count();
+                    ViewBag.countProd = prods.Count();
+                    ViewBag.clientes = _context.Clientes.Where(c => c.StatusId == 1).AsNoTracking().OrderBy(c => c.NomeCliente);
+                    return View("Create");
+                }
+                else
+                {
+                    var prods = _context.Produto.Include(p => p.tipoProduto).Where(b => b.NomeProduto.Contains(busca)).OrderBy(b => b.NomeProduto);
+                    ViewBag.produtos = prods;
+                    ViewBag.Tipos = _context.TipoProdutos.Select(t => t.NomeTipoProduto).OrderBy(t => t);
+                    ViewBag.countCli = _context.Clientes.Where(c => c.StatusId == 1).AsNoTracking().Count();
+                    ViewBag.countProd = prods.Count();
+                    ViewBag.clientes = _context.Clientes.Where(c => c.StatusId == 1).AsNoTracking().OrderBy(c => c.NomeCliente);
+                    return View("Create");
+                }
+            }
+            catch (Exception)
+            {
+                TempData["msgSucesso"] = "Erro na sua solicitação, favor tentar novamente!";
+                return View();
+            }
+
+
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SearchCliente(string buscaCliente, int page = 1)
+        {
+            try
+            {
+                if (buscaCliente == null)
+                {
+                    var clientes = _context.Clientes.Include(p => p.Status).Where(c => c.StatusId == 1).AsNoTracking().OrderBy(c => c.NomeCliente);
+                    ViewBag.clientes = clientes;
+                    ViewBag.Tipos = _context.TipoProdutos.Select(t => t.NomeTipoProduto).OrderBy(t => t);
+                    ViewBag.countCli = clientes.Count();
+                    ViewBag.countProd = _context.Produto.AsNoTracking().Count();
+                    ViewBag.produtos = _context.Produto.AsNoTracking().OrderBy(c => c.NomeProduto);
+                    return View("Create");
+                }
+                else
+                {
+                    var clientes = _context.Clientes.Include(p => p.Status).Where(b => b.NomeCliente.Contains(buscaCliente)).OrderBy(b => b.NomeCliente);
+                    ViewBag.clientes = clientes;
+                    ViewBag.Tipos = _context.TipoProdutos.Select(t => t.NomeTipoProduto).OrderBy(t => t);
+                    ViewBag.countCli = clientes.Count();
+                    ViewBag.countProd = _context.Produto.AsNoTracking().Count();
+                    ViewBag.produtos = _context.Produto.AsNoTracking().OrderBy(c => c.NomeProduto);
+                    return View("Create");
+                }
+            }
+            catch (Exception)
+            {
+                TempData["msgSucesso"] = "Erro na sua solicitação, favor tentar novamente!";
+                return View();
+            }
+
+
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> SearchTipo(string buscaTipo, int page = 1)
+        {
+            try
+            {
+                if (buscaTipo == null)
+                {
+                    var prods = _context.Produto.Include(p => p.tipoProduto).AsNoTracking().OrderBy(c => c.NomeProduto);
+                    ViewBag.produtos = prods;
+                    ViewBag.Tipos = _context.TipoProdutos.Select(t => t.NomeTipoProduto).OrderBy(t => t);
+                    ViewBag.countCli = _context.Clientes.Where(c => c.StatusId == 1).AsNoTracking().Count();
+                    ViewBag.countProd = prods.Count();
+                    ViewBag.clientes = _context.Clientes.Where(c => c.StatusId == 1).AsNoTracking().OrderBy(c => c.NomeCliente);
+                    return View("Create");
+                }
+                else
+                {
+                    var prods = _context.Produto.Include(p => p.tipoProduto).Where(b => b.tipoProduto.NomeTipoProduto.Contains(buscaTipo)).OrderBy(b => b.NomeProduto);
+                    ViewBag.produtos = prods;
+                    ViewBag.Tipos = _context.TipoProdutos.Select(t => t.NomeTipoProduto).OrderBy(t => t);
+                    ViewBag.countCli = _context.Clientes.Where(c => c.StatusId == 1).AsNoTracking().Count();
+                    ViewBag.countProd = prods.Count();
+                    ViewBag.clientes = _context.Clientes.Where(c => c.StatusId == 1).AsNoTracking().OrderBy(c => c.NomeCliente);
+                    return View("Create");
+                }
+            }
+            catch (Exception)
+            {
+                TempData["msgSucesso"] = "Erro na sua solicitação, favor tentar novamente!";
+                return View();
+            }
+
+
+        }
 
 
         // GET: Vendas/Details/5
@@ -54,7 +159,11 @@ namespace OsirisPdvReal.Controllers
         // GET: Vendas/Create
         public IActionResult Create(int page = 1)
         {
+            ViewBag.countCli = _context.Clientes.Where(c=>c.StatusId == 1).AsNoTracking().Count();
+            ViewBag.countProd = _context.Produto.AsNoTracking().Count();
+            ViewBag.clientes = _context.Clientes.Where(c=>c.StatusId == 1).AsNoTracking().OrderBy(c => c.NomeCliente);
             ViewBag.produtos = _context.Produto.AsNoTracking().OrderBy(c => c.NomeProduto);
+            ViewBag.Tipos = _context.TipoProdutos.Select(t => t.NomeTipoProduto).OrderBy(t => t);
             ViewData["BancaId"] = new SelectList(_context.Bancas, "BancaId", "NomeBanca");
             ViewData["CPFcliente"] = new SelectList(_context.Clientes, "CPFcliente", "EmailCliente");
             ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus");

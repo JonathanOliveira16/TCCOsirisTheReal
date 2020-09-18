@@ -8,14 +8,29 @@
 <hr />
 <div class="row">
     <div class="col-md-6">
-       
+        <!--Parte de produtos inicio-->
         <div>
-            <form asp-action="SearchProduto">
-                <div class="d-flex">
-                    <input type="text" class="form-control borderInput w-50" name="busca" id="busca" placeholder="Pesquisar produto..." />
-                    <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
-                </div>
-            </form>
+            <div class="d-flex">
+                <form asp-action="SearchProduto">
+                    <div class="d-flex">
+                        <input type="text" class="form-control borderInput" name="busca" id="busca" placeholder="Pesquisar..." />
+                        <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
+                    </div>
+                </form>
+                <form asp-action="SearchTipo" class="ml-3">
+                    <div class="d-flex">
+                        @*<input type="text" class="form-control borderInput w-50" name="busca" id="busca" placeholder="Pesquisar produto..." />*@
+                        <select class="form-control borderInput" style="width:200px;" name="buscaTipo">
+                            <option value="" disabled selected>Tipos de produtos...</option>
+                            @foreach (var tipo in ViewBag.Tipos)
+                            {
+                                <option value="@tipo">@tipo</option>
+                            }
+                        </select>
+                        <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
+                    </div>
+                </form>
+            </div>
             <div class="data-container"></div>
             <div id="pagination-demo1"></div>
             <table id="table-id" class="table mt-4 table-striped">
@@ -55,9 +70,9 @@
             </table>
 
             <!--		Start Pagination -->
-            <div class='pagination-container'>
+            <div class='pagination-container' id="page1" style="visibility:hidden">
                 <nav>
-                    <ul class="pagination">
+                    <ul class="pagination pageArr">
 
                         <li data-page="prev">
                             <span style="border: 3px solid purple;margin-right:6px;border-radius:5px;color:black"> <i class="fa fa-arrow-left"></i> <span class="sr-only">(current)</span></span>
@@ -71,7 +86,7 @@
             </div>
         </div>
 
-         <div style="visibility:hidden;">
+        <div style="visibility:hidden;">
             <h2>Select Number Of Rows</h2>
             <div class="form-group">
                 <!--		Show Numbers Of Rows 		-->
@@ -89,6 +104,101 @@
             </div>
         </div>
     </div>
+    <!--fim parte produtos-->
+
+    <div class="col-md-6">
+        <!--inicio parte clientes-->
+        <div>
+            <form asp-action="SearchCliente">
+                <div class="d-flex ">
+                    <input type="text" class="form-control float-right borderInput w-50" name="buscaCliente" id="buscaCliente" placeholder="Pesquisar..." />
+                    <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
+                </div>
+            </form>
+            <div class="mt-4">
+                <table id="table-id2" class="table table-striped">
+                    <thead class="tHeadPurple">
+                        <tr>
+                            <th class="text-white" style="font-size:13px;">
+                                Nome Cliente
+                            </th>
+                            <th class="text-white" style="font-size:13px;">
+                                Telefone
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in ViewBag.clientes)
+                        {
+                            <tr>
+                                <td style="font-size:13px;">
+                                    @item.NomeCliente
+                                </td>
+                                <td style="font-size:13px;">
+                                    @item.TelefoneCliente
+                                </td>
+                                <td class="float-right">
+                                    <a class="btn-sm btn-success text-white btnVenda" asp-action="Edit" asp-route-id="@item.CPFcliente">Adicionar</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!--		Start Pagination -->
+            <div class='pagination-container' id="page2" style="visibility:hidden" >
+                <nav>
+                    <ul class="pagination pageCli">
+
+                        <li data-page="prev">
+                            <span style="border: 3px solid purple;margin-right:6px;border-radius:5px;color:black"> <i class="fa fa-arrow-left"></i> <span class="sr-only">(current)</span></span>
+                        </li>
+                        <!--	Here the JS Function Will Add the Rows -->
+                        <li data-page="next" id="prev">
+                            <span style="border: 3px solid purple;margin-left:6px;border-radius:5px"> <i class="fa fa-arrow-right"></i> <span class="sr-only">(current)</span></span>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+        <div style="visibility:hidden;">
+            <h2>Select Number Of Rows</h2>
+            <div class="form-group">
+                <!--		Show Numbers Of Rows 		-->
+                <select class="form-control" name="state" id="maxRows">
+                    <option value="5000">Show ALL Rows</option>
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                    <option value="70">70</option>
+                    <option value="100">100</option>
+                </select>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="card">
+    <div class="card-header centerText fontTitles">
+        CARRINHO
+    </div>
+    <div class="card-body">
+        <table class="table table-striped" id="tableVenda">
+            <thead>
+              
+            </thead>
+            <tbody>
+             
+            </tbody>
+        </table>
+    </div>
 </div>
 
 
@@ -96,8 +206,24 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
-    <script>
+<script>
+        var countProd = '@(ViewBag.countProd)';
+        var countCli = '@(ViewBag.countCli)';
+        console.log('aqui' + countProd)
+        console.log('aqui' + countCli)
         getPagination('#table-id');
+        getPagination2('#table-id2');
+        if (countCli > 5) {
+            document.getElementById("page2").style.visibility = "visible";
+        } else {
+            document.getElementById("page2").style.visibility = "hidden";
+        }
+
+        if (countProd > 5) {
+            document.getElementById("page1").style.visibility = "visible";
+        } else {
+            document.getElementById("page1").style.visibility = "hidden";
+        }
         //getPagination('.table-class');
         //getPagination('table');
 
@@ -118,7 +244,7 @@
                     //$('.paginationprev').html('');						// reset pagination
 
                     lastPage = 1;
-                    $('.pagination')
+                    $('.pageArr')
                         .find('li')
                         .slice(1, -1)
                         .remove();
@@ -126,12 +252,13 @@
                     var maxRows = parseInt($(this).val()); // get Max Rows from select option
 
                     if (maxRows == 5000) {
-                        $('.pagination').hide();
+                        $('.pageArr').hide();
                     } else {
-                        $('.pagination').show();
+                        $('.pageArr').show();
                     }
 
                     var totalRows = $(table + ' tbody tr').length; // numbers of rows
+                    console.log(totalRows)
                     $(table + ' tr:gt(0)').each(function () {
                         // each TR in  table and not the header
                         trnum++; // Start Counter
@@ -145,31 +272,32 @@
                         } // else fade in Important in case if it ..
                     }); //  was fade out to fade it in
                     if (totalRows > maxRows) {
+                        console.log(maxRows)
                         // if tr total rows gt max rows option
                         var pagenum = Math.ceil(totalRows / maxRows); // ceil total(rows/maxrows) to get ..
                         //	numbers of pages
                         for (var i = 1; i <= pagenum;) {
                             // for each page append pagination li
-                            $('.pagination #prev')
+                            $('.pageArr #prev')
                                 .before(
                                     '<li data-page="' +
                                     i +
                                     '">\
-                                      <span>' +
+                                              <span>' +
                                     i++ +
                                     '<span class="sr-only">(current)</span></span>\
-                                    </li>'
+                                            </li>'
                                 )
                                 .show();
                         } // end for i
                     } // end if row count > max rows
-                    $('.pagination [data-page="1"]').addClass('active'); // add active class to the first li
-                    $('.pagination li').on('click', function (evt) {
+                    $('.pageArr [data-page="1"]').addClass('active'); // add active class to the first li
+                    $('.pageArr li').on('click', function (evt) {
                         // on click each page
                         evt.stopImmediatePropagation();
                         evt.preventDefault();
                         var pageNum = $(this).attr('data-page'); // get it's number
-
+                        console.log(pageNum)
                         var maxRows = parseInt($('#maxRows').val()); // get Max Rows from select option
 
                         if (pageNum == 'prev') {
@@ -179,16 +307,17 @@
                             pageNum = --lastPage;
                         }
                         if (pageNum == 'next') {
-                            if (lastPage == $('.pagination li').length - 2) {
+                            if (lastPage == $('.pageArr li').length - 2) {
                                 return;
                             }
                             pageNum = ++lastPage;
                         }
 
                         lastPage = pageNum;
+                        console.log(lastPage)
                         var trIndex = 0; // reset tr counter
-                        $('.pagination li').removeClass('active'); // remove active class from all li
-                        $('.pagination [data-page="' + lastPage + '"]').addClass('active'); // add active class to the clicked
+                        $('.pageArr li').removeClass('active'); // remove active class from all li
+                        $('.pageArr [data-page="' + lastPage + '"]').addClass('active'); // add active class to the clicked
                         // $(this).addClass('active');					// add active class to the clicked
                         limitPagging();
                         $(table + ' tr:gt(0)').each(function () {
@@ -215,19 +344,125 @@
             // END OF PAGINATION
         }
 
+        function getPagination2(table) {
+            var lastPage = 1;
+
+            $('#maxRows')
+                .on('change', function (evt) {
+                    //$('.paginationprev').html('');						// reset pagination
+
+                    lastPage = 1;
+                    $('.pageCli')
+                        .find('li')
+                        .slice(1, -1)
+                        .remove();
+                    var trnum = 0; // reset tr counter
+                    var maxRows = parseInt($(this).val()); // get Max Rows from select option
+
+                    if (maxRows == 5000) {
+                        $('.pageCli').hide();
+                    } else {
+                        $('.pageCli').show();
+                    }
+
+                    var totalRows = $(table + ' tbody tr').length; // numbers of rows
+                    $(table + ' tr:gt(0)').each(function () {
+                        // each TR in  table and not the header
+                        trnum++; // Start Counter
+                        if (trnum > maxRows) {
+                            // if tr number gt maxRows
+
+                            $(this).hide(); // fade it out
+                        }
+                        if (trnum <= maxRows) {
+                            $(this).show();
+                        } // else fade in Important in case if it ..
+                    }); //  was fade out to fade it in
+                    if (totalRows > maxRows) {
+                        // if tr total rows gt max rows option
+                        var pagenum = Math.ceil(totalRows / maxRows); // ceil total(rows/maxrows) to get ..
+                        //	numbers of pages
+                        for (var i = 1; i <= pagenum;) {
+                            // for each page append pagination li
+                            $('.pageCli #prev')
+                                .before(
+                                    '<li data-page="' +
+                                    i +
+                                    '">\
+                                              <span>' +
+                                    i++ +
+                                    '<span class="sr-only">(current)</span></span>\
+                                            </li>'
+                                )
+                                .show();
+                        } // end for i
+                    } // end if row count > max rows
+                    $('.pageCli [data-page="1"]').addClass('active'); // add active class to the first li
+                    $('.pageCli li').on('click', function (evt) {
+                        // on click each page
+                        evt.stopImmediatePropagation();
+                        evt.preventDefault();
+                        var pageNum = $(this).attr('data-page'); // get it's number
+
+                        var maxRows = parseInt($('#maxRows').val()); // get Max Rows from select option
+
+                        if (pageNum == 'prev') {
+                            if (lastPage == 1) {
+                                return;
+                            }
+                            pageNum = --lastPage;
+                        }
+                        if (pageNum == 'next') {
+                            if (lastPage == $('.pageArr li').length - 2) {
+                                return;
+                            }
+                            pageNum = ++lastPage;
+                        }
+
+                        lastPage = pageNum;
+                        var trIndex = 0; // reset tr counter
+                        $('.pageCli li').removeClass('active'); // remove active class from all li
+                        $('.pageCli [data-page="' + lastPage + '"]').addClass('active'); // add active class to the clicked
+                        // $(this).addClass('active');					// add active class to the clicked
+                        limitPagging2();
+                        $(table + ' tr:gt(0)').each(function () {
+                            // each tr in table not the header
+                            trIndex++; // tr index counter
+                            // if tr index gt maxRows*pageNum or lt maxRows*pageNum-maxRows fade if out
+                            if (
+                                trIndex > maxRows * pageNum ||
+                                trIndex <= maxRows * pageNum - maxRows
+                            ) {
+                                $(this).hide();
+                            } else {
+                                $(this).show();
+                            } //else fade in
+                        }); // end of for each tr in table
+                    }); // end of on click pagination list
+                    limitPagging2();
+                })
+                .val(5)
+                .change();
+
+            // end of on select change
+
+            // END OF PAGINATION
+        }
+
+
         function limitPagging() {
             // alert($('.pagination li').length)
-
-            if ($('.pagination li').length > 7) {
-                if ($('.pagination li.active').attr('data-page') <= 3) {
-                    $('.pagination li:gt(5)').hide();
-                    $('.pagination li:lt(5)').show();
-                    $('.pagination [data-page="next"]').show();
-                } if ($('.pagination li.active').attr('data-page') > 3) {
-                    $('.pagination li:gt(0)').hide();
-                    $('.pagination [data-page="next"]').show();
-                    for (let i = (parseInt($('.pagination li.active').attr('data-page')) - 2); i <= (parseInt($('.pagination li.active').attr('data-page')) + 2); i++) {
-                        $('.pagination [data-page="' + i + '"]').show();
+            console.log($('.pageArr li').length)
+            if ($('.pageArr li').length > 7) {
+                if ($('.pageArr li.active').attr('data-page') <= 3) {
+                    $('.pageArr li:gt(5)').hide();
+                    $('.pageArr li:lt(5)').show();
+                    $('.pageArr [data-page="next"]').show();
+                } if ($('.pageArr li.active').attr('data-page') > 3) {
+                    $('.pageArr li:gt(0)').hide();
+                    $('.pageArr [data-page="next"]').show();
+                    for (let i = (parseInt($('.pageArr li.active').attr('data-page')) - 2); i <= (parseInt($('.pageArr li.active').attr('data-page')) + 2); i++) {
+                        $('.pageArr [data-page="' + i + '"]').show();
 
                     }
 
@@ -235,18 +470,38 @@
             }
         }
 
-        //$(function () {
-        //    // Just to append id number for each row
-        //    $('table tr:eq(0)').prepend('<th> ID </th>');
+        function limitPagging2() {
+            // alert($('.pagination li').length)
 
-        //    var id = 0;
+            if ($('.pageCli li').length > 7) {
+                if ($('.pageCli li.active').attr('data-page') <= 3) {
+                    $('.pageCli li:gt(5)').hide();
+                    $('.pageCli li:lt(5)').show();
+                    $('.pageCli [data-page="next"]').show();
+                } if ($('.pageCli li.active').attr('data-page') > 3) {
+                    $('.pageCli li:gt(0)').hide();
+                    $('.pageCli [data-page="next"]').show();
+                    for (let i = (parseInt($('.pageCli li.active').attr('data-page')) - 2); i <= (parseInt($('.pageCli li.active').attr('data-page')) + 2); i++) {
+                        $('.pageCli [data-page="' + i + '"]').show();
 
-        //    $('table tr:gt(0)').each(function () {
-        //        id++;
-        //        $(this).prepend('<td>' + id + '</td>');
-        //    });
-        //});
+                    }
 
-    </script>
+                }
+            }
+        }
+
+                //$(function () {
+                //    // Just to append id number for each row
+                //    $('table tr:eq(0)').prepend('<th> ID </th>');
+
+                //    var id = 0;
+
+                //    $('table tr:gt(0)').each(function () {
+                //        id++;
+                //        $(this).prepend('<td>' + id + '</td>');
+                //    });
+                //});
+
+</script>
 
 }
