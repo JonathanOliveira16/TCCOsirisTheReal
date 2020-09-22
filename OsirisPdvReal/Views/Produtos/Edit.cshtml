@@ -49,16 +49,16 @@
             </div>
             <div class="form-group">
                 <label asp-for="ValorProduto" class="control-label font-weight-bold"></label>
-                <input asp-for="ValorProduto" class="form-control borderInput" />
+                <input asp-for="ValorProduto" id="inp1" class="form-control borderInput" />
                 <span asp-validation-for="ValorProduto" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="QuantideProduto" class="control-label font-weight-bold"></label>
+                <label class="control-label font-weight-bold">Estoque</label>
                 <input asp-for="QuantideProduto" class="form-control borderInput" />
                 <span asp-validation-for="QuantideProduto" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label class="control-label font-weight-bold" asp-for="TipoProdId"></label>
+                <label class="control-label font-weight-bold">Categoria</label>
                 <select class="form-control borderInput" id="sel1" asp-for="TipoProdId" asp-items="ViewBag.TipoProdId"></select>
             </div>
             <div class="divBtn flex-row mt-2 mb-2">

@@ -22,6 +22,7 @@ namespace OsirisPdvReal.Controllers
         // GET: Produtos
         public async Task<IActionResult> Index(int page = 1)
         {
+            ViewBag.categorias = _context.TipoProdutos.Select(t => t.NomeTipoProduto).ToList();
             var query = _context.Produto.Include(p => p.tipoProduto).AsNoTracking().OrderBy(j => j.NomeProduto);
             //var contexto = _context.Bancas.Include(b => b.Jornaleiro);
             var model = await PagingList.CreateAsync(query, 5, page);
@@ -37,6 +38,8 @@ namespace OsirisPdvReal.Controllers
                 {
                     var query = _context.Produto.Include(p=>p.tipoProduto).AsNoTracking().OrderBy(j => j.NomeProduto);
                     var model = await PagingList.CreateAsync(query, 5, page);
+                    ViewBag.categorias = _context.TipoProdutos.Select(t => t.NomeTipoProduto).ToList();
+
                     return View(model);
                 }
                 else
@@ -44,6 +47,8 @@ namespace OsirisPdvReal.Controllers
                     List<Produto> listaDeProdutos = new List<Produto>();
                     var produtos = _context.Produto.Include(p => p.tipoProduto).Where(b => b.NomeProduto.Contains(busca)).OrderBy(b => b.NomeProduto);
                     var model = await PagingList.CreateAsync(produtos, 5, page);
+                    ViewBag.categorias = _context.TipoProdutos.Select(t => t.NomeTipoProduto).ToList();
+
                     return View(model);
                 }
             }
@@ -55,6 +60,40 @@ namespace OsirisPdvReal.Controllers
 
 
         }
+
+
+        [HttpPost]
+        public async Task<IActionResult> BuscarTipo(string tipoBusca, int page = 1)
+        {
+            try
+            {
+                if (tipoBusca == null)
+                {
+                    var query = _context.Produto.Include(p => p.tipoProduto).AsNoTracking().OrderBy(j => j.NomeProduto);
+                    var model = await PagingList.CreateAsync(query, 5, page);
+                    ViewBag.categorias = _context.TipoProdutos.Select(t => t.NomeTipoProduto).ToList();
+
+                    return View("Index", model);
+                }
+                else
+                {
+                    List<Produto> listaDeProdutos = new List<Produto>();
+                    var produtos = _context.Produto.Include(p => p.tipoProduto).Where(b => b.tipoProduto.NomeTipoProduto.Contains(tipoBusca)).OrderBy(b => b.NomeProduto);
+                    var model = await PagingList.CreateAsync(produtos, 5, page);
+                    ViewBag.categorias = _context.TipoProdutos.Select(t => t.NomeTipoProduto).ToList();
+
+                    return View("Index", model);
+                }
+            }
+            catch (Exception)
+            {
+                TempData["msgSucesso"] = "Erro na sua solicitação, favor tentar novamente!";
+                return View();
+            }
+
+
+        }
+
 
         // GET: Produtos/Details/5
         public async Task<IActionResult> Details(int? id)

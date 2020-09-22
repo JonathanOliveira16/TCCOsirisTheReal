@@ -19,6 +19,7 @@ namespace OsirisPdvReal.Models
         [Required(ErrorMessage = "Campo obrigatório")]
         [DataType(DataType.EmailAddress, ErrorMessage = "Favor insira um e-mail",ErrorMessageResourceName = "teste")]
         [StringLength(80, ErrorMessage = "Limite de caracteres atingido")]
+        [EmailAddress(ErrorMessage = "E-mail inválido")]
         [Display(Name = "E-mail")]
         public string EmailJornaleiro { get; set; }
         [Required(ErrorMessage = "Campo obrigatório")]

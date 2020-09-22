@@ -4,10 +4,41 @@
     ViewData["Title"] = "Create";
 }
 
+<div class="modal" id="visao" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title font-weight-bold" id="titleModal">Informações adicionais</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <label class="font-weight-bold ml-3 control-label">Quantidade vendida</label>
+                <input class="form-control borderInput" required id="quantidadeProduto" />
+                <label class="control-label ml-3 font-weight-bold">Cliente</label>
+                <select id="clienteDrop" name="bairroBusca" class="form-control borderInput">
+                    @foreach (var y in ViewBag.clientes)
+                    {
+                        <option value="@y.NomeCliente">@y.NomeCliente</option>
+                    }
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success botaoDoId" onclick="AddCarrinho()" style="font-size:12px;">Adicionar no carrinho</button>
+                <button type="button" class="btn btn-danger" style="font-size:12px;" data-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <h5 class="divBtn fontTitles">REALIZAR VENDA</h5>
 <hr />
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-2">
+
+    </div>
+    <div class="col-md-8">
         <!--Parte de produtos inicio-->
         <div>
             <div class="d-flex">
@@ -24,7 +55,7 @@
                             <option value="" disabled selected>Tipos de produtos...</option>
                             @foreach (var tipo in ViewBag.Tipos)
                             {
-                                <option value="@tipo">@tipo</option>
+                            <option value="@tipo">@tipo</option>
                             }
                         </select>
                         <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
@@ -40,7 +71,7 @@
                             Nome Produto
                         </th>
                         <th class="text-white" style="font-size:13px;">
-                            Quantidade
+                            Estoque
                         </th>
                         <th class="text-white" style="font-size:13px;">
                             Valor
@@ -51,20 +82,20 @@
                 <tbody>
                     @foreach (var item in ViewBag.produtos)
                     {
-                        <tr>
-                            <td style="font-size:13px;">
-                                @item.NomeProduto
-                            </td>
-                            <td style="font-size:13px;">
-                                @item.QuantideProduto
-                            </td>
-                            <td style="font-size:13px;">
-                                @item.ValorProduto
-                            </td>
-                            <td class="float-right">
-                                <a class="btn-sm btn-success text-white btnVenda" asp-action="Edit" asp-route-id="@item.ProdutoId">Adicionar</a>
-                            </td>
-                        </tr>
+                    <tr>
+                        <td style="font-size:13px;">
+                            @item.NomeProduto
+                        </td>
+                        <td style="font-size:13px;">
+                            @item.QuantideProduto
+                        </td>
+                        <td style="font-size:13px;">
+                            @item.ValorProduto
+                        </td>
+                        <td class="float-right">
+                            <a class="btn-sm btn-success text-white btnVenda btnProd" data-toggle="modal" data-target="#visao">Adicionar</a>
+                        </td>
+                    </tr>
                     }
                 </tbody>
             </table>
@@ -105,84 +136,6 @@
         </div>
     </div>
     <!--fim parte produtos-->
-
-    <div class="col-md-6">
-        <!--inicio parte clientes-->
-        <div>
-            <form asp-action="SearchCliente">
-                <div class="d-flex ">
-                    <input type="text" class="form-control float-right borderInput w-50" name="buscaCliente" id="buscaCliente" placeholder="Pesquisar..." />
-                    <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
-                </div>
-            </form>
-            <div class="mt-4">
-                <table id="table-id2" class="table table-striped">
-                    <thead class="tHeadPurple">
-                        <tr>
-                            <th class="text-white" style="font-size:13px;">
-                                Nome Cliente
-                            </th>
-                            <th class="text-white" style="font-size:13px;">
-                                Telefone
-                            </th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in ViewBag.clientes)
-                        {
-                            <tr>
-                                <td style="font-size:13px;">
-                                    @item.NomeCliente
-                                </td>
-                                <td style="font-size:13px;">
-                                    @item.TelefoneCliente
-                                </td>
-                                <td class="float-right">
-                                    <a class="btn-sm btn-success text-white btnVenda" asp-action="Edit" asp-route-id="@item.CPFcliente">Adicionar</a>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-
-            <!--		Start Pagination -->
-            <div class='pagination-container' id="page2" style="visibility:hidden" >
-                <nav>
-                    <ul class="pagination pageCli">
-
-                        <li data-page="prev">
-                            <span style="border: 3px solid purple;margin-right:6px;border-radius:5px;color:black"> <i class="fa fa-arrow-left"></i> <span class="sr-only">(current)</span></span>
-                        </li>
-                        <!--	Here the JS Function Will Add the Rows -->
-                        <li data-page="next" id="prev">
-                            <span style="border: 3px solid purple;margin-left:6px;border-radius:5px"> <i class="fa fa-arrow-right"></i> <span class="sr-only">(current)</span></span>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
-
-        <div style="visibility:hidden;">
-            <h2>Select Number Of Rows</h2>
-            <div class="form-group">
-                <!--		Show Numbers Of Rows 		-->
-                <select class="form-control" name="state" id="maxRows">
-                    <option value="5000">Show ALL Rows</option>
-                    <option value="5">5</option>
-                    <option value="10">10</option>
-                    <option value="15">15</option>
-                    <option value="20">20</option>
-                    <option value="50">50</option>
-                    <option value="70">70</option>
-                    <option value="100">100</option>
-                </select>
-
-            </div>
-        </div>
-    </div>
-
 </div>
 
 <div class="card">
@@ -192,27 +145,133 @@
     <div class="card-body">
         <table class="table table-striped" id="tableVenda">
             <thead>
-              
+                <tr>
+                    <th class="font-weight-bold">
+                        Produto
+                    </th>
+                    <th class="font-weight-bold">
+                        Valor total
+                    </th>
+                    <th class="font-weight-bold">
+                        Nome Cliente
+                    </th>
+                    <th class="font-weight-bold">
+                        Quantidade vendida
+                    </th>
+                </tr>
             </thead>
             <tbody>
-             
             </tbody>
         </table>
     </div>
 </div>
 
 
-
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
-<script>
+    <script>
+
+
+        //$(".modal").modal('hide');
+        var arrData = [];
+        var dadosProds = [];
+        // loop over each table row (tr)
+        //$("#table-id tr").each(function () {
+        //    var currentRow = $(this);
+
+        //    var col1_value = currentRow.find("td:eq(0)").text();
+        //    var col2_value = currentRow.find("td:eq(1)").text();
+        //    var col3_value = currentRow.find("td:eq(2)").text();
+
+        //    var obj = {};
+        //    obj.col1 = col1_value;
+        //    obj.col2 = col2_value;
+        //    obj.col3 = col3_value;
+
+        //    arrData.push(obj);
+        //});
+        $("#tableVenda").on("click", "#DeleteButton", function () {
+            $(this).closest("tr").remove();
+        });
+
+        $("#table-id").on('click', '.btnProd', function () {
+                // get the current row
+            var currentRow = $(this).closest("tr");
+            dadosProds = []
+            var col1 = currentRow.find("td:eq(0)").html(); // nnome
+            var col2 = currentRow.find("td:eq(1)").html(); // quantidade
+            var col3 = currentRow.find("td:eq(2)").html(); // valor
+            col1 = col1.trimStart()
+            col1 = col1.trimEnd();
+            col2 = col2.trimStart()
+            col2 = col2.trimEnd();
+            col3 = col3.trimStart()
+            col3 = col3.trimEnd();
+            //console.log(col3.substring(2))
+            //console.log(col2)
+            //var valTotal = Number(col2) * Number(col3.substring(2))
+            dadosProds.push(col1)
+            dadosProds.push(col2)
+            dadosProds.push(col3)
+        });
+
+        $("#table-id").on('click', '.btnCli', function () {
+            // get the current row
+            var currentRow = $(this).closest("tr");
+
+            var col1 = currentRow.find("td:eq(0)").html(); // get current row 1st table cell TD value
+            var col2 = currentRow.find("td:eq(1)").html(); // get current row 2nd table cell TD value
+            var data = col1 + "\n" + col2
+
+
+        });
+
+        function AddCarrinho() {
+            var quant = document.getElementById("quantidadeProduto").value
+            var valorConvertido = ""
+            if (/[,\-]/.test(dadosProds[2])) {
+                valorConvertido = dadosProds[2].replace(',','.')
+            }
+            console.log(valorConvertido)
+            var valTotal = 0
+            if (valorConvertido == "") {
+                valTotal = Number(dadosProds[2].substring(2)) * Number(quant)
+
+            } else {
+                valTotal = Number(valorConvertido.substring(2)) * Number(quant)
+            }
+            
+
+
+            var x = quant;
+            var y = valTotal;
+            var e = document.getElementById("clienteDrop");
+            var strUser = e.options[e.selectedIndex].text;
+            var letters = '/^[a-zA-Z]+$/';
+            if ((parseInt(quant) != (x)) && (y == parseInt(y))) {
+               alert("Valor inválido");
+            } else {
+                var rows = "";
+                var name = dadosProds[0];
+                var valor = valTotal;
+                var quantidade = quant;
+                var clienteVal = strUser
+                rows += "<tr><td>" + name + "</td><td>" + 'R$' + valor + "</td><td>" + clienteVal + "</td><td>" + quantidade + "</td><td> <a class='btn-sm btn-danger text-white' id='DeleteButton'>REMOVER</a> </td></tr>";
+                $(rows).appendTo("#tableVenda");
+            }
+            $(".modal").modal('hide');
+            document.getElementById("quantidadeProduto").value = "";
+
+        }
+
         var countProd = '@(ViewBag.countProd)';
         var countCli = '@(ViewBag.countCli)';
         console.log('aqui' + countProd)
         console.log('aqui' + countCli)
         getPagination('#table-id');
         getPagination2('#table-id2');
+
         if (countCli > 5) {
             document.getElementById("page2").style.visibility = "visible";
         } else {
@@ -502,6 +561,6 @@
                 //    });
                 //});
 
-</script>
+    </script>
 
 }

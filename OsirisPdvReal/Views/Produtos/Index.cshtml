@@ -32,13 +32,36 @@
     </div>
 }
 
-<form asp-action="Index">
-    <div class="d-flex">
-        <input type="text" class="form-control borderInput w-25" name="busca" id="busca" placeholder="Pesquisar..." />
-        <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
-        <a class="btn btnPage btn-success mlAddNew" style="margin-left:10%;" asp-action="Create">Novo produto</a>
-    </div>
-</form>
+
+<div class="d-flex">
+    <form asp-action="Index">
+        <div class="d-flex">
+            <input type="text" class="form-control borderInput" name="busca" id="busca" placeholder="Pesquisar por nome..." />
+            <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
+
+        </div>
+    </form>
+
+    <form class="ml-4" asp-action="BuscarTipo">
+        <div class="d-flex">
+            <select id="tipoBusca" name="tipoBusca" class="form-control borderInput">
+                <option value="" disabled selected>Categorias de produtos...</option>
+                @foreach (var y in ViewBag.categorias)
+                {
+                    <option value="@y">@y</option>
+                }
+            </select>
+            <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
+        </div>
+    </form>
+
+    <form class="ml-4" asp-action="Index">
+         <a class="btn btn-success" asp-action="Create">Novo produto</a>
+    </form>
+</div>
+
+
+
 
 <table class="table mt-4 table-striped">
     <thead class="tHeadPurple">
@@ -50,7 +73,7 @@
                 @Html.DisplayNameFor(model => model.ValorProduto)
             </th>
             <th class="text-white">
-                @Html.DisplayNameFor(model => model.QuantideProduto)
+                Estoque
             </th>
             <th class="text-white">
                 Categoria
@@ -61,25 +84,25 @@
     <tbody>
         @foreach (var item in Model)
         {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.NomeProduto)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ValorProduto)
-            </td>
-            <td class="ml-2">
-                @Html.DisplayFor(modelItem => item.QuantideProduto)
-            </td>
-            <td class="ml-2">
-                @Html.DisplayFor(modelItem => item.tipoProduto.NomeTipoProduto)
-            </td>
-            <td class="float-right">
-                <a class="btn btn-warning text-white" asp-action="Edit" asp-route-id="@item.ProdutoId">Editar</a> |
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NomeProduto)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ValorProduto)
+                </td>
+                <td class="ml-2">
+                    @Html.DisplayFor(modelItem => item.QuantideProduto)
+                </td>
+                <td class="ml-2">
+                    @Html.DisplayFor(modelItem => item.tipoProduto.NomeTipoProduto)
+                </td>
+                <td class="float-right">
+                    <a class="btn btn-warning text-white" asp-action="Edit" asp-route-id="@item.ProdutoId">Editar</a> |
 
-                <a class="btn btn-danger text-white" data-toggle="modal" data-target="#visao" onclick="PassarDados(@item.ProdutoId)">Excluir</a>
-            </td>
-        </tr>
+                    <a class="btn btn-danger text-white" data-toggle="modal" data-target="#visao" onclick="PassarDados(@item.ProdutoId)">Excluir</a>
+                </td>
+            </tr>
         }
     </tbody>
 </table>

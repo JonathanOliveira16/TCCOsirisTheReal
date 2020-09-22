@@ -154,12 +154,18 @@ namespace OsirisPdvReal.Controllers
 
         // POST: TipoProdutos/Delete/5
         [HttpPost]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<string> Delete(int id)
         {
-            var tipoProduto = await _context.TipoProdutos.FindAsync(id);
-            _context.TipoProdutos.Remove(tipoProduto);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            var prodsComTipo = _context.Produto.Where(p => p.TipoProdId == id).Select(p=>p.NomeProduto).FirstOrDefault();
+            if (prodsComTipo == null)
+            {
+                var tipoProduto = await _context.TipoProdutos.FindAsync(id);
+                _context.TipoProdutos.Remove(tipoProduto);
+                await _context.SaveChangesAsync();
+                return "ok";
+            }
+
+            return "bad";
         }
 
         private bool TipoProdutoExists(int id)

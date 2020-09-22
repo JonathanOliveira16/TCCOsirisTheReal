@@ -186,7 +186,7 @@ namespace OsirisPdvReal.Controllers
 
             if (ModelState.IsValid)
             {
-                var existeCliente = _context.Clientes.Where(c => c.NomeCliente == cliente.NomeCliente && c.StatusId == 1).Select(c => c.NomeCliente).FirstOrDefault();
+                var existeCliente = _context.Clientes.Where(c => c.NomeCliente == cliente.NomeCliente && c.StatusId == 1 && c.CPFcliente != cliente.CPFcliente).Select(c => c.NomeCliente).FirstOrDefault();
 
                 try
                 {
