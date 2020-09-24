@@ -66,9 +66,11 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    <script>
-        $(function () {
+<script>
+    $(function () {
             var dtToday = new Date();
+ 
+            window.localStorage.clear();
 
             var month = dtToday.getMonth() + 1;
             var day = dtToday.getDate();

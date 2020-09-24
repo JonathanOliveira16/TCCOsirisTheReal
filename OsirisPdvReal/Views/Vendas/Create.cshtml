@@ -15,9 +15,9 @@
             </div>
             <div class="modal-body">
                 <label class="font-weight-bold ml-3 control-label">Quantidade vendida</label>
-                <input class="form-control borderInput" required id="quantidadeProduto" />
-                <label class="control-label ml-3 font-weight-bold">Cliente</label>
-                <select id="clienteDrop" name="bairroBusca" class="form-control borderInput">
+                <input class="form-control borderInput" type="number" required id="quantidadeProduto" />
+                <label class="control-label ml-3 font-weight-bold" style="visibility:visible" id="lblCli">Cliente</label>
+                <select id="clienteDrop" style="visibility:visible" name="bairroBusca" class="form-control borderInput">
                     @foreach (var y in ViewBag.clientes)
                     {
                         <option value="@y.NomeCliente">@y.NomeCliente</option>
@@ -52,7 +52,7 @@
                     <div class="d-flex">
                         @*<input type="text" class="form-control borderInput w-50" name="busca" id="busca" placeholder="Pesquisar produto..." />*@
                         <select class="form-control borderInput" style="width:200px;" name="buscaTipo">
-                            <option value="" disabled selected>Tipos de produtos...</option>
+                            <option value="" selected>Tipos de produtos...</option>
                             @foreach (var tipo in ViewBag.Tipos)
                             {
                             <option value="@tipo">@tipo</option>
@@ -138,7 +138,7 @@
     <!--fim parte produtos-->
 </div>
 
-<div class="card">
+<div class="card" id="cardCar" style="visibility:hidden">
     <div class="card-header centerText fontTitles">
         CARRINHO
     </div>
@@ -163,6 +163,9 @@
             <tbody>
             </tbody>
         </table>
+        <div class="centerText">
+            <a class="btn btn-success text-white">FINALIZAR</a>
+        </div>
     </div>
 </div>
 
@@ -172,10 +175,67 @@
 
     <script>
 
+        window.onbeforeunload = function () {
+            console.log('tam array' + dadosTableRefresh)
+            localStorage.setItem("prods", dadosTableRefresh);
+        }
 
         //$(".modal").modal('hide');
         var arrData = [];
         var dadosProds = [];
+        var dadoSplitTable = []
+        var tabelaProd = localStorage.getItem("prods");
+        if (tabelaProd != undefined) {
+             dadoSplitTable = tabelaProd.split('/');
+        }
+        var dadosTableRefresh = []
+        console.log('aaaaaaa' + dadoSplitTable)
+        if (dadoSplitTable.length == 0) {
+            dadosTableRefresh = []
+            console.log( "zeradpo" + dadosTableRefresh)
+
+        } else {
+            for (z = 1; z < dadoSplitTable.length; z++) {
+                var xx = dadoSplitTable[z].split(',')
+                dadosTableRefresh.push("/"+xx);
+                console.log("datado" + dadosTableRefresh)
+            }
+           
+        }
+      
+        var clienteSelect = ""
+        //nome,valor,quantidade,cliente
+        var tabelaProd = localStorage.getItem("prods");
+        var dadoSplitTable = tabelaProd.split('/');
+        console.log('bbb' + tabelaProd)
+        console.log(dadoSplitTable)
+        if (dadoSplitTable.length > 1) {
+            console.log('entro')
+            for (j = 1; j < dadoSplitTable.length; j++) {
+                var data = dadoSplitTable[j].split(',')
+                console.log(data)
+                var x = data[2];
+                var e = data[3]
+                var y = data[1];
+                var lenTable = document.getElementById("tableVenda").rows.length;
+                console.log(lenTable+1)
+                var strUser = e;
+                var letters = '/^[a-zA-Z]+$/';
+              
+                    var rows = "";
+                    var name = data[0];
+                    var valor = y;
+                    var quantidade = x;
+                var clienteVal = e
+                rows += "<tr><td>" + name + "</td><td>" + 'R$' + valor + "</td><td>" + clienteVal + "</td><td>" + quantidade + "</td><td> <a class='btn-sm btn-danger text-white' id='DeleteButton'>REMOVER</a><p id='idrow'>" + lenTable+1 + "</p> </td></tr>";
+                    $(rows).appendTo("#tableVenda");
+                
+              
+                document.getElementById("cardCar").style.visibility = "visible";
+                document.getElementById("clienteDrop").style.visibility = "hidden";
+                document.getElementById("lblCli").style.visibility = "hidden";           
+            }
+        }
         // loop over each table row (tr)
         //$("#table-id tr").each(function () {
         //    var currentRow = $(this);
@@ -193,6 +253,15 @@
         //});
         $("#tableVenda").on("click", "#DeleteButton", function () {
             $(this).closest("tr").remove();
+            $("#tableVenda tr").each(function () {
+                var x = document.getElementById("tableVenda").rows.length;
+                if (x == 1) {
+                    document.getElementById("cardCar").style.visibility = "hidden";
+                    document.getElementById("clienteDrop").style.visibility = "visible";
+                    document.getElementById("lblCli").style.visibility = "visible";
+                }
+            });
+            
         });
 
         $("#table-id").on('click', '.btnProd', function () {
@@ -214,6 +283,8 @@
             dadosProds.push(col1)
             dadosProds.push(col2)
             dadosProds.push(col3)
+
+            console.log(dadosProds)
         });
 
         $("#table-id").on('click', '.btnCli', function () {
@@ -245,8 +316,14 @@
 
 
             var x = quant;
+            var e = ""
             var y = valTotal;
-            var e = document.getElementById("clienteDrop");
+            if (clienteSelect == "" || clienteSelect == null) {
+                e = document.getElementById("clienteDrop");
+                clienteSelect = e
+            } else {
+                e = clienteSelect
+            }           
             var strUser = e.options[e.selectedIndex].text;
             var letters = '/^[a-zA-Z]+$/';
             if ((parseInt(quant) != (x)) && (y == parseInt(y))) {
@@ -262,6 +339,11 @@
             }
             $(".modal").modal('hide');
             document.getElementById("quantidadeProduto").value = "";
+            document.getElementById("cardCar").style.visibility = "visible";
+            document.getElementById("clienteDrop").style.visibility = "hidden";
+            document.getElementById("lblCli").style.visibility = "hidden";
+            var dadoCheio = ["/"+dadosProds[0], valTotal, quant, strUser]
+            dadosTableRefresh.push(dadoCheio)
 
         }
 
@@ -317,7 +399,6 @@
                     }
 
                     var totalRows = $(table + ' tbody tr').length; // numbers of rows
-                    console.log(totalRows)
                     $(table + ' tr:gt(0)').each(function () {
                         // each TR in  table and not the header
                         trnum++; // Start Counter
@@ -331,7 +412,6 @@
                         } // else fade in Important in case if it ..
                     }); //  was fade out to fade it in
                     if (totalRows > maxRows) {
-                        console.log(maxRows)
                         // if tr total rows gt max rows option
                         var pagenum = Math.ceil(totalRows / maxRows); // ceil total(rows/maxrows) to get ..
                         //	numbers of pages
@@ -356,7 +436,6 @@
                         evt.stopImmediatePropagation();
                         evt.preventDefault();
                         var pageNum = $(this).attr('data-page'); // get it's number
-                        console.log(pageNum)
                         var maxRows = parseInt($('#maxRows').val()); // get Max Rows from select option
 
                         if (pageNum == 'prev') {
@@ -373,7 +452,6 @@
                         }
 
                         lastPage = pageNum;
-                        console.log(lastPage)
                         var trIndex = 0; // reset tr counter
                         $('.pageArr li').removeClass('active'); // remove active class from all li
                         $('.pageArr [data-page="' + lastPage + '"]').addClass('active'); // add active class to the clicked

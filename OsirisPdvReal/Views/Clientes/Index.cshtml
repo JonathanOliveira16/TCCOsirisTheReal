@@ -92,6 +92,8 @@
     <script>
         var idParaApagar
 
+        window.localStorage.clear();
+
         function PassarDados(idJornaleiro) {
             $(".botaoDoId").on('click', function () {
                 $.ajax({

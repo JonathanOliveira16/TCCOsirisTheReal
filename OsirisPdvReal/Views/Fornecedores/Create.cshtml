@@ -85,6 +85,7 @@
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
     <script>
+        window.localStorage.clear();
         var currencyMask = IMask(
             document.getElementById('inp3'),
             {
