@@ -164,7 +164,7 @@
             </tbody>
         </table>
         <div class="centerText">
-            <a class="btn btn-success text-white">FINALIZAR</a>
+            <a class="btn btn-success text-white float-right">FINALIZAR</a>
         </div>
     </div>
 </div>
@@ -189,11 +189,10 @@
              dadoSplitTable = tabelaProd.split('/');
         }
         var dadosTableRefresh = []
-        console.log('aaaaaaa' + dadoSplitTable)
         if (dadoSplitTable.length == 0) {
             dadosTableRefresh = []
-            console.log( "zeradpo" + dadosTableRefresh)
-
+            console.log("zeradpo" + dadosTableRefresh)
+            location.reload()
         } else {
             for (z = 1; z < dadoSplitTable.length; z++) {
                 var xx = dadoSplitTable[z].split(',')
@@ -207,18 +206,14 @@
         //nome,valor,quantidade,cliente
         var tabelaProd = localStorage.getItem("prods");
         var dadoSplitTable = tabelaProd.split('/');
-        console.log('bbb' + tabelaProd)
-        console.log(dadoSplitTable)
         if (dadoSplitTable.length > 1) {
-            console.log('entro')
             for (j = 1; j < dadoSplitTable.length; j++) {
                 var data = dadoSplitTable[j].split(',')
-                console.log(data)
                 var x = data[2];
                 var e = data[3]
                 var y = data[1];
                 var lenTable = document.getElementById("tableVenda").rows.length;
-                console.log(lenTable+1)
+             
                 var strUser = e;
                 var letters = '/^[a-zA-Z]+$/';
               
@@ -227,7 +222,7 @@
                     var valor = y;
                     var quantidade = x;
                 var clienteVal = e
-                rows += "<tr><td>" + name + "</td><td>" + 'R$' + valor + "</td><td>" + clienteVal + "</td><td>" + quantidade + "</td><td> <a class='btn-sm btn-danger text-white' id='DeleteButton'>REMOVER</a><p id='idrow'>" + lenTable+1 + "</p> </td></tr>";
+                rows += "<tr><td>" + name + "</td><td>" + 'R$' + valor + "</td><td>" + clienteVal + "</td><td>" + quantidade + "</td><td> <a class='btn-sm btn-danger text-white' id='DeleteButton'>REMOVER</a></td></tr>";
                     $(rows).appendTo("#tableVenda");
                 
               
@@ -252,16 +247,45 @@
         //    arrData.push(obj);
         //});
         $("#tableVenda").on("click", "#DeleteButton", function () {
+            var currentRow = $(this).closest("tr");
             $(this).closest("tr").remove();
+            dadosTableRefresh = []
+            console.log(dadosTableRefresh)
+            var arrProFinal = []
+            console.log('new array zerado')
+            console.log("array excluido | ")
             $("#tableVenda tr").each(function () {
                 var x = document.getElementById("tableVenda").rows.length;
                 if (x == 1) {
                     document.getElementById("cardCar").style.visibility = "hidden";
                     document.getElementById("clienteDrop").style.visibility = "visible";
                     document.getElementById("lblCli").style.visibility = "visible";
+                } else {
+                    var currentRow = $(this);
+
+                    var col1_value = currentRow.find("td:eq(0)").text();
+                    var col2_value = currentRow.find("td:eq(1)").text();
+                    var col3_value = currentRow.find("td:eq(2)").text();
+                    var col4_value = currentRow.find("td:eq(3)").text();
+                    var dadosProds = []
+                    dadosProds.push("/" + col1_value)
+                    dadosProds.push(col2_value.replace('R$', ''))
+                    dadosProds.push(col4_value)
+                    dadosProds.push(col3_value)
+
+                    arrProFinal.push(dadosProds);
+                    console.log(arrProFinal)
+                    console.log('new array rewformulado')
+                    
                 }
             });
-            
+            console.log(arrProFinal)
+            console.log("array pre finial")
+            for (o = 1; o < arrProFinal.length; o++) {
+                dadosTableRefresh.push(arrProFinal[o])
+            }
+            console.log(dadosTableRefresh)
+            console.log("array  finial")
         });
 
         $("#table-id").on('click', '.btnProd', function () {
@@ -290,7 +314,7 @@
         $("#table-id").on('click', '.btnCli', function () {
             // get the current row
             var currentRow = $(this).closest("tr");
-
+            
             var col1 = currentRow.find("td:eq(0)").html(); // get current row 1st table cell TD value
             var col2 = currentRow.find("td:eq(1)").html(); // get current row 2nd table cell TD value
             var data = col1 + "\n" + col2
@@ -304,7 +328,6 @@
             if (/[,\-]/.test(dadosProds[2])) {
                 valorConvertido = dadosProds[2].replace(',','.')
             }
-            console.log(valorConvertido)
             var valTotal = 0
             if (valorConvertido == "") {
                 valTotal = Number(dadosProds[2].substring(2)) * Number(quant)
@@ -317,7 +340,9 @@
 
             var x = quant;
             var e = ""
-            var y = valTotal;
+            var y = valTotal.toFixed(2);
+            var lenTable = document.getElementById("tableVenda").rows.length;
+
             if (clienteSelect == "" || clienteSelect == null) {
                 e = document.getElementById("clienteDrop");
                 clienteSelect = e
@@ -331,10 +356,10 @@
             } else {
                 var rows = "";
                 var name = dadosProds[0];
-                var valor = valTotal;
+                var valor = valTotal.toFixed(2);
                 var quantidade = quant;
                 var clienteVal = strUser
-                rows += "<tr><td>" + name + "</td><td>" + 'R$' + valor + "</td><td>" + clienteVal + "</td><td>" + quantidade + "</td><td> <a class='btn-sm btn-danger text-white' id='DeleteButton'>REMOVER</a> </td></tr>";
+                rows += "<tr><td>" + name + "</td><td>" + 'R$' + valor + "</td><td>" + clienteVal + "</td><td>" + quantidade + "</td><td> <a class='btn-sm btn-danger text-white' id='DeleteButton'>REMOVER</a></td></tr>";
                 $(rows).appendTo("#tableVenda");
             }
             $(".modal").modal('hide');
@@ -342,15 +367,14 @@
             document.getElementById("cardCar").style.visibility = "visible";
             document.getElementById("clienteDrop").style.visibility = "hidden";
             document.getElementById("lblCli").style.visibility = "hidden";
-            var dadoCheio = ["/"+dadosProds[0], valTotal, quant, strUser]
+            var dadoCheio = ["/" + dadosProds[0], valTotal, quant, strUser]
+            console.log(dadoCheio)
             dadosTableRefresh.push(dadoCheio)
 
         }
 
         var countProd = '@(ViewBag.countProd)';
         var countCli = '@(ViewBag.countCli)';
-        console.log('aqui' + countProd)
-        console.log('aqui' + countCli)
         getPagination('#table-id');
         getPagination2('#table-id2');
 
@@ -589,7 +613,6 @@
 
         function limitPagging() {
             // alert($('.pagination li').length)
-            console.log($('.pageArr li').length)
             if ($('.pageArr li').length > 7) {
                 if ($('.pageArr li.active').attr('data-page') <= 3) {
                     $('.pageArr li:gt(5)').hide();
