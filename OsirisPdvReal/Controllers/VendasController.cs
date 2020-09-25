@@ -35,21 +35,28 @@ namespace OsirisPdvReal.Controllers
             {
                 if (busca == null)
                 {
+                    String cpf = Request.Cookies["idDoUser"];
+
                     var prods = _context.Produto.Include(p => p.tipoProduto).AsNoTracking().OrderBy(c => c.NomeProduto);
                     ViewBag.produtos = prods;
                     ViewBag.Tipos = _context.TipoProdutos.Select(t => t.NomeTipoProduto).OrderBy(t => t);
                     ViewBag.countCli = _context.Clientes.Where(c => c.StatusId == 1).AsNoTracking().Count();
                     ViewBag.countProd = prods.Count();
+                    ViewBag.banca = _context.Bancas.Where(c => c.CPF == Convert.ToInt64(cpf)).AsNoTracking().OrderBy(c => c.NomeBanca);
                     ViewBag.clientes = _context.Clientes.Where(c => c.StatusId == 1).AsNoTracking().OrderBy(c => c.NomeCliente);
                     return View("Create");
                 }
                 else
                 {
+                    String cpf = Request.Cookies["idDoUser"];
+
                     var prods = _context.Produto.Include(p => p.tipoProduto).Where(b => b.NomeProduto.Contains(busca)).OrderBy(b => b.NomeProduto);
                     ViewBag.produtos = prods;
                     ViewBag.Tipos = _context.TipoProdutos.Select(t => t.NomeTipoProduto).OrderBy(t => t);
                     ViewBag.countCli = _context.Clientes.Where(c => c.StatusId == 1).AsNoTracking().Count();
                     ViewBag.countProd = prods.Count();
+                    ViewBag.banca = _context.Bancas.Where(c => c.CPF == Convert.ToInt64(cpf)).AsNoTracking().OrderBy(c => c.NomeBanca);
+
                     ViewBag.clientes = _context.Clientes.Where(c => c.StatusId == 1).AsNoTracking().OrderBy(c => c.NomeCliente);
                     return View("Create");
                 }
@@ -62,42 +69,6 @@ namespace OsirisPdvReal.Controllers
 
 
         }
-
-        [HttpPost]
-        public async Task<IActionResult> SearchCliente(string buscaCliente, int page = 1)
-        {
-            try
-            {
-                if (buscaCliente == null)
-                {
-                    var clientes = _context.Clientes.Include(p => p.Status).Where(c => c.StatusId == 1).AsNoTracking().OrderBy(c => c.NomeCliente);
-                    ViewBag.clientes = clientes;
-                    ViewBag.Tipos = _context.TipoProdutos.Select(t => t.NomeTipoProduto).OrderBy(t => t);
-                    ViewBag.countCli = clientes.Count();
-                    ViewBag.countProd = _context.Produto.AsNoTracking().Count();
-                    ViewBag.produtos = _context.Produto.AsNoTracking().OrderBy(c => c.NomeProduto);
-                    return View("Create");
-                }
-                else
-                {
-                    var clientes = _context.Clientes.Include(p => p.Status).Where(b => b.NomeCliente.Contains(buscaCliente)).OrderBy(b => b.NomeCliente);
-                    ViewBag.clientes = clientes;
-                    ViewBag.Tipos = _context.TipoProdutos.Select(t => t.NomeTipoProduto).OrderBy(t => t);
-                    ViewBag.countCli = clientes.Count();
-                    ViewBag.countProd = _context.Produto.AsNoTracking().Count();
-                    ViewBag.produtos = _context.Produto.AsNoTracking().OrderBy(c => c.NomeProduto);
-                    return View("Create");
-                }
-            }
-            catch (Exception)
-            {
-                TempData["msgSucesso"] = "Erro na sua solicitação, favor tentar novamente!";
-                return View();
-            }
-
-
-        }
-
 
         [HttpPost]
         public async Task<IActionResult> SearchTipo(string buscaTipo, int page = 1)
@@ -106,8 +77,12 @@ namespace OsirisPdvReal.Controllers
             {
                 if (buscaTipo == null)
                 {
+                    String cpf = Request.Cookies["idDoUser"];
+
                     var prods = _context.Produto.Include(p => p.tipoProduto).AsNoTracking().OrderBy(c => c.NomeProduto);
                     ViewBag.produtos = prods;
+                    ViewBag.banca = _context.Bancas.Where(c => c.CPF == Convert.ToInt64(cpf)).AsNoTracking().OrderBy(c => c.NomeBanca);
+
                     ViewBag.Tipos = _context.TipoProdutos.Select(t => t.NomeTipoProduto).OrderBy(t => t);
                     ViewBag.countCli = _context.Clientes.Where(c => c.StatusId == 1).AsNoTracking().Count();
                     ViewBag.countProd = prods.Count();
@@ -116,8 +91,12 @@ namespace OsirisPdvReal.Controllers
                 }
                 else
                 {
+                    String cpf = Request.Cookies["idDoUser"];
+
                     var prods = _context.Produto.Include(p => p.tipoProduto).Where(b => b.tipoProduto.NomeTipoProduto.Contains(buscaTipo)).OrderBy(b => b.NomeProduto);
                     ViewBag.produtos = prods;
+                    ViewBag.banca = _context.Bancas.Where(c => c.CPF == Convert.ToInt64(cpf)).AsNoTracking().OrderBy(c => c.NomeBanca);
+
                     ViewBag.Tipos = _context.TipoProdutos.Select(t => t.NomeTipoProduto).OrderBy(t => t);
                     ViewBag.countCli = _context.Clientes.Where(c => c.StatusId == 1).AsNoTracking().Count();
                     ViewBag.countProd = prods.Count();
@@ -132,6 +111,26 @@ namespace OsirisPdvReal.Controllers
             }
 
 
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SalvarVenda(String[] dados)
+        {
+            string[] x = dados;
+            for (int i = 5; i <= dados.Length; i+=5)
+            {
+                string[] y = new string[5];
+                y[0] = dados[i];  //nome item
+                y[1] = dados[i+1]; //valor
+                y[2] = dados[i+2]; //cliente
+                y[3] = dados[i+3]; //quantidade
+                y[4] = dados[i+4]; //nome banca
+                //_context.Add(venda);
+                //await _context.SaveChangesAsync();
+                //return RedirectToAction(nameof(Index));
+            }
+            string xxxx = "aaa";
+            return RedirectToAction("Index");
         }
 
 
@@ -159,9 +158,11 @@ namespace OsirisPdvReal.Controllers
         // GET: Vendas/Create
         public IActionResult Create(int page = 1)
         {
+            String cpf = Request.Cookies["idDoUser"];
             ViewBag.countCli = _context.Clientes.Where(c=>c.StatusId == 1).AsNoTracking().Count();
             ViewBag.countProd = _context.Produto.AsNoTracking().Count();
             ViewBag.clientes = _context.Clientes.Where(c=>c.StatusId == 1).AsNoTracking().OrderBy(c => c.NomeCliente);
+            ViewBag.banca = _context.Bancas.Where(c => c.CPF == Convert.ToInt64(cpf)).AsNoTracking().OrderBy(c => c.NomeBanca);
             ViewBag.produtos = _context.Produto.AsNoTracking().OrderBy(c => c.NomeProduto);
             ViewBag.Tipos = _context.TipoProdutos.Select(t => t.NomeTipoProduto).OrderBy(t => t);
             ViewData["BancaId"] = new SelectList(_context.Bancas, "BancaId", "NomeBanca");

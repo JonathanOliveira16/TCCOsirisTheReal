@@ -23,6 +23,13 @@
                         <option value="@y.NomeCliente">@y.NomeCliente</option>
                     }
                 </select>
+                <label class="control-label ml-3 font-weight-bold" style="visibility:visible" id="lblBan">Banca</label>
+                <select id="bancaDrop" style="visibility:visible" name="bairroBusca" class="form-control borderInput">
+                    @foreach (var y in ViewBag.banca)
+                    {
+                        <option value="@y.NomeBanca">@y.NomeBanca</option>
+                    }
+                </select>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-success botaoDoId" onclick="AddCarrinho()" style="font-size:12px;">Adicionar no carrinho</button>
@@ -55,7 +62,7 @@
                             <option value="" selected>Tipos de produtos...</option>
                             @foreach (var tipo in ViewBag.Tipos)
                             {
-                            <option value="@tipo">@tipo</option>
+                                <option value="@tipo">@tipo</option>
                             }
                         </select>
                         <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
@@ -82,20 +89,20 @@
                 <tbody>
                     @foreach (var item in ViewBag.produtos)
                     {
-                    <tr>
-                        <td style="font-size:13px;">
-                            @item.NomeProduto
-                        </td>
-                        <td style="font-size:13px;">
-                            @item.QuantideProduto
-                        </td>
-                        <td style="font-size:13px;">
-                            @item.ValorProduto
-                        </td>
-                        <td class="float-right">
-                            <a class="btn-sm btn-success text-white btnVenda btnProd" data-toggle="modal" data-target="#visao">Adicionar</a>
-                        </td>
-                    </tr>
+                        <tr>
+                            <td style="font-size:13px;">
+                                @item.NomeProduto
+                            </td>
+                            <td style="font-size:13px;">
+                                @item.QuantideProduto
+                            </td>
+                            <td style="font-size:13px;">
+                                @item.ValorProduto
+                            </td>
+                            <td class="float-right">
+                                <a class="btn-sm btn-success text-white btnVenda btnProd" data-toggle="modal" data-target="#visao">Adicionar</a>
+                            </td>
+                        </tr>
                     }
                 </tbody>
             </table>
@@ -139,7 +146,7 @@
 </div>
 
 <div class="card" id="cardCar" style="visibility:hidden">
-    <div class="card-header centerText fontTitles">
+    <div class="card-header fontTitles text-center" >
         CARRINHO
     </div>
     <div class="card-body">
@@ -158,13 +165,21 @@
                     <th class="font-weight-bold">
                         Quantidade vendida
                     </th>
+                    <th class="font-weight-bold">
+                        Banca
+                    </th>
                 </tr>
             </thead>
             <tbody>
             </tbody>
+
         </table>
-        <div class="centerText">
-            <a class="btn btn-success text-white float-right">FINALIZAR</a>
+        <a class="btn btn-success text-white float-right" id="vender">FINALIZAR</a>
+
+    </div>
+    <div class="card-footer text-muted">
+        <div class="d-flex">
+            <p>Valor Total: </p> <p class="font-weight-bold" id="valTotalTable"></p>
         </div>
     </div>
 </div>
@@ -178,6 +193,7 @@
         window.onbeforeunload = function () {
             console.log('tam array' + dadosTableRefresh)
             localStorage.setItem("prods", dadosTableRefresh);
+
         }
 
         //$(".modal").modal('hide');
@@ -199,10 +215,10 @@
                 dadosTableRefresh.push("/"+xx);
                 console.log("datado" + dadosTableRefresh)
             }
-           
+
         }
-      
         var clienteSelect = ""
+        var bancaSelect = ""
         //nome,valor,quantidade,cliente
         var tabelaProd = localStorage.getItem("prods");
         var dadoSplitTable = tabelaProd.split('/');
@@ -212,23 +228,26 @@
                 var x = data[2];
                 var e = data[3]
                 var y = data[1];
+                var banca = data[4]
                 var lenTable = document.getElementById("tableVenda").rows.length;
-             
+
                 var strUser = e;
                 var letters = '/^[a-zA-Z]+$/';
-              
+
                     var rows = "";
                     var name = data[0];
-                    var valor = y;
+                    var valor = y.toFixed(2);
                     var quantidade = x;
+                    var bancaSelecionada = banca
                 var clienteVal = e
-                rows += "<tr><td>" + name + "</td><td>" + 'R$' + valor + "</td><td>" + clienteVal + "</td><td>" + quantidade + "</td><td> <a class='btn-sm btn-danger text-white' id='DeleteButton'>REMOVER</a></td></tr>";
+                rows += "<tr><td>" + name + "</td><td>" + 'R$' + valor + "</td><td>" + clienteVal + "</td><td>" + quantidade + "</td><td>" + bancaSelecionada + "</td><td> <a class='btn-sm btn-danger text-white' style='margin-left:90px'  id='DeleteButton'>REMOVER</a></td></tr>";
                     $(rows).appendTo("#tableVenda");
-                
-              
+
                 document.getElementById("cardCar").style.visibility = "visible";
                 document.getElementById("clienteDrop").style.visibility = "hidden";
-                document.getElementById("lblCli").style.visibility = "hidden";           
+                document.getElementById("bancaDrop").style.visibility = "hidden";
+                document.getElementById("lblCli").style.visibility = "hidden";
+                document.getElementById("lblBan").style.visibility = "hidden";
             }
         }
         // loop over each table row (tr)
@@ -246,6 +265,37 @@
 
         //    arrData.push(obj);
         //});
+
+        $("#vender").on("click",function () {
+            var dadosProds = []
+            var arrayFinal = []
+            $("#tableVenda tr").each(function () {
+                var currentRow = $(this);
+
+                var nomeProd = currentRow.find("td:eq(0)").text();
+                var valorProd = currentRow.find("td:eq(1)").text();
+                var clienteName = currentRow.find("td:eq(2)").text();
+                var quantidadeProd = currentRow.find("td:eq(3)").text();
+                var banca = currentRow.find("td:eq(4)").text();
+                dadosProds.push(nomeProd)
+                dadosProds.push(valorProd)
+                dadosProds.push(clienteName)
+                dadosProds.push(quantidadeProd)
+                dadosProds.push(banca)
+            })
+         
+          
+            $.ajax({
+                url: "/Vendas/SalvarVenda",
+                method: "POST",
+                data: { dados: dadosProds },
+                datatype: "json",
+                success: function (data) {
+
+                }
+            });
+        });
+
         $("#tableVenda").on("click", "#DeleteButton", function () {
             var currentRow = $(this).closest("tr");
             $(this).closest("tr").remove();
@@ -259,7 +309,9 @@
                 if (x == 1) {
                     document.getElementById("cardCar").style.visibility = "hidden";
                     document.getElementById("clienteDrop").style.visibility = "visible";
+                    document.getElementById("bancaDrop").style.visibility = "visible";
                     document.getElementById("lblCli").style.visibility = "visible";
+                    document.getElementById("lblBan").style.visibility = "visible";
                 } else {
                     var currentRow = $(this);
 
@@ -267,16 +319,18 @@
                     var col2_value = currentRow.find("td:eq(1)").text();
                     var col3_value = currentRow.find("td:eq(2)").text();
                     var col4_value = currentRow.find("td:eq(3)").text();
+                    var col5_value = currentRow.find("td:eq(4)").text();
                     var dadosProds = []
                     dadosProds.push("/" + col1_value)
                     dadosProds.push(col2_value.replace('R$', ''))
                     dadosProds.push(col4_value)
                     dadosProds.push(col3_value)
+                    dadosProds.push(col5_value)
 
                     arrProFinal.push(dadosProds);
                     console.log(arrProFinal)
                     console.log('new array rewformulado')
-                    
+
                 }
             });
             console.log(arrProFinal)
@@ -314,7 +368,7 @@
         $("#table-id").on('click', '.btnCli', function () {
             // get the current row
             var currentRow = $(this).closest("tr");
-            
+
             var col1 = currentRow.find("td:eq(0)").html(); // get current row 1st table cell TD value
             var col2 = currentRow.find("td:eq(1)").html(); // get current row 2nd table cell TD value
             var data = col1 + "\n" + col2
@@ -323,6 +377,8 @@
         });
 
         function AddCarrinho() {
+            var valorTotalDaVenda = document.getElementById("valTotalTable");
+
             var quant = document.getElementById("quantidadeProduto").value
             var valorConvertido = ""
             if (/[,\-]/.test(dadosProds[2])) {
@@ -335,11 +391,12 @@
             } else {
                 valTotal = Number(valorConvertido.substring(2)) * Number(quant)
             }
-            
+
 
 
             var x = quant;
             var e = ""
+            var banca = ""
             var y = valTotal.toFixed(2);
             var lenTable = document.getElementById("tableVenda").rows.length;
 
@@ -348,8 +405,16 @@
                 clienteSelect = e
             } else {
                 e = clienteSelect
-            }           
+            }
+
+            if (bancaSelect == "" || bancaSelect == null) {
+                banca = document.getElementById("bancaDrop");
+                bancaSelect = banca
+            } else {
+                banca = bancaSelect
+            }
             var strUser = e.options[e.selectedIndex].text;
+            var bancaUser = banca.options[e.selectedIndex].text;
             var letters = '/^[a-zA-Z]+$/';
             if ((parseInt(quant) != (x)) && (y == parseInt(y))) {
                alert("Valor inválido");
@@ -359,15 +424,20 @@
                 var valor = valTotal.toFixed(2);
                 var quantidade = quant;
                 var clienteVal = strUser
-                rows += "<tr><td>" + name + "</td><td>" + 'R$' + valor + "</td><td>" + clienteVal + "</td><td>" + quantidade + "</td><td> <a class='btn-sm btn-danger text-white' id='DeleteButton'>REMOVER</a></td></tr>";
+                var bancaSelecionada = bancaUser
+                rows += "<tr><td>" + name + "</td><td>" + 'R$' + valor + "</td><td>" + clienteVal + "</td><td>" + quantidade + "</td><td>" + bancaSelecionada + "</td><td> <a class='btn-sm btn-danger text-white' style='margin-left:90px' id='DeleteButton'>REMOVER</a></td></tr>";
                 $(rows).appendTo("#tableVenda");
             }
             $(".modal").modal('hide');
+            valorTotalDaVenda.textContent = Number(valorTotalDaVenda.textContent) + Number(valor)
+
             document.getElementById("quantidadeProduto").value = "";
             document.getElementById("cardCar").style.visibility = "visible";
             document.getElementById("clienteDrop").style.visibility = "hidden";
+            document.getElementById("bancaDrop").style.visibility = "hidden";
             document.getElementById("lblCli").style.visibility = "hidden";
-            var dadoCheio = ["/" + dadosProds[0], valTotal, quant, strUser]
+            document.getElementById("lblBan").style.visibility = "hidden";
+            var dadoCheio = ["/" + dadosProds[0], valTotal, quant, strUser, bancaSelecionada]
             console.log(dadoCheio)
             dadosTableRefresh.push(dadoCheio)
 
