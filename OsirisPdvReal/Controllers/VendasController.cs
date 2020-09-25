@@ -117,19 +117,44 @@ namespace OsirisPdvReal.Controllers
         public async Task<IActionResult> SalvarVenda(String[] dados)
         {
             string[] x = dados;
-            for (int i = 5; i <= dados.Length; i+=5)
+            double valorTotal = 0;
+            int intBanca = 0;
+            long intCliente = 0;
+            List<Produto> listaProduto = new List<Produto>();
+            try
             {
-                string[] y = new string[5];
-                y[0] = dados[i];  //nome item
-                y[1] = dados[i+1]; //valor
-                y[2] = dados[i+2]; //cliente
-                y[3] = dados[i+3]; //quantidade
-                y[4] = dados[i+4]; //nome banca
-                //_context.Add(venda);
-                //await _context.SaveChangesAsync();
-                //return RedirectToAction(nameof(Index));
+                for (int i = 5; i <= dados.Length; i += 5)
+                {
+                    string[] y = new string[5];
+                    y[0] = dados[i];  //nome item
+                    y[1] = dados[i + 1]; //valor
+                    y[2] = dados[i + 2]; //cliente
+                    y[3] = dados[i + 3]; //quantidade
+                    y[4] = dados[i + 4]; //nome banca
+                    var prod = _context.Produto.Where(p => p.NomeProduto == y[0]).Select(p => p).FirstOrDefault();
+                    listaProduto.Add(prod);
+                    valorTotal = Convert.ToInt64(y[1]) + valorTotal;
+                    intBanca = _context.Bancas.Where(b => b.NomeBanca == y[4]).Select(b => b.BancaId).FirstOrDefault();
+                    intCliente = _context.Clientes.Where(c => c.NomeCliente == y[2]).Select(c => c.CPFcliente).FirstOrDefault();
+
+                    //_context.Add(venda);
+                    //await _context.SaveChangesAsync();
+                    //return RedirectToAction(nameof(Index));
+                }
+                Venda venda = new Venda();
+                venda.ItemVenda = listaProduto;
+                venda.BancaId = intBanca;
+                venda.CPFcliente = intCliente;
+                venda.DataVenda = DateTime.Now.Date;
+                venda.StatusId = 1;
+                venda.ValorVenda = valorTotal;
             }
-            string xxxx = "aaa";
+            catch (Exception)
+            {
+
+                throw;
+            }
+          
             return RedirectToAction("Index");
         }
 
