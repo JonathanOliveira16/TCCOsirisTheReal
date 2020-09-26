@@ -2,26 +2,30 @@
 
 namespace OsirisPdvReal.Migrations
 {
-    public partial class changeValorToStringProduto : Migration
+    public partial class ChangeToStringVendaValor : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterColumn<string>(
-                name: "ValorProduto",
-                table: "Produto",
+                name: "ValorVenda",
+                table: "Vendas",
+                maxLength: 30,
                 nullable: false,
                 oldClrType: typeof(double),
-                oldType: "float");
+                oldType: "float",
+                oldMaxLength: 30);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterColumn<double>(
-                name: "ValorProduto",
-                table: "Produto",
+                name: "ValorVenda",
+                table: "Vendas",
                 type: "float",
+                maxLength: 30,
                 nullable: false,
-                oldClrType: typeof(string));
+                oldClrType: typeof(string),
+                oldMaxLength: 30);
         }
     }
 }

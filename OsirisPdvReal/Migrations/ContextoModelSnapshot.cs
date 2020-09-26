@@ -403,9 +403,7 @@ namespace OsirisPdvReal.Migrations
             modelBuilder.Entity("OsirisPdvReal.Models.Venda", b =>
                 {
                     b.Property<int?>("VendaId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
                     b.Property<int>("BancaId")
                         .HasColumnType("int");
@@ -416,11 +414,15 @@ namespace OsirisPdvReal.Migrations
                     b.Property<DateTime>("DataVenda")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("QuantidadeVendida")
+                        .HasColumnType("int");
+
                     b.Property<int?>("StatusId")
                         .HasColumnType("int");
 
-                    b.Property<double>("ValorVenda")
-                        .HasColumnType("float")
+                    b.Property<string>("ValorVenda")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(30)")
                         .HasMaxLength(30);
 
                     b.HasKey("VendaId");

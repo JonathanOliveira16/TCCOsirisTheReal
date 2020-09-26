@@ -23,7 +23,7 @@ namespace OsirisPdvReal.Controllers
         public async Task<IActionResult> Index()
         {
 
-          
+
             var contexto = _context.Vendas.Include(v => v.Bancas).Include(v => v.Clientes).Include(v => v.Status);
             return View(await contexto.ToListAsync());
         }
@@ -114,16 +114,38 @@ namespace OsirisPdvReal.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SalvarVenda(String[] dados)
+        public async Task<IActionResult> SalvarVenda(String[] dados, string valTotal)
         {
             string[] x = dados;
-            double valorTotal = 0;
             int intBanca = 0;
+            bool NotErro = false;
+            int quantidadeTotalVendida = 0;
+            int idVenda = 0;
+            List<VendaProduto> listvp = new List<VendaProduto>();
             long intCliente = 0;
-            List<Produto> listaProduto = new List<Produto>();
+            Random rnd = new Random();
+            //List<long> generatedNumbers = new List<long>();
             try
             {
-                for (int i = 5; i <= dados.Length; i += 5)
+                List<int?> generatedNumbers = _context.Vendas.Select(x => x.VendaId).ToList();
+                do
+                {
+                    int rndsize = rnd.Next(1, 2000);
+                    if (generatedNumbers.Contains(rndsize))
+                    {
+                        NotErro = false;
+                    }
+                    else
+                    {
+                        NotErro = true;
+                        idVenda = rndsize;
+                    }
+                } while (NotErro == false);
+
+
+                List<Produto> listaProduto = new List<Produto>();
+
+                for (int i = 5; i < dados.Length; i += 5)
                 {
                     string[] y = new string[5];
                     y[0] = dados[i];  //nome item
@@ -132,32 +154,69 @@ namespace OsirisPdvReal.Controllers
                     y[3] = dados[i + 3]; //quantidade
                     y[4] = dados[i + 4]; //nome banca
                     var prod = _context.Produto.Where(p => p.NomeProduto == y[0]).Select(p => p).FirstOrDefault();
+                    prod.QuantideProduto = prod.QuantideProduto - Convert.ToInt32(y[3]);
+                    _context.Update(prod);
+                    await _context.SaveChangesAsync();
+                    VendaProduto vp = new VendaProduto();
+                    vp.VendaId = idVenda;
+                    vp.ProdutoId = prod.ProdutoId;
+                    vp.QuantidadeVendida = Convert.ToInt32(y[3]);
+                    listvp.Add(vp);
                     listaProduto.Add(prod);
-                    valorTotal = Convert.ToInt64(y[1]) + valorTotal;
+                    
                     intBanca = _context.Bancas.Where(b => b.NomeBanca == y[4]).Select(b => b.BancaId).FirstOrDefault();
                     intCliente = _context.Clientes.Where(c => c.NomeCliente == y[2]).Select(c => c.CPFcliente).FirstOrDefault();
-
+                    quantidadeTotalVendida = quantidadeTotalVendida + Convert.ToInt32(y[3]);
                     //_context.Add(venda);
                     //await _context.SaveChangesAsync();
                     //return RedirectToAction(nameof(Index));
                 }
                 Venda venda = new Venda();
+                venda.VendaId = idVenda;
                 venda.ItemVenda = listaProduto;
                 venda.BancaId = intBanca;
                 venda.CPFcliente = intCliente;
                 venda.DataVenda = DateTime.Now.Date;
                 venda.StatusId = 1;
-                venda.ValorVenda = valorTotal;
+                venda.ValorVenda = "R$"+ valTotal;
+                venda.QuantidadeVendida = quantidadeTotalVendida;
+                _context.Add(venda);
+                await _context.SaveChangesAsync();
+
+                foreach(var vendaProd in listvp)
+                {
+                    _context.Add(vendaProd);
+                    await _context.SaveChangesAsync();
+                }
+
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
                 throw;
             }
-          
+
             return RedirectToAction("Index");
         }
 
+
+        public JsonResult ShowInfo(int id)
+        {
+            var vp = _context.VendaProduto.Where(v => v.VendaId == id).ToList();
+            List<JsonVendaProduto> listaJson = new List<JsonVendaProduto>();
+            foreach(var vendaProd in vp)
+            {
+                var produto = _context.Produto.Where(p => p.ProdutoId == vendaProd.ProdutoId).Select(p => p.NomeProduto).FirstOrDefault();
+                JsonVendaProduto data = new JsonVendaProduto
+                {
+                    NomeProduto = produto ,
+                    QuantidadeProduto = vendaProd.QuantidadeVendida
+                };
+                listaJson.Add(data);
+            }
+           
+            return Json(listaJson);
+        }
 
         // GET: Vendas/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -184,9 +243,9 @@ namespace OsirisPdvReal.Controllers
         public IActionResult Create(int page = 1)
         {
             String cpf = Request.Cookies["idDoUser"];
-            ViewBag.countCli = _context.Clientes.Where(c=>c.StatusId == 1).AsNoTracking().Count();
+            ViewBag.countCli = _context.Clientes.Where(c => c.StatusId == 1).AsNoTracking().Count();
             ViewBag.countProd = _context.Produto.AsNoTracking().Count();
-            ViewBag.clientes = _context.Clientes.Where(c=>c.StatusId == 1).AsNoTracking().OrderBy(c => c.NomeCliente);
+            ViewBag.clientes = _context.Clientes.Where(c => c.StatusId == 1).AsNoTracking().OrderBy(c => c.NomeCliente);
             ViewBag.banca = _context.Bancas.Where(c => c.CPF == Convert.ToInt64(cpf)).AsNoTracking().OrderBy(c => c.NomeBanca);
             ViewBag.produtos = _context.Produto.AsNoTracking().OrderBy(c => c.NomeProduto);
             ViewBag.Tipos = _context.TipoProdutos.Select(t => t.NomeTipoProduto).OrderBy(t => t);
@@ -255,14 +314,7 @@ namespace OsirisPdvReal.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!VendaExists(venda.VendaId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+
                 }
                 return RedirectToAction(nameof(Index));
             }

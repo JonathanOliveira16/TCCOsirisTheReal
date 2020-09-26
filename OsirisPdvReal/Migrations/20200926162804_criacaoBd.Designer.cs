@@ -10,7 +10,7 @@ using OsirisPdvReal.Models;
 namespace OsirisPdvReal.Migrations
 {
     [DbContext(typeof(Contexto))]
-    [Migration("20200910142815_criacaoBd")]
+    [Migration("20200926162804_criacaoBd")]
     partial class criacaoBd
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,6 +27,10 @@ namespace OsirisPdvReal.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Bairro")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<long?>("CPF")
                         .HasColumnType("bigint");
@@ -66,8 +70,8 @@ namespace OsirisPdvReal.Migrations
 
                     b.Property<string>("TelefoneCliente")
                         .IsRequired()
-                        .HasColumnType("nvarchar(12)")
-                        .HasMaxLength(12);
+                        .HasColumnType("nvarchar(15)")
+                        .HasMaxLength(15);
 
                     b.HasKey("CPFcliente");
 
@@ -137,14 +141,14 @@ namespace OsirisPdvReal.Migrations
                         .HasMaxLength(80);
 
                     b.Property<int>("QuantidadeCompra")
-                        .HasColumnType("int")
-                        .HasMaxLength(9);
+                        .HasColumnType("int");
 
                     b.Property<int>("StatusId")
                         .HasColumnType("int");
 
-                    b.Property<double>("ValorCompra")
-                        .HasColumnType("float");
+                    b.Property<string>("ValorCompra")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ComprasId");
 
@@ -162,8 +166,8 @@ namespace OsirisPdvReal.Migrations
 
                     b.Property<string>("CEPFornecedor")
                         .IsRequired()
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
+                        .HasColumnType("nvarchar(9)")
+                        .HasMaxLength(9);
 
                     b.Property<string>("EmailFornecedor")
                         .IsRequired()
@@ -190,8 +194,8 @@ namespace OsirisPdvReal.Migrations
 
                     b.Property<string>("TelefoneFornecedor")
                         .IsRequired()
-                        .HasColumnType("nvarchar(12)")
-                        .HasMaxLength(12);
+                        .HasColumnType("nvarchar(16)")
+                        .HasMaxLength(16);
 
                     b.HasKey("CNPJ");
 
@@ -287,13 +291,19 @@ namespace OsirisPdvReal.Migrations
                     b.Property<int>("QuantideProduto")
                         .HasColumnType("int");
 
-                    b.Property<double>("ValorProduto")
-                        .HasColumnType("float");
+                    b.Property<int>("TipoProdId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ValorProduto")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("VendaId")
                         .HasColumnType("int");
 
                     b.HasKey("ProdutoId");
+
+                    b.HasIndex("TipoProdId");
 
                     b.HasIndex("VendaId");
 
@@ -376,12 +386,26 @@ namespace OsirisPdvReal.Migrations
                         });
                 });
 
-            modelBuilder.Entity("OsirisPdvReal.Models.Venda", b =>
+            modelBuilder.Entity("OsirisPdvReal.Models.TipoProduto", b =>
                 {
-                    b.Property<int?>("VendaId")
+                    b.Property<int>("TipoProdId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("NomeTipoProduto")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("TipoProdId");
+
+                    b.ToTable("TipoProdutos");
+                });
+
+            modelBuilder.Entity("OsirisPdvReal.Models.Venda", b =>
+                {
+                    b.Property<int?>("VendaId")
+                        .HasColumnType("int");
 
                     b.Property<int>("BancaId")
                         .HasColumnType("int");
@@ -391,6 +415,9 @@ namespace OsirisPdvReal.Migrations
 
                     b.Property<DateTime>("DataVenda")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("QuantidadeVendida")
+                        .HasColumnType("int");
 
                     b.Property<int?>("StatusId")
                         .HasColumnType("int");
@@ -531,6 +558,12 @@ namespace OsirisPdvReal.Migrations
 
             modelBuilder.Entity("OsirisPdvReal.Models.Produto", b =>
                 {
+                    b.HasOne("OsirisPdvReal.Models.TipoProduto", "tipoProduto")
+                        .WithMany("Produtos")
+                        .HasForeignKey("TipoProdId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("OsirisPdvReal.Models.Venda", null)
                         .WithMany("ItemVenda")
                         .HasForeignKey("VendaId");

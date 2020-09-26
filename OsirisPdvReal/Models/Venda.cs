@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -9,6 +10,7 @@ namespace OsirisPdvReal.Models
     public class Venda
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int? VendaId { get; set; }
         [Required(ErrorMessage = "Campo obrigatório")]
         [Display(Name = "Data da venda")]
@@ -16,9 +18,10 @@ namespace OsirisPdvReal.Models
         [Required(ErrorMessage = "Campo obrigatório")]
         [StringLength(30, ErrorMessage = "Limite de caracteres atingido")]
         [Display(Name = "Valor da venda")]
-        public double ValorVenda { get; set; }
+        public string ValorVenda { get; set; }
         [Required(ErrorMessage = "Campo obrigatório")]
         [Display(Name = "Produtos")]
+        public int QuantidadeVendida { get; set; }
         public List<Produto> ItemVenda { get; set; }
         public int? StatusId { get; set; }
         public Status Status { get; set; }

@@ -6,9 +6,27 @@
 
 <h1>Index</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+<div class="modal" id="visao" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header tHeadPurple">
+                <h5 class="modal-title font-weight-bold text-white" id="titleModal">Produtos da venda</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="modalInfo">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success botaoDoId" onclick="AddCarrinho()" style="font-size:12px;">Adicionar no carrinho</button>
+                    <button type="button" class="btn btn-danger" style="font-size:12px;" data-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <table class="table">
     <thead>
         <tr>
@@ -19,41 +37,65 @@
                 @Html.DisplayNameFor(model => model.ValorVenda)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Status)
+                Cliente
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Bancas)
+                Banca
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Clientes)
+                Status
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.DataVenda)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ValorVenda)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status.NomeStatus)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Bancas.NomeBanca)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Clientes.EmailCliente)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.VendaId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.VendaId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.VendaId">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @item.DataVenda.ToString("dd/MM/yyyy")
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ValorVenda)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Clientes.NomeCliente)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Bancas.NomeBanca)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status.NomeStatus)
+                </td>
+                <td>
+                    <a class="btn btn-warning" onclick="InfoVenda(@item.VendaId)" data-toggle="modal" data-target="#visao">PRODUTOS</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        function InfoVenda(id) {
+            document.getElementById('modalInfo').innerHTML = "";
+            console.log('entro')
+            $.ajax({
+                url: "/Vendas/ShowInfo",
+                method: "POST",
+                data: { id: id },
+                datatype: "json",
+                success: function (data) {
+                    console.log(data)
+                    for (i = 0; i < data.length; i++) {
+                        console.log(data[i])
+                        console.log(data[i].NomeProduto)
+                        $('#modalInfo').append('<p class="fontTitles"> produto - ' + data[i].nomeProduto + ' / unidade(s) - ' + data[i].quantidadeProduto+'</p>');
+                    }
+                }
+            });
+        }
+    </script>
+
+}

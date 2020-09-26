@@ -21,6 +21,19 @@ namespace OsirisPdvReal.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TipoProdutos",
+                columns: table => new
+                {
+                    TipoProdId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    NomeTipoProduto = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TipoProdutos", x => x.TipoProdId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Tipos",
                 columns: table => new
                 {
@@ -40,7 +53,7 @@ namespace OsirisPdvReal.Migrations
                     CPFcliente = table.Column<long>(nullable: false),
                     NomeCliente = table.Column<string>(maxLength: 80, nullable: false),
                     EmailCliente = table.Column<string>(maxLength: 80, nullable: false),
-                    TelefoneCliente = table.Column<string>(maxLength: 12, nullable: false),
+                    TelefoneCliente = table.Column<string>(maxLength: 15, nullable: false),
                     StatusId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -61,10 +74,10 @@ namespace OsirisPdvReal.Migrations
                     CNPJ = table.Column<long>(nullable: false),
                     NomeFornecedor = table.Column<string>(maxLength: 100, nullable: false),
                     EmailFornecedor = table.Column<string>(maxLength: 80, nullable: false),
-                    TelefoneFornecedor = table.Column<string>(maxLength: 12, nullable: false),
+                    TelefoneFornecedor = table.Column<string>(maxLength: 16, nullable: false),
                     PontoFocalFornecedor = table.Column<string>(maxLength: 100, nullable: false),
                     LogradouroFornecedor = table.Column<string>(maxLength: 100, nullable: false),
-                    CEPFornecedor = table.Column<string>(maxLength: 100, nullable: false),
+                    CEPFornecedor = table.Column<string>(maxLength: 9, nullable: false),
                     StatusId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -85,9 +98,9 @@ namespace OsirisPdvReal.Migrations
                     ComprasId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     NomeItemCompra = table.Column<string>(maxLength: 80, nullable: false),
-                    QuantidadeCompra = table.Column<int>(maxLength: 9, nullable: false),
+                    QuantidadeCompra = table.Column<int>(nullable: false),
                     DataCompra = table.Column<DateTime>(nullable: false),
-                    ValorCompra = table.Column<double>(nullable: false),
+                    ValorCompra = table.Column<string>(nullable: false),
                     StatusId = table.Column<int>(nullable: false),
                     CNPJ = table.Column<long>(nullable: true)
                 },
@@ -209,6 +222,7 @@ namespace OsirisPdvReal.Migrations
                     BancaId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     NomeBanca = table.Column<string>(maxLength: 100, nullable: false),
+                    Bairro = table.Column<string>(nullable: false),
                     CPF = table.Column<long>(nullable: true),
                     JornaleiroCPF = table.Column<long>(nullable: true)
                 },
@@ -227,10 +241,10 @@ namespace OsirisPdvReal.Migrations
                 name: "Vendas",
                 columns: table => new
                 {
-                    VendaId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    VendaId = table.Column<int>(nullable: false),
                     DataVenda = table.Column<DateTime>(nullable: false),
                     ValorVenda = table.Column<double>(maxLength: 30, nullable: false),
+                    QuantidadeVendida = table.Column<int>(nullable: false),
                     StatusId = table.Column<int>(nullable: true),
                     BancaId = table.Column<int>(nullable: false),
                     CPFcliente = table.Column<long>(nullable: false)
@@ -265,13 +279,20 @@ namespace OsirisPdvReal.Migrations
                     ProdutoId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     NomeProduto = table.Column<string>(maxLength: 80, nullable: false),
-                    ValorProduto = table.Column<double>(nullable: false),
+                    ValorProduto = table.Column<string>(nullable: false),
                     QuantideProduto = table.Column<int>(nullable: false),
+                    TipoProdId = table.Column<int>(nullable: false),
                     VendaId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Produto", x => x.ProdutoId);
+                    table.ForeignKey(
+                        name: "FK_Produto_TipoProdutos_TipoProdId",
+                        column: x => x.TipoProdId,
+                        principalTable: "TipoProdutos",
+                        principalColumn: "TipoProdId",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Produto_Vendas_VendaId",
                         column: x => x.VendaId,
@@ -409,6 +430,11 @@ namespace OsirisPdvReal.Migrations
                 column: "TipoId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Produto_TipoProdId",
+                table: "Produto",
+                column: "TipoProdId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Produto_VendaId",
                 table: "Produto",
                 column: "VendaId");
@@ -492,6 +518,9 @@ namespace OsirisPdvReal.Migrations
 
             migrationBuilder.DropTable(
                 name: "Fornecedores");
+
+            migrationBuilder.DropTable(
+                name: "TipoProdutos");
 
             migrationBuilder.DropTable(
                 name: "Vendas");

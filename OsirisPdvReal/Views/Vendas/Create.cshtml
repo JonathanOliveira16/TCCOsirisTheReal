@@ -146,7 +146,7 @@
 </div>
 
 <div class="card" id="cardCar" style="visibility:hidden">
-    <div class="card-header fontTitles text-center" >
+    <div class="card-header fontTitles text-center">
         CARRINHO
     </div>
     <div class="card-body">
@@ -223,6 +223,7 @@
         var tabelaProd = localStorage.getItem("prods");
         var dadoSplitTable = tabelaProd.split('/');
         if (dadoSplitTable.length > 1) {
+            var valTotal = 0
             for (j = 1; j < dadoSplitTable.length; j++) {
                 var data = dadoSplitTable[j].split(',')
                 var x = data[2];
@@ -235,10 +236,10 @@
                 var letters = '/^[a-zA-Z]+$/';
 
                     var rows = "";
-                    var name = data[0];
-                    var valor = y.toFixed(2);
-                    var quantidade = x;
-                    var bancaSelecionada = banca
+                var name = data[0];
+                var valor = y;
+                var quantidade = x;
+                var bancaSelecionada = banca
                 var clienteVal = e
                 rows += "<tr><td>" + name + "</td><td>" + 'R$' + valor + "</td><td>" + clienteVal + "</td><td>" + quantidade + "</td><td>" + bancaSelecionada + "</td><td> <a class='btn-sm btn-danger text-white' style='margin-left:90px'  id='DeleteButton'>REMOVER</a></td></tr>";
                     $(rows).appendTo("#tableVenda");
@@ -248,7 +249,11 @@
                 document.getElementById("bancaDrop").style.visibility = "hidden";
                 document.getElementById("lblCli").style.visibility = "hidden";
                 document.getElementById("lblBan").style.visibility = "hidden";
+                valTotal = valTotal + Number(y)
             }
+            var valorTotalDaVenda = document.getElementById("valTotalTable");
+            var vt = valTotal
+            valorTotalDaVenda.textContent = vt.toFixed(2)
         }
         // loop over each table row (tr)
         //$("#table-id tr").each(function () {
@@ -269,6 +274,8 @@
         $("#vender").on("click",function () {
             var dadosProds = []
             var arrayFinal = []
+            var valTot = document.getElementById("valTotalTable").textContent
+            console.log("val total" + valTot)
             $("#tableVenda tr").each(function () {
                 var currentRow = $(this);
 
@@ -283,15 +290,21 @@
                 dadosProds.push(quantidadeProd)
                 dadosProds.push(banca)
             })
-         
-          
+
+
             $.ajax({
                 url: "/Vendas/SalvarVenda",
                 method: "POST",
-                data: { dados: dadosProds },
+                data: { dados: dadosProds, valTotal: valTot },
                 datatype: "json",
                 success: function (data) {
-
+                    $.ajax({
+                        url: "/Vendas/Index",
+                        type: "get",
+                        success: function () {
+                            window.location.href = '/Vendas/Index'
+                        }
+                    });
                 }
             });
         });
@@ -429,7 +442,8 @@
                 $(rows).appendTo("#tableVenda");
             }
             $(".modal").modal('hide');
-            valorTotalDaVenda.textContent = Number(valorTotalDaVenda.textContent) + Number(valor)
+            var vt = Number(valorTotalDaVenda.textContent) + Number(valor)
+            valorTotalDaVenda.textContent = vt.toFixed(2)
 
             document.getElementById("quantidadeProduto").value = "";
             document.getElementById("cardCar").style.visibility = "visible";
@@ -437,7 +451,7 @@
             document.getElementById("bancaDrop").style.visibility = "hidden";
             document.getElementById("lblCli").style.visibility = "hidden";
             document.getElementById("lblBan").style.visibility = "hidden";
-            var dadoCheio = ["/" + dadosProds[0], valTotal, quant, strUser, bancaSelecionada]
+            var dadoCheio = ["/" + dadosProds[0], valor, quant, strUser, bancaSelecionada]
             console.log(dadoCheio)
             dadosTableRefresh.push(dadoCheio)
 
