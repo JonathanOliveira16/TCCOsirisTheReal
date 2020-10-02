@@ -162,7 +162,10 @@ namespace OsirisPdvReal.Controllers
         // GET: Jornaleiros
         public async Task<IActionResult> Index(int page = 1)
         {
-            
+            if (Request.Cookies["idDoUser"] == null)
+            {
+                return RedirectToAction("Login", "Jornaleiros");
+            }
             //essas linhas sao necessarias para a paginaca so trocar o tipo de context, jornaleiro, produto etc
             ViewBag.admin = Request.Cookies["admin"];
 
@@ -171,29 +174,14 @@ namespace OsirisPdvReal.Controllers
             return View(model);
         }
 
-        // GET: Jornaleiros/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var jornaleiro = await _context.Jornaleiros
-                .Include(j => j.Status)
-                .FirstOrDefaultAsync(m => m.CPF == id);
-            if (jornaleiro == null)
-            {
-                return NotFound();
-            }
-
-            return View(jornaleiro);
-        }
 
         // GET: Jornaleiros/Create
         public IActionResult Create()
         {
-
+            if (Request.Cookies["idDoUser"] == null)
+            {
+                return RedirectToAction("Login", "Jornaleiros");
+            }
             ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus");
             ViewData["disable"] = "readonly";
             ViewData["TipoId"] = new SelectList(_context.Tipos, "TipoId", "NomeTipo");
@@ -274,6 +262,10 @@ namespace OsirisPdvReal.Controllers
         // GET: Jornaleiros/Edit/5
         public async Task<IActionResult> Edit(long? id)
         {
+            if (Request.Cookies["idDoUser"] == null)
+            {
+                return RedirectToAction("Login", "Jornaleiros");
+            }
             ViewBag.admin = Request.Cookies["admin"];
             var idUserLogado = Request.Cookies["idDoUser"];
             var eadmin = Request.Cookies["admin"];

@@ -4,7 +4,6 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
 
 <div class="modal" id="visao" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
@@ -20,64 +19,97 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success botaoDoId" onclick="AddCarrinho()" style="font-size:12px;">Adicionar no carrinho</button>
-                    <button type="button" class="btn btn-danger" style="font-size:12px;" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" style="font-size:12px;" data-dismiss="modal">Fechar</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.DataVenda)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ValorVenda)
-            </th>
-            <th>
-                Cliente
-            </th>
-            <th>
-                Banca
-            </th>
-            <th>
-                Status
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
+
+<h5 class="divBtn fontTitles">LISTAGEM DE VENDAS</h5>
+
+<div class="divBtn">
+    <a class="btn btnPage btn-success mt-2" asp-action="Create">Nova venda</a>
+</div>
+
+@if(Model != null) { 
+    <table class="table mt-4 table-striped">
+        <thead class="tHeadPurple">
             <tr>
-                <td>
-                    @item.DataVenda.ToString("dd/MM/yyyy")
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ValorVenda)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Clientes.NomeCliente)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Bancas.NomeBanca)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Status.NomeStatus)
-                </td>
-                <td>
-                    <a class="btn btn-warning" onclick="InfoVenda(@item.VendaId)" data-toggle="modal" data-target="#visao">PRODUTOS</a>
-                </td>
+                <th class="text-white">
+                    @Html.DisplayNameFor(model => model.DataVenda)
+                </th>
+                <th class="text-white">
+                    @Html.DisplayNameFor(model => model.ValorVenda)
+                </th>
+                <th class="text-white">
+                    Cliente
+                </th>
+                <th class="text-white">
+                    Banca
+                </th>
+                <th class="text-white">
+                    Status
+                </th>
+                <th></th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @item.DataVenda.ToString("dd/MM/yyyy")
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ValorVenda)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Clientes.NomeCliente)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Bancas.NomeBanca)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Status.NomeStatus)
+                    </td>
+                    <td>
+                        <a class="btn-sm btn-warning text-white" onclick="InfoVenda(@item.VendaId)" data-toggle="modal" data-target="#visao">PRODUTOS</a>
+                        <a class="btn-sm btn-danger text-white" onclick="ApagarVenda(@item.VendaId)">EXCLUIR</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+<div class="divBtn mt-5">
+    <div class="card">
+        <h5 class="card-header font-weight-bold text-white" style="background-color: #00AA9E;">Nenhum item cadastrado</h5>
+        <div class="card-body">
+            <h5 class="card-title">Você não possui dados para serem exibidos, que tal começar cadastrando alguns dados?</h5>
+        </div>
+    </div>
+</div>
+}
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
     <script>
+        window.localStorage.clear();
+
+        function ApagarVenda(id) {
+            $.ajax({
+                url: "/Vendas/Delete",
+                method: "POST",
+                data: { id: id },
+                success: function (data) {
+                    location.reload(true)
+                }
+            });
+        }
+
         function InfoVenda(id) {
             document.getElementById('modalInfo').innerHTML = "";
             console.log('entro')
@@ -91,7 +123,7 @@
                     for (i = 0; i < data.length; i++) {
                         console.log(data[i])
                         console.log(data[i].NomeProduto)
-                        $('#modalInfo').append('<p class="fontTitles"> produto - ' + data[i].nomeProduto + ' / unidade(s) - ' + data[i].quantidadeProduto+'</p>');
+                        $('#modalInfo').append('<div class="d-flex"><p class="font-weight-bold"> Produto - ' + data[i].nomeProduto + '</p><span class="badge badge-pill badge-primary mt-1 ml-2" style="height:20px;">Unidade(s) - ' + data[i].quantidadeProduto + '</span></div>');
                     }
                 }
             });

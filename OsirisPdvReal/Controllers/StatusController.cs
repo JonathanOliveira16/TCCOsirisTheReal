@@ -21,12 +21,19 @@ namespace OsirisPdvReal.Controllers
         // GET: Status
         public async Task<IActionResult> Index()
         {
+            if (Request.Cookies["idDoUser"] == null)
+            {
+                return RedirectToAction("Login", "Jornaleiros");
+            }
             return View(await _context.Status.ToListAsync());
         }
 
         public async Task<IActionResult> InativosJornaleiros()
         {
-
+            if (Request.Cookies["idDoUser"] == null)
+            {
+                return RedirectToAction("Login", "Jornaleiros");
+            }
             return View(await _context.Jornaleiros.Include(j=>j.Status).Where(j=>j.StatusId == 2).ToListAsync());
         }
 
@@ -53,7 +60,10 @@ namespace OsirisPdvReal.Controllers
 
         public async Task<IActionResult> InativosFornecedores()
         {
-
+            if (Request.Cookies["idDoUser"] == null)
+            {
+                return RedirectToAction("Login", "Jornaleiros");
+            }
             return View(await _context.Fornecedores.Include(j => j.Status).Where(j => j.StatusId == 2).ToListAsync());
         }
 
@@ -80,6 +90,10 @@ namespace OsirisPdvReal.Controllers
 
         public async Task<IActionResult> InativosClientes()
         {
+            if (Request.Cookies["idDoUser"] == null)
+            {
+                return RedirectToAction("Login", "Jornaleiros");
+            }
             return View(await _context.Clientes.Include(j => j.Status).Where(j => j.StatusId == 2).ToListAsync());
         }
 
@@ -126,6 +140,10 @@ namespace OsirisPdvReal.Controllers
         // GET: Status/Create
         public IActionResult Create()
         {
+            if (Request.Cookies["idDoUser"] == null)
+            {
+                return RedirectToAction("Login", "Jornaleiros");
+            }
             return View();
         }
 
@@ -158,6 +176,10 @@ namespace OsirisPdvReal.Controllers
         // GET: Status/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            if (Request.Cookies["idDoUser"] == null)
+            {
+                return RedirectToAction("Login", "Jornaleiros");
+            }
             if (id == null)
             {
                 return NotFound();

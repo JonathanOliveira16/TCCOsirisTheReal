@@ -325,32 +325,37 @@ namespace OsirisPdvReal.Controllers
         }
 
         // GET: Vendas/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //public async Task<IActionResult> Delete(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var venda = await _context.Vendas
-                .Include(v => v.Bancas)
-                .Include(v => v.Clientes)
-                .Include(v => v.Status)
-                .FirstOrDefaultAsync(m => m.VendaId == id);
-            if (venda == null)
-            {
-                return NotFound();
-            }
+        //    var venda = await _context.Vendas
+        //        .Include(v => v.Bancas)
+        //        .Include(v => v.Clientes)
+        //        .Include(v => v.Status)
+        //        .FirstOrDefaultAsync(m => m.VendaId == id);
+        //    if (venda == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return View(venda);
-        }
+        //    return View(venda);
+        //}
 
         // POST: Vendas/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int? id)
+        [HttpPost]
+        public async Task<IActionResult> Delete(int? id)
         {
             var venda = await _context.Vendas.FindAsync(id);
+            var vendaComProdutoSeparado = _context.VendaProduto.Where(v => v.VendaId == id).ToList();
+            foreach(var x in vendaComProdutoSeparado)
+            {
+                var prod = _context.Produto.Where(p => p.ProdutoId == x.ProdutoId).FirstOrDefault();
+                prod.QuantideProduto = x.QuantidadeVendida + prod.QuantideProduto;
+            }
             _context.Vendas.Remove(venda);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

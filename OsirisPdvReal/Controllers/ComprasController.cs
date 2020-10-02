@@ -22,6 +22,10 @@ namespace OsirisPdvReal.Controllers
         // GET: Compras
         public async Task<IActionResult> Index(int page = 1)
         {
+            if (Request.Cookies["idDoUser"] == null)
+            {
+                return RedirectToAction("Login", "Jornaleiros");
+            }
             var query = _context.Compras.Include(c => c.Status).Include(c => c.fornecedor).OrderBy(c=>c.DataCompra);
             var model = await PagingList.CreateAsync(query, 5, page);
             return View(model);
@@ -41,29 +45,14 @@ namespace OsirisPdvReal.Controllers
             return View(model);
         }
 
-        // GET: Compras/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var compras = await _context.Compras
-                .Include(c => c.Status)
-                .Include(c => c.fornecedor)
-                .FirstOrDefaultAsync(m => m.ComprasId == id);
-            if (compras == null)
-            {
-                return NotFound();
-            }
-
-            return View(compras);
-        }
 
         // GET: Compras/Create
         public IActionResult Create()
         {
+            if (Request.Cookies["idDoUser"] == null)
+            {
+                return RedirectToAction("Login", "Jornaleiros");
+            }
             ViewData["ProdutoId"] = new SelectList(_context.Produto, "NomeProduto", "NomeProduto").OrderBy(c=>c.Text);
             ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus");
             ViewData["CNPJ"] = new SelectList(_context.Fornecedores, "CNPJ", "NomeFornecedor");
@@ -96,6 +85,10 @@ namespace OsirisPdvReal.Controllers
         // GET: Compras/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            if (Request.Cookies["idDoUser"] == null)
+            {
+                return RedirectToAction("Login", "Jornaleiros");
+            }
             if (id == null)
             {
                 return NotFound();

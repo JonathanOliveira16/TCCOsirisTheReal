@@ -54,6 +54,10 @@ namespace OsirisPdvReal.Controllers
         // GET: Clientes
         public async Task<IActionResult> Index(int page = 1)
         {
+            if (Request.Cookies["idDoUser"] == null)
+            {
+                return RedirectToAction("Login", "Jornaleiros");
+            }
             var query = _context.Clientes.Include(j => j.Status).AsNoTracking().Where(c=>c.StatusId ==1).OrderBy(j => j.NomeCliente);
             var model = await PagingList.CreateAsync(query, 5, page);
             return View(model);
@@ -87,28 +91,14 @@ namespace OsirisPdvReal.Controllers
 
         }
 
-        // GET: Clientes/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var cliente = await _context.Clientes
-                .Include(c => c.Status)
-                .FirstOrDefaultAsync(m => m.CPFcliente == id);
-            if (cliente == null)
-            {
-                return NotFound();
-            }
-
-            return View(cliente);
-        }
 
         // GET: Clientes/Create
         public IActionResult Create()
         {
+            if (Request.Cookies["idDoUser"] == null)
+            {
+                return RedirectToAction("Login", "Jornaleiros");
+            }
             ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus");
             return View();
         }
@@ -158,6 +148,10 @@ namespace OsirisPdvReal.Controllers
         // GET: Clientes/Edit/5
         public async Task<IActionResult> Edit(long? id)
         {
+            if (Request.Cookies["idDoUser"] == null)
+            {
+                return RedirectToAction("Login", "Jornaleiros");
+            }
             if (id == null)
             {
                 return NotFound();

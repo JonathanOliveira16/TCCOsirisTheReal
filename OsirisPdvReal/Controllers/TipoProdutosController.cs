@@ -21,6 +21,10 @@ namespace OsirisPdvReal.Controllers
         // GET: TipoProdutos
         public async Task<IActionResult> Index()
         {
+            if (Request.Cookies["idDoUser"] == null)
+            {
+                return RedirectToAction("Login", "Jornaleiros");
+            }
             return View(await _context.TipoProdutos.ToListAsync());
         }
 
@@ -45,6 +49,10 @@ namespace OsirisPdvReal.Controllers
         // GET: TipoProdutos/Create
         public IActionResult Create()
         {
+            if (Request.Cookies["idDoUser"] == null)
+            {
+                return RedirectToAction("Login", "Jornaleiros");
+            }
             return View();
         }
 
@@ -77,6 +85,10 @@ namespace OsirisPdvReal.Controllers
         // GET: TipoProdutos/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            if (Request.Cookies["idDoUser"] == null)
+            {
+                return RedirectToAction("Login", "Jornaleiros");
+            }
             if (id == null)
             {
                 return NotFound();

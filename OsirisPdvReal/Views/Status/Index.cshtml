@@ -54,12 +54,12 @@
                     @Html.DisplayFor(modelItem => item.NomeStatus)
                 </td>
                 <td class="float-right">
-                    <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.StatusId">Editar</a>
                     @if (item.StatusId == 1 || item.StatusId == 2)
                     {
                     }
                     else
                     {
+                        <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.StatusId">Editar</a>
                         <a class="btn btn-danger" data-toggle="modal" data-target="#visao" onclick="PassarDados(@item.StatusId)">Excluir</a>
 
                     }
@@ -73,6 +73,7 @@
 @section Scripts{
     <script>
         var idParaApagar
+        window.localStorage.clear();
 
         function PassarDados(idJornaleiro) {
             $(".botaoDoId").on('click', function () {

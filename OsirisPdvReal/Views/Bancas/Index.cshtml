@@ -38,7 +38,7 @@
         <div class="d-flex">
             <input type="text" class="form-control borderInput" name="busca" id="busca" placeholder="Pesquisar por nome..." />
             <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
-         
+
         </div>
     </form>
 
@@ -63,50 +63,62 @@
 
 
 
+@if (Model.Count > 0)
+{
+    <table class="table mt-4 table-striped">
+        <thead class="tHeadPurple">
+            <tr>
+                <th class="text-white">
+                    @Html.DisplayNameFor(model => model.NomeBanca)
+                </th>
+                <th class="text-white">
+                    @Html.DisplayNameFor(model => model.Jornaleiro)
+                </th>
+                <th class="text-white">
+                    @Html.DisplayNameFor(model => model.Bairro)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NomeBanca)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Jornaleiro.NomeJornaleiro)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Bairro)
+                    </td>
+                    <td class="float-right">
+                        <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.BancaId">Editar</a> |
 
-<table class="table mt-4 table-striped">
-    <thead class="tHeadPurple">
-        <tr>
-            <th class="text-white">
-                @Html.DisplayNameFor(model => model.NomeBanca)
-            </th>
-            <th class="text-white">
-                @Html.DisplayNameFor(model => model.Jornaleiro)
-            </th>
-            <th class="text-white">
-                @Html.DisplayNameFor(model => model.Bairro)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.NomeBanca)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Jornaleiro.NomeJornaleiro)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Bairro)
-            </td>
-            <td class="float-right">
-                <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.BancaId">Editar</a> |
+                        <a class="btn btn-danger" data-toggle="modal" data-target="#visao" onclick="PassarDados(@item.BancaId)">Excluir</a>
+                    </td>
 
-                <a class="btn btn-danger" data-toggle="modal" data-target="#visao" onclick="PassarDados(@item.BancaId)">Excluir</a>
-            </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 
-        </tr>
-        }
-    </tbody>
-</table>
-
-<nav class="float-right">
-    @await this.Component.InvokeAsync("Pager", new { PagingList = this.Model })
-</nav>
-
+    <nav class="float-right">
+        @await this.Component.InvokeAsync("Pager", new { PagingList = this.Model })
+    </nav>
+}
+else
+{
+    <div class="divBtn mt-5">
+        <div class="card">
+            <h5 class="card-header font-weight-bold text-white" style="background-color: #00AA9E;">Nenhum item cadastrado</h5>
+            <div class="card-body">
+                <h5 class="card-title">Você não possui dados para serem exibidos, que tal começar cadastrando alguns dados?</h5>
+            </div>
+        </div>
+    </div>
+}
 @section Scripts{
     <script>
         var idParaApagar

@@ -289,6 +289,9 @@ namespace OsirisPdvReal.Migrations
                     b.Property<int>("QuantideProduto")
                         .HasColumnType("int");
 
+                    b.Property<int>("StatusId")
+                        .HasColumnType("int");
+
                     b.Property<int>("TipoProdId")
                         .HasColumnType("int");
 
@@ -300,6 +303,8 @@ namespace OsirisPdvReal.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("ProdutoId");
+
+                    b.HasIndex("StatusId");
 
                     b.HasIndex("TipoProdId");
 
@@ -557,6 +562,12 @@ namespace OsirisPdvReal.Migrations
 
             modelBuilder.Entity("OsirisPdvReal.Models.Produto", b =>
                 {
+                    b.HasOne("OsirisPdvReal.Models.Status", "Status")
+                        .WithMany("Produtos")
+                        .HasForeignKey("StatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("OsirisPdvReal.Models.TipoProduto", "tipoProduto")
                         .WithMany("Produtos")
                         .HasForeignKey("TipoProdId")

@@ -22,6 +22,10 @@ namespace OsirisPdvReal.Controllers
         // GET: Produtos
         public async Task<IActionResult> Index(int page = 1)
         {
+            if (Request.Cookies["idDoUser"] == null)
+            {
+                return RedirectToAction("Login", "Jornaleiros");
+            }
             ViewBag.categorias = _context.TipoProdutos.Select(t => t.NomeTipoProduto).ToList();
             var query = _context.Produto.Include(p => p.tipoProduto).AsNoTracking().OrderBy(j => j.NomeProduto);
             //var contexto = _context.Bancas.Include(b => b.Jornaleiro);
@@ -95,27 +99,15 @@ namespace OsirisPdvReal.Controllers
         }
 
 
-        // GET: Produtos/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
-            var produto = await _context.Produto
-                .FirstOrDefaultAsync(m => m.ProdutoId == id);
-            if (produto == null)
-            {
-                return NotFound();
-            }
-
-            return View(produto);
-        }
 
         // GET: Produtos/Create
         public IActionResult Create()
         {
+            if (Request.Cookies["idDoUser"] == null)
+            {
+                return RedirectToAction("Login", "Jornaleiros");
+            }
             ViewData["TipoProdId"] = new SelectList(_context.TipoProdutos, "TipoProdId", "NomeTipoProduto");
 
             return View();
@@ -135,6 +127,7 @@ namespace OsirisPdvReal.Controllers
                     var produtoExist = _context.Produto.Where(p => p.NomeProduto == produto.NomeProduto).Select(p => p.NomeProduto).FirstOrDefault();
                     if (produtoExist == null)
                     {
+                        
                         _context.Add(produto);
                         await _context.SaveChangesAsync();
                         return RedirectToAction(nameof(Index));
@@ -162,6 +155,10 @@ namespace OsirisPdvReal.Controllers
         // GET: Produtos/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            if (Request.Cookies["idDoUser"] == null)
+            {
+                return RedirectToAction("Login", "Jornaleiros");
+            }
             if (id == null)
             {
                 return NotFound();
@@ -240,8 +237,19 @@ namespace OsirisPdvReal.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
+            
             var produto = await _context.Produto.FindAsync(id);
-            _context.Produto.Remove(produto);
+            var vendaComProd = _context.VendaProduto.Where(p => p.ProdutoId == id).ToList();
+            if (vendaComProd.Count == 0)
+            {
+                _context.Produto.Remove(produto);
+            }
+            else
+            {
+                TempData["msgSucesso"] = "Produto atrelado em uma venda, favor excluir a venda antes do produto!";
+
+            }
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

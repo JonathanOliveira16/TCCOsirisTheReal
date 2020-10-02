@@ -24,6 +24,10 @@ namespace OsirisPdvReal.Controllers
         // GET: Fornecedores
         public async Task<IActionResult> Index(int page = 1)
         {
+            if (Request.Cookies["idDoUser"] == null)
+            {
+                return RedirectToAction("Login", "Jornaleiros");
+            }
             var query = _context.Fornecedores.Include(j => j.Status).AsNoTracking().Where(f=>f.StatusId == 1).OrderBy(j => j.NomeFornecedor);
             var model = await PagingList.CreateAsync(query, 5, page);
 
@@ -33,6 +37,7 @@ namespace OsirisPdvReal.Controllers
         [HttpPost]
         public async Task<IActionResult> Index(string busca, int page = 1)
         {
+
             try
             {
                 if (busca == null)
@@ -85,28 +90,15 @@ namespace OsirisPdvReal.Controllers
             }
         }
 
-        // GET: Fornecedores/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
-            var fornecedor = await _context.Fornecedores
-                .Include(f => f.Status)
-                .FirstOrDefaultAsync(m => m.CNPJ == id);
-            if (fornecedor == null)
-            {
-                return NotFound();
-            }
-
-            return View(fornecedor);
-        }
 
         // GET: Fornecedores/Create
         public IActionResult Create()
         {
+            if (Request.Cookies["idDoUser"] == null)
+            {
+                return RedirectToAction("Login", "Jornaleiros");
+            }
             ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus");
             return View();
         }
@@ -146,6 +138,10 @@ namespace OsirisPdvReal.Controllers
         // GET: Fornecedores/Edit/5
         public async Task<IActionResult> Edit(long? id)
         {
+            if (Request.Cookies["idDoUser"] == null)
+            {
+                return RedirectToAction("Login", "Jornaleiros");
+            }
             if (id == null)
             {
                 return NotFound();

@@ -23,6 +23,10 @@ namespace OsirisPdvReal.Controllers
         // GET: Bancas
         public async Task<IActionResult> Index(int page = 1)
         {
+            if (Request.Cookies["idDoUser"] == null)
+            {
+                return RedirectToAction("Login","Jornaleiros");
+            }
             List<String> Bairros = BairroUtil.GetBairros();
             ViewBag.bairros = Bairros.OrderBy(b => b).ToList();
             var query = _context.Bancas.Include(j => j.Jornaleiro).AsNoTracking().OrderBy(j => j.NomeBanca);
@@ -97,27 +101,15 @@ namespace OsirisPdvReal.Controllers
         }
 
         // GET: Bancas/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
-            var banca = await _context.Bancas
-                .Include(b => b.Jornaleiros)
-                .FirstOrDefaultAsync(m => m.BancaId == id);
-            if (banca == null)
-            {
-                return NotFound();
-            }
-
-            return View(banca);
-        }
 
         // GET: Bancas/Create
         public IActionResult Create()
         {
+            if (Request.Cookies["idDoUser"] == null)
+            {
+                return RedirectToAction("Login", "Jornaleiros");
+            }
             List<String> Bairros = BairroUtil.GetBairros();
             ViewBag.bairros = Bairros.OrderBy(b=>b).ToList();
             ViewData["CPF"] = new SelectList(_context.Jornaleiros, "CPF", "NomeJornaleiro");
@@ -174,6 +166,10 @@ namespace OsirisPdvReal.Controllers
         // GET: Bancas/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            if (Request.Cookies["idDoUser"] == null)
+            {
+                return RedirectToAction("Login", "Jornaleiros");
+            }
             if (id == null)
             {
                 return NotFound();

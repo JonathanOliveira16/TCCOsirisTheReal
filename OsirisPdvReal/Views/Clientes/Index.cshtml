@@ -40,54 +40,68 @@
         <a class="btn btnPage btn-success mlAddNew" style="margin-left:10%;" asp-action="Create">Novo cliente</a>
     </div>
 </form>
-<table class="table mt-4 table-striped" >
-    <thead class="tHeadPurple">
-        <tr>
-            <th class="text-white">
-                @Html.DisplayNameFor(model => model.NomeCliente)
-            </th>
-            <th class="text-white">
-                @Html.DisplayNameFor(model => model.EmailCliente)
-            </th>
-            <th class="text-white">
-                @Html.DisplayNameFor(model => model.TelefoneCliente)
-            </th>
-            <th class="text-white">
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
+
+@if (Model.Count > 0)
+{
+    <table class="table mt-4 table-striped">
+        <thead class="tHeadPurple">
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.NomeCliente)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.EmailCliente)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.TelefoneCliente)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Status.NomeStatus)
-                </td>
-                <td class="float-right">
-                    <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.CPFcliente">Editar</a> |
-
-                    <a class="btn btn-danger" data-toggle="modal" data-target="#visao" onclick="PassarDados(@item.CPFcliente)">Excluir</a>
-                </td>
+                <th class="text-white">
+                    @Html.DisplayNameFor(model => model.NomeCliente)
+                </th>
+                <th class="text-white">
+                    @Html.DisplayNameFor(model => model.EmailCliente)
+                </th>
+                <th class="text-white">
+                    @Html.DisplayNameFor(model => model.TelefoneCliente)
+                </th>
+                <th class="text-white">
+                    @Html.DisplayNameFor(model => model.Status)
+                </th>
+                <th></th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NomeCliente)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.EmailCliente)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TelefoneCliente)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Status.NomeStatus)
+                    </td>
+                    <td class="float-right">
+                        <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.CPFcliente">Editar</a> |
 
-<nav class="float-right">
-    @await this.Component.InvokeAsync("Pager", new { PagingList = this.Model })
-</nav>
+                        <a class="btn btn-danger" data-toggle="modal" data-target="#visao" onclick="PassarDados(@item.CPFcliente)">Excluir</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 
+    <nav class="float-right">
+        @await this.Component.InvokeAsync("Pager", new { PagingList = this.Model })
+    </nav>
+}
+else
+{
+    <div class="divBtn mt-5">
+        <div class="card">
+            <h5 class="card-header font-weight-bold text-white" style="background-color: #00AA9E;">Nenhum item cadastrado</h5>
+            <div class="card-body">
+                <h5 class="card-title">Você não possui dados para serem exibidos, que tal começar cadastrando alguns dados?</h5>
+            </div>
+        </div>
+    </div>
+}
 @section Scripts{
     <script>
         var idParaApagar

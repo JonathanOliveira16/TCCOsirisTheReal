@@ -37,33 +37,45 @@
     </div>
 }
 
-
-<table class="table mt-4 table-striped">
-    <thead class="tHeadPurple">
-        <tr>
-            <th class="text-white">
-                @Html.DisplayNameFor(model => model.NomeTipoProduto)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
+@if (Model != null)
+{
+    <table class="table mt-4 table-striped">
+        <thead class="tHeadPurple">
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.NomeTipoProduto)
-                </td>
-                <td class="float-right">
-                    <a class="btn btn-warning text-white" asp-action="Edit" asp-route-id="@item.TipoProdId">Editar</a> |
-
-                    <a class="btn btn-danger text-white" data-toggle="modal" data-target="#visao" onclick="PassarDados(@item.TipoProdId)">Excluir</a>
-                </td>
+                <th class="text-white">
+                    @Html.DisplayNameFor(model => model.NomeTipoProduto)
+                </th>
+                <th></th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NomeTipoProduto)
+                    </td>
+                    <td class="float-right">
+                        <a class="btn btn-warning text-white" asp-action="Edit" asp-route-id="@item.TipoProdId">Editar</a> |
 
+                        <a class="btn btn-danger text-white" data-toggle="modal" data-target="#visao" onclick="PassarDados(@item.TipoProdId)">Excluir</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="divBtn mt-5">
+        <div class="card">
+            <h5 class="card-header font-weight-bold text-white" style="background-color: #00AA9E;">Nenhum item cadastrado</h5>
+            <div class="card-body">
+                <h5 class="card-title">Você não possui dados para serem exibidos, que tal começar cadastrando alguns dados?</h5>
+            </div>
+        </div>
+    </div>
+}
 @section Scripts{
     <script>
         var idParaApagar
