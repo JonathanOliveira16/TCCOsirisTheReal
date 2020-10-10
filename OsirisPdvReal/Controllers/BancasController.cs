@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -14,6 +15,7 @@ namespace OsirisPdvReal.Controllers
     public class BancasController : Controller
     {
         private readonly Contexto _context;
+        private static List<Banca> ListaParaCsv = new List<Banca>();
 
         public BancasController(Contexto context)
         {
@@ -30,9 +32,9 @@ namespace OsirisPdvReal.Controllers
             List<String> Bairros = BairroUtil.GetBairros();
             ViewBag.bairros = Bairros.OrderBy(b => b).ToList();
             var query = _context.Bancas.Include(j => j.Jornaleiro).AsNoTracking().OrderBy(j => j.NomeBanca);
-            //var contexto = _context.Bancas.Include(b => b.Jornaleiro);
+            ListaParaCsv.Clear();
+            ListaParaCsv = query.ToList();
             var model = await PagingList.CreateAsync(query, 5, page);
-
             return View(model);
         }
 
@@ -43,7 +45,9 @@ namespace OsirisPdvReal.Controllers
             {
                 if (busca == null)
                 {
-                    var query = _context.Bancas.Include(j => j.Jornaleiros).AsNoTracking().OrderBy(j => j.NomeBanca);
+                    var query = _context.Bancas.Include(j => j.Jornaleiro).AsNoTracking().OrderBy(j => j.NomeBanca);
+                    ListaParaCsv.Clear();
+                    ListaParaCsv = query.ToList();
                     var model = await PagingList.CreateAsync(query, 5, page);
                     List<String> Bairros = BairroUtil.GetBairros();
                     ViewBag.bairros = Bairros.OrderBy(b => b).ToList();
@@ -52,7 +56,9 @@ namespace OsirisPdvReal.Controllers
                 else
                 {
                     List<Banca> listaDasBancas = new List<Banca>();
-                    var bancas = _context.Bancas.Include(j => j.Jornaleiros).Where(b => b.NomeBanca.Contains(busca)).OrderBy(b => b.NomeBanca);
+                    var bancas = _context.Bancas.Include(j => j.Jornaleiro).Where(b => b.NomeBanca.Contains(busca)).OrderBy(b => b.NomeBanca);
+                    ListaParaCsv.Clear();
+                    ListaParaCsv = bancas.ToList();
                     var model = await PagingList.CreateAsync(bancas, 5, page);
                     List<String> Bairros = BairroUtil.GetBairros();
                     ViewBag.bairros = Bairros.OrderBy(b => b).ToList();
@@ -69,13 +75,50 @@ namespace OsirisPdvReal.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> SearchJornaleiro(string buscaJornaleiro,int page = 1)
+        {
+            try
+            {
+                if (buscaJornaleiro == null)
+                {
+                    var query = _context.Bancas.Include(j => j.Jornaleiro).AsNoTracking().OrderBy(j => j.NomeBanca);
+                    ListaParaCsv.Clear();
+                    ListaParaCsv = query.ToList();
+                    var model = await PagingList.CreateAsync(query, 5, page);
+                    List<String> Bairros = BairroUtil.GetBairros();
+                    ViewBag.bairros = Bairros.OrderBy(b => b).ToList();
+                    return View("Index", model);
+                }
+                else
+                {
+                    List<Banca> listaDasBancas = new List<Banca>();
+                    var bancas = _context.Bancas.Include(j => j.Jornaleiro).Where(j => j.Jornaleiro.NomeJornaleiro.Contains(buscaJornaleiro)).OrderBy(b => b.NomeBanca);
+                    ListaParaCsv.Clear();
+                    ListaParaCsv = bancas.ToList();
+                    var model = await PagingList.CreateAsync(bancas, 5, page);
+                    List<String> Bairros = BairroUtil.GetBairros();
+                    ViewBag.bairros = Bairros.OrderBy(b => b).ToList();
+                    return View("Index", model);
+                }
+            }
+            catch (Exception)
+            {
+                TempData["msgSucesso"] = "Erro na sua solicitação, favor tentar novamente!";
+                return View("Index");
+            }
+
+        }
+
+        [HttpPost]
         public async Task<IActionResult> BuscarBairro(string bairroBusca, int page = 1)
         {
             try
             {
                 if (bairroBusca == null)
                 {
-                    var query = _context.Bancas.Include(j => j.Jornaleiros).AsNoTracking().OrderBy(j => j.NomeBanca);
+                    var query = _context.Bancas.Include(j => j.Jornaleiro).AsNoTracking().OrderBy(j => j.NomeBanca);
+                    ListaParaCsv.Clear();
+                    ListaParaCsv = query.ToList();
                     var model = await PagingList.CreateAsync(query, 5, page);
                     List<String> Bairros = BairroUtil.GetBairros();
                     ViewBag.bairros = Bairros.OrderBy(b => b).ToList();
@@ -84,7 +127,9 @@ namespace OsirisPdvReal.Controllers
                 else
                 {
                     List<Banca> listaDasBancas = new List<Banca>();
-                    var bancas = _context.Bancas.Include(j => j.Jornaleiros).Where(b => b.Bairro.Contains(bairroBusca)).OrderBy(b => b.NomeBanca);
+                    var bancas = _context.Bancas.Include(j => j.Jornaleiro).Where(b => b.Bairro.Contains(bairroBusca)).OrderBy(b => b.NomeBanca);
+                    ListaParaCsv.Clear();
+                    ListaParaCsv = bancas.ToList();
                     var model = await PagingList.CreateAsync(bancas, 5, page);
                     List<String> Bairros = BairroUtil.GetBairros();
                     ViewBag.bairros = Bairros.OrderBy(b => b).ToList();
@@ -239,20 +284,46 @@ namespace OsirisPdvReal.Controllers
       
         // POST: Bancas/Delete/5
         [HttpPost]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<String> Delete(int id)
         {
-            //TODO QUANTO VENDA TIVER PRONTA
-            //var temCompra = _context.Bancas.Select(b => b.Vendas).ToList();
-            //if (temCompra.Count() > 0)
-            //{
-            //    TempData["msgSucesso"] = "Banca vinculada à uma venda, logo não é possivel realizar sua exclusão";
-            //    return RedirectToAction(nameof(Index));
+            var temCompra = _context.Vendas.Where(v => v.BancaId == id).ToList();
 
-            //}
-            var banca = await _context.Bancas.FindAsync(id);
-            _context.Bancas.Remove(banca);
-            await _context.SaveChangesAsync();
-            return RedirectToAction("Index");
+            if (temCompra.Count() > 0)
+            {
+               
+                return "erro";
+
+            }
+            else
+            {
+                var banca = await _context.Bancas.FindAsync(id);
+                _context.Bancas.Remove(banca);
+                await _context.SaveChangesAsync();
+                return "ok";
+            }
+           
+        }
+
+        public IActionResult GerarCSV()
+        {
+            var registros = ListaParaCsv;
+            StringBuilder arquivo = new StringBuilder();
+            arquivo.AppendLine("BancaId;Banca;Bairro;Jornaleiro");
+
+            foreach (var item in registros)
+            {
+
+                byte[] tempBytes;
+                tempBytes = System.Text.Encoding.GetEncoding("ISO-8859-8").GetBytes(item.Jornaleiro.NomeJornaleiro);
+                string asciiStr = System.Text.Encoding.UTF8.GetString(tempBytes);
+
+                byte[] tempBytes2;
+                tempBytes2 = System.Text.Encoding.GetEncoding("ISO-8859-8").GetBytes(item.Bairro);
+                string asciiStr2 = System.Text.Encoding.UTF8.GetString(tempBytes2);
+                arquivo.AppendLine(item.BancaId + ";" + item.NomeBanca + ";" + asciiStr2 + ";" + asciiStr);
+            }
+
+            return File(Encoding.ASCII.GetBytes(arquivo.ToString()), "text/csv", "bancas.csv");
         }
 
         private bool BancaExists(int id)

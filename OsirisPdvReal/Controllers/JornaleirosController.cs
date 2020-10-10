@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Caelum.Stella.CSharp.Validation;
 using Microsoft.AspNetCore.Http;
@@ -20,6 +21,8 @@ namespace OsirisPdvReal.Controllers
         private static String emailParaReset;
         private static long cpfUser;
         private static int deuErro;
+        private static List<Jornaleiro> ListaParaCsv = new List<Jornaleiro>();
+
         public IActionResult Login()
         {
             Response.Cookies.Delete("admin");
@@ -170,8 +173,31 @@ namespace OsirisPdvReal.Controllers
             ViewBag.admin = Request.Cookies["admin"];
 
             var query = _context.Jornaleiros.Include(j => j.Status).AsNoTracking().Where(j=>j.StatusId == 1).OrderBy(j => j.NomeJornaleiro);
+            ListaParaCsv.Clear();
+            ListaParaCsv = query.ToList();
             var model = await PagingList.CreateAsync(query, 5, page);
             return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Index(string busca, int page = 1)
+        {
+            if(busca == null)
+            {
+                var query = _context.Jornaleiros.Include(j => j.Status).AsNoTracking().Where(j => j.StatusId == 1).OrderBy(j => j.NomeJornaleiro);
+                ListaParaCsv.Clear();
+                ListaParaCsv = query.ToList();
+                var model = await PagingList.CreateAsync(query, 5, page);
+                return View(model);
+            }
+            else
+            {
+                var query = _context.Jornaleiros.Include(j => j.Status).AsNoTracking().Where(j => j.StatusId == 1 && j.NomeJornaleiro.ToLower() == busca.ToLower()).OrderBy(j => j.NomeJornaleiro);
+                ListaParaCsv.Clear();
+                ListaParaCsv = query.ToList();
+                var model = await PagingList.CreateAsync(query, 5, page);
+                return View(model);
+            }
         }
 
 
@@ -399,6 +425,22 @@ namespace OsirisPdvReal.Controllers
             //_context.Jornaleiros.Remove(jornaleiro);
             await _context.SaveChangesAsync();
             return "ok";
+        }
+
+        public IActionResult GerarCSV()
+        {
+            var registros = ListaParaCsv;
+            StringBuilder arquivo = new StringBuilder();
+            arquivo.AppendLine("CPF;Nome;E-mail;Telefone;Permissão");
+
+            foreach (var item in registros)
+            {
+
+
+                arquivo.AppendLine(item.CPF + ";" + item.NomeJornaleiro + ";" + item.EmailJornaleiro + ";" + item.TelefoneJornaleiro + ";" + item.tipo.NomeTipo);
+            }
+
+            return File(Encoding.ASCII.GetBytes(arquivo.ToString()), "text/csv", "jornaleiros.csv");
         }
 
         private bool JornaleiroExists(long id)

@@ -55,6 +55,15 @@
                 <span asp-validation-for="LogradouroFornecedor" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="EstadoFornecedor" class="control-label font-weight-bold"></label>
+                <select asp-for="EstadoFornecedor" class="form-control borderInput">
+                    @foreach (var y in ViewBag.estados)
+                    {
+                        <option value="@y">@y</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group">
                 <label asp-for="CEPFornecedor" class="control-label font-weight-bold"></label>
                 <input asp-for="CEPFornecedor" id="inp6" readonly="readonly" class="form-control borderInput" />
                 <span asp-validation-for="CEPFornecedor" class="text-danger"></span>
@@ -85,7 +94,6 @@
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
     <script>
-        window.localStorage.clear();
         var currencyMask = IMask(
             document.getElementById('inp3'),
             {

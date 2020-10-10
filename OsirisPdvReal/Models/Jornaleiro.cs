@@ -36,6 +36,7 @@ namespace OsirisPdvReal.Models
         [Display(Name = "Permissão")]
         public int TipoId { get; set; }
         public Tipo tipo { get; set; }
+        public ICollection<Venda> Vendas { get; set; }
 
     }
 }

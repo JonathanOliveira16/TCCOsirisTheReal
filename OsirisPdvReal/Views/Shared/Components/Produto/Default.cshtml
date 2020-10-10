@@ -1,60 +1,12 @@
-﻿@model ReflectionIT.Mvc.Paging.PagingList<OsirisPdvReal.Models.Produto>
-@using ReflectionIT.Mvc.Paging
-@addTagHelper *, ReflectionIT.Mvc.Paging
-
-<h5 class="divBtn fontTitles">REALIZAR VENDA</h5>
-<hr />
-<div class="row">
-    <div class="col-md-6">
-        <div>
-            <form asp-action="SearchProduto">
-                <div class="d-flex">
-                    <input type="text" class="form-control borderInput w-50" name="busca" id="busca" placeholder="Pesquisar produto..." />
-                    <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
-                </div>
+﻿<div class="divBtn mt-5">
+    <div class="card">
+        <h5 class="card-header font-weight-bold text-white" style="background-color: #00AA9E;">Nenhum item cadastrado</h5>
+        <div class="card-body">
+            <h5 class="card-title">Você não possui dados para serem exibidos, que tal começar cadastrando alguns dados?</h5>
+            <form class="ml-4 mt-3" asp-action="Index">
+                <a class="btn btn-success" asp-action="Create">Cadastrar</a>
             </form>
-            <div class="data-container"></div>
-            <div id="pagination-demo1"></div>
-            <table id="prods" class="table mt-4 table-striped">
-                <thead class="tHeadPurple">
-                    <tr>
-                        <th class="text-white" style="font-size:13px;">
-                            Nome Produto
-                        </th>
-                        <th class="text-white" style="font-size:13px;">
-                            Quantidade
-                        </th>
-                        <th class="text-white" style="font-size:13px;">
-                            Valor
-                        </th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in ViewBag.produtos)
-                    {
-                        <tr>
-                            <td style="font-size:13px;">
-                                @item.NomeProduto
-                            </td>
-                            <td style="font-size:13px;">
-                                @item.QuantideProduto
-                            </td>
-                            <td style="font-size:13px;">
-                                @item.ValorProduto
-                            </td>
-                            <td class="float-right">
-                                <a class="btn-sm btn-success text-white btnVenda" asp-action="Edit" asp-route-id="@item.ProdutoId">Adicionar</a>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-            <nav class="float-right">
-                @await this.Component.InvokeAsync("Pager", new { PagingList = this.Model })
-            </nav>
         </div>
 
-      
     </div>
 </div>

@@ -28,12 +28,7 @@
 
 <h5 class="divBtn fontTitles">LISTAGEM DE JORNALEIROS</h5>
 
-@if (ViewBag.admin == "admin")
-{
-    <div class="divBtn">
-        <a class="btn btnPage btn-success mt-2" asp-action="Create">Novo Jornaleiro</a>
-    </div>
-}
+
 
 
 @if (TempData["msgSucesso"] != null)
@@ -45,6 +40,23 @@
 
 @if (Model.Count > 0)
 {
+    <div class="d-flex mt-2" style="margin-left:15%">
+        <form asp-action="Index">
+            <div class="d-flex">
+                <input type="text" class="form-control borderInput" name="busca" id="busca" placeholder="Pesquisar por nome..." />
+                <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
+            </div>
+        </form>
+
+        @if (ViewBag.admin == "admin")
+        {
+            <div class="divBtn">
+                <a class="btn btn-success ml-5" asp-action="Create">Novo Jornaleiro</a>
+            </div>
+        }
+
+        <a asp-action="GerarCSV" class="btn btn-success ml-5">Download CSV</a>
+    </div>
     <table class="table mt-4 table-striped">
         <thead class="tHeadPurple">
             <tr>
@@ -98,14 +110,8 @@
 }
 else
 {
-    <div class="divBtn mt-5">
-        <div class="card">
-            <h5 class="card-header font-weight-bold text-white" style="background-color: #00AA9E;">Nenhum item cadastrado</h5>
-            <div class="card-body">
-                <h5 class="card-title">Você não possui dados para serem exibidos, que tal começar cadastrando alguns dados?</h5>
-            </div>
-        </div>
-    </div>
+    @await Component.InvokeAsync("Produto")
+
 }
 @section Scripts{
     <script>

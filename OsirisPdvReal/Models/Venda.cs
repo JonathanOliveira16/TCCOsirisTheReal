@@ -20,13 +20,16 @@ namespace OsirisPdvReal.Models
         [Display(Name = "Valor da venda")]
         public string ValorVenda { get; set; }
         [Required(ErrorMessage = "Campo obrigatório")]
-        [Display(Name = "Produtos")]
+        [Display(Name = "Quantidade")]
         public int QuantidadeVendida { get; set; }
+        public string ProdutosSalvos { get; set; }
         public List<Produto> ItemVenda { get; set; }
         public int? StatusId { get; set; }
         public Status Status { get; set; }
         public int BancaId { get; set; }
         public Banca Bancas { get; set; }
+        public long? CPFvJ { get; set; }
+        public Jornaleiro Jornaleiros { get; set; }
         public long CPFcliente { get; set; }
         public Cliente Clientes { get; set; }
         public ICollection<VendaProduto> VendaProduto { get; set; }

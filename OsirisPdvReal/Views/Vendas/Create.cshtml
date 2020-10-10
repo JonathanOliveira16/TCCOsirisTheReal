@@ -39,8 +39,25 @@
     </div>
 </div>
 
+<div class="modal" id="modal2" tabindex="-1" style="margin-top:100px;" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div style="margin-left: 40%;" class="loader"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <h5 class="divBtn fontTitles">REALIZAR VENDA</h5>
 <hr />
+
+@if (TempData["msgSucesso"] != null)
+{
+    <div class="alert alert-danger alert-dismissable mt-2" style="margin-left:10%;margin-right:10%">
+        <strong>@TempData["msgSucesso"]</strong>
+    </div>
+}
 <div class="row">
     <div class="col-md-2">
 
@@ -174,7 +191,7 @@
             </tbody>
 
         </table>
-        <a class="btn-sm btn-success text-white float-right" id="vender">FINALIZAR</a>
+        <a class="btn-sm btn-success text-white float-right" id="vender" data-toggle="modal" data-target="#modal2">FINALIZAR</a>
 
     </div>
     <div class="card-footer text-muted">
@@ -427,7 +444,7 @@
                 banca = bancaSelect
             }
             var strUser = e.options[e.selectedIndex].text;
-            var bancaUser = banca.options[e.selectedIndex].text;
+            var bancaUser = banca.options[banca.selectedIndex].text;
             var letters = '/^[a-zA-Z]+$/';
             if ((parseInt(quant) != (x)) && (y == parseInt(y))) {
                alert("Valor inválido");
@@ -458,15 +475,8 @@
         }
 
         var countProd = '@(ViewBag.countProd)';
-        var countCli = '@(ViewBag.countCli)';
         getPagination('#table-id');
-        getPagination2('#table-id2');
 
-        if (countCli > 5) {
-            document.getElementById("page2").style.visibility = "visible";
-        } else {
-            document.getElementById("page2").style.visibility = "hidden";
-        }
 
         if (countProd > 5) {
             document.getElementById("page1").style.visibility = "visible";

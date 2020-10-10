@@ -1,0 +1,45 @@
+﻿<div>
+    <table class="table mt-4 table-striped">
+        <thead class="tHeadPurple">
+            <tr>
+                <td>
+
+                </td>
+                <td>
+                    NOME
+                </td>
+                <td>
+                    EMAIL
+                </td>
+                <td>
+                    TELEFONE
+                </td>
+                <td>
+                    VALOR
+                </td>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in ViewBag.ranking)
+            {
+                <tr>
+                    <td>
+                        @item.Posicao
+                    </td>
+                    <td>
+                        @item.NomeCliente
+                    </td>
+                    <td>
+                        @item.EmailCliente
+                    </td>
+                    <td>
+                        @item.TelefoneCliente
+                    </td>
+                    <td style="color:lawngreen">
+                        @item.ValorVenda
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

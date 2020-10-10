@@ -41,6 +41,7 @@ namespace OsirisPdvReal.Models
             modelBuilder.Entity<TipoProduto>().HasMany(t => t.Produtos).WithOne(t => t.tipoProduto);
             modelBuilder.Entity<Fornecedor>().HasMany(t => t.Compras).WithOne(t => t.fornecedor).OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<Banca>().HasMany(t => t.Vendas).WithOne(t => t.Bancas);
+            modelBuilder.Entity<Jornaleiro>().HasMany(t => t.Vendas).WithOne(t => t.Jornaleiros).OnDelete(DeleteBehavior.NoAction); ;
             modelBuilder.Entity<Tipo>().HasMany(t => t.Jornaleiro).WithOne(t => t.tipo);
             modelBuilder.Entity<Cliente>().HasMany(t => t.Vendas).WithOne(t => t.Clientes);
 
@@ -53,6 +54,7 @@ namespace OsirisPdvReal.Models
             modelBuilder.Entity<Venda>().HasOne(e => e.Status).WithMany(e => e.Vendas).HasForeignKey(e => e.StatusId);
             modelBuilder.Entity<Jornaleiro>().HasOne(e => e.tipo).WithMany(e => e.Jornaleiro).HasForeignKey(e => e.TipoId);
             modelBuilder.Entity<Venda>().HasOne(e => e.Bancas).WithMany(e => e.Vendas).HasForeignKey(e => e.BancaId);
+            modelBuilder.Entity<Venda>().HasOne(e => e.Jornaleiros).WithMany(e => e.Vendas).HasForeignKey(e => e.CPFvJ).OnDelete(DeleteBehavior.NoAction); ;
             modelBuilder.Entity<Venda>().HasOne(e => e.Clientes).WithMany(e => e.Vendas).HasForeignKey(e => e.CPFcliente);
 
 
@@ -98,7 +100,8 @@ namespace OsirisPdvReal.Models
                       LogradouroFornecedor = "sem endereço",
                       PontoFocalFornecedor = "Sem ponto",
                       TelefoneFornecedor = "11111111",
-                      StatusId = 1
+                      StatusId = 1,
+                      EstadoFornecedor = "Rio de Janeiro"
                   }
             );
 

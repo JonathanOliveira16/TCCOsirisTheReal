@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -15,6 +16,7 @@ namespace OsirisPdvReal.Controllers
     {
         private readonly Contexto _context;
         private static long CpnjFornece;
+        private static List<Fornecedor> ListaParaCsv = new List<Fornecedor>();
 
         public FornecedoresController(Contexto context)
         {
@@ -28,7 +30,11 @@ namespace OsirisPdvReal.Controllers
             {
                 return RedirectToAction("Login", "Jornaleiros");
             }
+            List<String> Estados = BairroUtil.GetEstados();
+            ViewBag.estados = Estados.OrderBy(b => b).ToList();
             var query = _context.Fornecedores.Include(j => j.Status).AsNoTracking().Where(f=>f.StatusId == 1).OrderBy(j => j.NomeFornecedor);
+            ListaParaCsv.Clear();
+            ListaParaCsv = query.ToList();
             var model = await PagingList.CreateAsync(query, 5, page);
 
             return View(model);
@@ -42,14 +48,22 @@ namespace OsirisPdvReal.Controllers
             {
                 if (busca == null)
                 {
+                    List<String> Estados = BairroUtil.GetEstados();
+                    ViewBag.estados = Estados.OrderBy(b => b).ToList();
                     var query = _context.Fornecedores.Include(j => j.Status).AsNoTracking().Where(f=>f.StatusId == 1).OrderBy(j => j.NomeFornecedor);
+                    ListaParaCsv.Clear();
+                    ListaParaCsv = query.ToList();
                     var model = await PagingList.CreateAsync(query, 5, page);
                     return View(model);
                 }
                 else
                 {
+                    List<String> Estados = BairroUtil.GetEstados();
+                    ViewBag.estados = Estados.OrderBy(b => b).ToList();
                     List<Fornecedor> listaDeFornecedor = new List<Fornecedor>();
                     var fornecedor = _context.Fornecedores.Include(j => j.Status).Where(b => b.NomeFornecedor.Contains(busca) && b.StatusId == 1).OrderBy(b => b.NomeFornecedor);
+                    ListaParaCsv.Clear();
+                    ListaParaCsv = fornecedor.ToList();
                     var model = await PagingList.CreateAsync(fornecedor, 5, page);
                     return View(model);
                 }
@@ -61,6 +75,40 @@ namespace OsirisPdvReal.Controllers
             }
 
 
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SearchEstado(string buscaEstado, int page = 1)
+        {
+            try
+            {
+                if (buscaEstado == null)
+                {
+                    List<String> Estados = BairroUtil.GetEstados();
+                    ViewBag.estados = Estados.OrderBy(b => b).ToList();
+                    var query = _context.Fornecedores.Include(j => j.Status).AsNoTracking().Where(f => f.StatusId == 1).OrderBy(j => j.NomeFornecedor);
+                    ListaParaCsv.Clear();
+                    ListaParaCsv = query.ToList();
+                    var model = await PagingList.CreateAsync(query, 5, page);
+                    return View("Index",model);
+                }
+                else
+                {
+                    List<String> Estados = BairroUtil.GetEstados();
+                    ViewBag.estados = Estados.OrderBy(b => b).ToList();
+                    List<Fornecedor> listaDeFornecedor = new List<Fornecedor>();
+                    var fornecedor = _context.Fornecedores.Include(j => j.Status).Where(b => b.EstadoFornecedor.Contains(buscaEstado) && b.StatusId == 1).OrderBy(b => b.NomeFornecedor);
+                    ListaParaCsv.Clear();
+                    ListaParaCsv = fornecedor.ToList();
+                    var model = await PagingList.CreateAsync(fornecedor, 5, page);
+                    return View("Index", model);
+                }
+            }
+            catch (Exception)
+            {
+                TempData["msgSucesso"] = "Erro na sua solicitação, favor tentar novamente!";
+                return View();
+            }
         }
 
         [HttpPost]
@@ -99,7 +147,10 @@ namespace OsirisPdvReal.Controllers
             {
                 return RedirectToAction("Login", "Jornaleiros");
             }
+            List<String> Estados = BairroUtil.GetEstados();
+            ViewBag.estados = Estados.OrderBy(b => b).ToList();
             ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus");
+
             return View();
         }
 
@@ -108,31 +159,43 @@ namespace OsirisPdvReal.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CNPJ,NomeFornecedor,EmailFornecedor,TelefoneFornecedor,PontoFocalFornecedor,LogradouroFornecedor,CEPFornecedor,StatusId")] Fornecedor fornecedor)
+        public async Task<IActionResult> Create([Bind("CNPJ,NomeFornecedor,EmailFornecedor,TelefoneFornecedor,PontoFocalFornecedor,LogradouroFornecedor,EstadoFornecedor,CEPFornecedor,StatusId")] Fornecedor fornecedor)
         {
-            fornecedor.CNPJ = CpnjFornece;
-            if (ModelState.IsValid)
+            try
             {
-                var existeForne = _context.Fornecedores.Where(f=>f.NomeFornecedor == fornecedor.NomeFornecedor && f.StatusId == 1).Select(b => b.NomeFornecedor).FirstOrDefault();
-                if (existeForne == null)
+                fornecedor.CNPJ = CpnjFornece;
+                if (ModelState.IsValid)
                 {
-                    //var forneceData = _context.Fornecedores.Where(j => j.CNPJ == fornecedor.CNPJ).Select(j => j).FirstOrDefault();
-                    fornecedor.CNPJ = CpnjFornece;
-                    _context.Add(fornecedor);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
-                }
-                else
-                {
+                    var existeForne = _context.Fornecedores.Where(f => f.NomeFornecedor == fornecedor.NomeFornecedor && f.StatusId == 1).Select(b => b.NomeFornecedor).FirstOrDefault();
+                    if (existeForne == null)
+                    {
+                        //var forneceData = _context.Fornecedores.Where(j => j.CNPJ == fornecedor.CNPJ).Select(j => j).FirstOrDefault();
+                        fornecedor.CNPJ = CpnjFornece;
+                        _context.Add(fornecedor);
+                        await _context.SaveChangesAsync();
+                        return RedirectToAction(nameof(Index));
+                    }
+                    else
+                    {
 
-                    ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus", fornecedor.StatusId);
-
-                    TempData["msgSucesso"] = "Nome de fornecedor já existente em nosso banco de dados!";
-                    return View();
+                        ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus", fornecedor.StatusId);
+                        List<String> Estados2 = BairroUtil.GetEstados();
+                        ViewBag.estados = Estados2.OrderBy(b => b).ToList();
+                        TempData["msgSucesso"] = "Nome de fornecedor já existente em nosso banco de dados!";
+                        return View();
+                    }
                 }
+                ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus", fornecedor.StatusId);
+                List<String> Estados = BairroUtil.GetEstados();
+                ViewBag.estados = Estados.OrderBy(b => b).ToList();
+                return View(fornecedor);
             }
-            ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus", fornecedor.StatusId);
-            return View(fornecedor);
+            catch (Exception ex)
+            {
+                TempData["msgSucesso"] = "Ocorreu um erro interno na aplicação!";
+                return View(fornecedor);
+            }
+
         }
 
         // GET: Fornecedores/Edit/5
@@ -153,6 +216,8 @@ namespace OsirisPdvReal.Controllers
                 return NotFound();
             }
             ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus", fornecedor.StatusId);
+            List<String> Estados = BairroUtil.GetEstados();
+            ViewBag.estados = Estados.OrderBy(b => b).ToList();
             return View(fornecedor);
         }
 
@@ -161,7 +226,7 @@ namespace OsirisPdvReal.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long? id, [Bind("CNPJ,NomeFornecedor,EmailFornecedor,TelefoneFornecedor,PontoFocalFornecedor,LogradouroFornecedor,CEPFornecedor,StatusId")] Fornecedor fornecedor)
+        public async Task<IActionResult> Edit(long? id, [Bind("CNPJ,NomeFornecedor,EmailFornecedor,TelefoneFornecedor,PontoFocalFornecedor,LogradouroFornecedor,EstadoFornecedor,CEPFornecedor,StatusId")] Fornecedor fornecedor)
         {
             if (id != fornecedor.CNPJ)
             {
@@ -181,7 +246,8 @@ namespace OsirisPdvReal.Controllers
                     else
                     {
                         ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus", fornecedor.StatusId);
-
+                        List<String> Estados = BairroUtil.GetEstados();
+                        ViewBag.estados = Estados.OrderBy(b => b).ToList();
                         TempData["msgSucesso"] = "Nome de fornecedor já existente em nosso banco de dados!";
                         return View();
                     }
@@ -191,7 +257,8 @@ namespace OsirisPdvReal.Controllers
                 {
 
                     ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus");
-
+                    List<String> Estados = BairroUtil.GetEstados();
+                    ViewBag.estados = Estados.OrderBy(b => b).ToList();
                     TempData["msgSucesso"] = "Erro na sua solicitação, favor tentar novamente!";
                     return View();
                 }
@@ -229,6 +296,23 @@ namespace OsirisPdvReal.Controllers
             _context.Update(fornecedor);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult GerarCSV()
+        {
+            var registros = ListaParaCsv;
+            StringBuilder arquivo = new StringBuilder();
+            arquivo.AppendLine("CNPJ;Nome;E-mail;Telefone;Ponto focal;Estado;Logradouro;CEP");
+           
+            foreach (var item in registros)
+            {
+                byte[] tempBytes;
+                tempBytes = System.Text.Encoding.GetEncoding("ISO-8859-8").GetBytes(item.EstadoFornecedor);
+                string asciiStr = System.Text.Encoding.UTF8.GetString(tempBytes);
+                arquivo.AppendLine(item.CNPJ + ";" + item.NomeFornecedor + ";" + item.EmailFornecedor + ";" + item.TelefoneFornecedor + ";" + item.PontoFocalFornecedor + ";" + asciiStr + ";" + item.LogradouroFornecedor + ";" + item.CEPFornecedor);
+            }
+
+            return File(Encoding.ASCII.GetBytes(arquivo.ToString()), "text/csv", "fornecedores.csv");
         }
 
         private bool FornecedorExists(int? id)

@@ -19,8 +19,10 @@ namespace OsirisPdvReal.Models
         public int QuantidadeCompra { get; set; }
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
         [Required(ErrorMessage = "Campo obrigatório")]
+        [Display(Name = "Data da compra")]
         public DateTime DataCompra { get; set; }
         [Required(ErrorMessage = "Campo obrigatório")]
+        [Display(Name = "Valor da compra")]
         public String ValorCompra { get; set; }
         public ICollection<ProdutoCompras> ProdutoCompras { get; set; }
         public int StatusId { get; set; }

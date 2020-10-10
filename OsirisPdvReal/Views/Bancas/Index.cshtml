@@ -33,16 +33,30 @@
     </div>
 }
 
+
+
+
+
+@if (Model.Count > 0)
+{
 <div class="d-flex">
     <form asp-action="Index">
         <div class="d-flex">
-            <input type="text" class="form-control borderInput" name="busca" id="busca" placeholder="Pesquisar por nome..." />
+            <input type="text" class="form-control borderInput" name="busca" id="busca" placeholder="Pesquisar por banca..." />
             <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
 
         </div>
     </form>
 
-    <form class="ml-4" asp-action="BuscarBairro">
+    <form asp-action="SearchJornaleiro">
+        <div class="d-flex ml-1">
+            <input type="text" class="form-control borderInput" name="buscaJornaleiro" id="buscaJornaleiro" placeholder="Pesquisar por jornaleiro..." />
+            <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
+
+        </div>
+    </form>
+
+    <form class="ml-2" asp-action="BuscarBairro">
         <div class="d-flex">
             <select id="bairroBusca" name="bairroBusca" class="form-control borderInput">
                 <option value="" disabled selected>Bairros Rio de Janeiro...</option>
@@ -55,16 +69,14 @@
         </div>
     </form>
 
-    <form class="ml-4" asp-action="Index">
+    <form class="ml-2" asp-action="Index">
         <a class="btn btn-success" asp-action="Create">Nova banca</a>
     </form>
+
+    <a asp-action="GerarCSV" class="btn btn-success ml-2">Download CSV</a>
 </div>
 
 
-
-
-@if (Model.Count > 0)
-{
     <table class="table mt-4 table-striped">
         <thead class="tHeadPurple">
             <tr>
@@ -110,14 +122,16 @@
 }
 else
 {
-    <div class="divBtn mt-5">
-        <div class="card">
-            <h5 class="card-header font-weight-bold text-white" style="background-color: #00AA9E;">Nenhum item cadastrado</h5>
-            <div class="card-body">
-                <h5 class="card-title">Você não possui dados para serem exibidos, que tal começar cadastrando alguns dados?</h5>
+    @await Component.InvokeAsync("Produto")
+
+    @*<div class="divBtn mt-5">
+            <div class="card">
+                <h5 class="card-header font-weight-bold text-white" style="background-color: #00AA9E;">Nenhum item cadastrado</h5>
+                <div class="card-body">
+                    <h5 class="card-title">Você não possui dados para serem exibidos, que tal começar cadastrando alguns dados?</h5>
+                </div>
             </div>
-        </div>
-    </div>
+        </div>*@
 }
 @section Scripts{
     <script>
@@ -131,8 +145,15 @@ else
                     method: "POST",
                     data: { id: idJornaleiro },
                     success: function (data) {
-                        $(".modal").modal('hide');
-                        location.reload(true);
+                        if (data == "erro") {
+                            alert("Banca vinculada à uma venda, logo não é possivel realizar sua exclusão")
+                            $(".modal").modal('hide');
+                            location.reload(true);
+
+                        } else {
+                            $(".modal").modal('hide');
+                            location.reload(true);
+                        }       
                     }
                 });
             });

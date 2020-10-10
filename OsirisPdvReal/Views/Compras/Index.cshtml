@@ -33,90 +33,101 @@
         <strong>@TempData["msgSucesso"]</strong>
     </div>
 }
-<form asp-action="Index">
-    <div class="d-flex">
-        <input type="date" class="form-control borderInput w-25" name="busca" id="busca" placeholder="Pesquisar por data..." />
-        <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
-        <a class="btn btnPage btn-success mlAddNew" style="margin-left:10%;" asp-action="Create">Novo compra</a>
-    </div>
-</form>
+
 @if (Model.Count > 0)
 {
-<table class="table mt-4 table-striped">
-    <thead class="tHeadPurple">
-        <tr>
-            <th class="text-white">
-                @Html.DisplayNameFor(model => model.NomeItemCompra)
-            </th>
-            <th class="text-white">
-                @Html.DisplayNameFor(model => model.QuantidadeCompra)
-            </th>
-            <th class="text-white">
-                @Html.DisplayNameFor(model => model.DataCompra)
-            </th>
-            <th class="text-white">
-                @Html.DisplayNameFor(model => model.ValorCompra)
-            </th>
-            <th class="text-white">
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
-            <th class="text-white">
-                @Html.DisplayNameFor(model => model.fornecedor)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
+
+<div class="d-flex">
+
+    <form asp-action="Index">
+        <div class="d-flex">
+            <input type="date" class="form-control borderInput" name="busca" id="busca" placeholder="Pesquisar por data..." />
+            <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
+        </div>
+    </form>
+
+    <form asp-action="SearchByFornecedor">
+        <div class="d-flex ml-3">
+            <input type="text" class="form-control borderInput" name="buscaFornecedor" id="buscaFornecedor" placeholder="Pesquisar fornecedor..." />
+            <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
+        </div>
+    </form>
+
+    <div class="ml-4 ml-3">
+        <a class="btn btn-success" asp-action="Create">Nova compra</a>
+    </div>
+
+    <a asp-action="GerarCSV" class="btn btn-success ml-3">Download CSV</a>
+
+</div>
+
+
+
+    <table class="table mt-4 table-striped">
+        <thead class="tHeadPurple">
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.NomeItemCompra)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.QuantidadeCompra)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.DataCompra)
-                </td>
-                <td class="ml-5">
-                    @Html.DisplayFor(modelItem => item.ValorCompra)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Status.NomeStatus)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.fornecedor.NomeFornecedor)
-                </td>
-                <td class="float-right">
-                    <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.ComprasId">Editar</a> |
-                    <a class="btn btn-danger" data-toggle="modal" data-target="#visao" onclick="PassarDados(@item.ComprasId)">Excluir</a>
-                </td>
+                <th class="text-white">
+                    @Html.DisplayNameFor(model => model.NomeItemCompra)
+                </th>
+                <th class="text-white">
+                    @Html.DisplayNameFor(model => model.QuantidadeCompra)
+                </th>
+                <th class="text-white">
+                    @Html.DisplayNameFor(model => model.DataCompra)
+                </th>
+                <th class="text-white">
+                    @Html.DisplayNameFor(model => model.ValorCompra)
+                </th>
+        
+                <th class="text-white">
+                    @Html.DisplayNameFor(model => model.fornecedor)
+                </th>
+                <th></th>
             </tr>
-        }
-    </tbody>
-</table>
-<nav class="float-right">
-    @await this.Component.InvokeAsync("Pager", new { PagingList = this.Model })
-</nav>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NomeItemCompra)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.QuantidadeCompra)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DataCompra)
+                    </td>
+                    <td class="ml-5">
+                        @Html.DisplayFor(modelItem => item.ValorCompra)
+                    </td>
+                  
+                    <td>
+                        @Html.DisplayFor(modelItem => item.fornecedor.NomeFornecedor)
+                    </td>
+                    <td class="float-right">
+                        <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.ComprasId">Editar</a> |
+                        <a class="btn btn-danger" data-toggle="modal" data-target="#visao" onclick="PassarDados(@item.ComprasId)">Excluir</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <nav class="float-right">
+        @await this.Component.InvokeAsync("Pager", new { PagingList = this.Model })
+    </nav>
 }
 else
 {
-<div class="divBtn mt-5">
-    <div class="card">
-        <h5 class="card-header font-weight-bold text-white" style="background-color: #00AA9E;">Nenhum item cadastrado</h5>
-        <div class="card-body">
-            <h5 class="card-title">Você não possui dados para serem exibidos, que tal começar cadastrando alguns dados?</h5>
-        </div>
-    </div>
-</div>
+    @await Component.InvokeAsync("Produto")
+
 }
 @section Scripts{
     <script>
         var idParaApagar
         $(function () {
             var dtToday = new Date();
-    
+
             window.localStorage.clear();
 
             var month = dtToday.getMonth() + 1;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Caelum.Stella.CSharp.Validation;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +16,9 @@ namespace OsirisPdvReal.Controllers
     public class ClientesController : Controller
     {
         private readonly Contexto _context;
-        private static long cpfUser; 
+        private static long cpfUser;
+        private static List<Cliente> ListaParaCsv = new List<Cliente>();
+
         public ClientesController(Contexto context)
         {
             _context = context;
@@ -59,6 +62,8 @@ namespace OsirisPdvReal.Controllers
                 return RedirectToAction("Login", "Jornaleiros");
             }
             var query = _context.Clientes.Include(j => j.Status).AsNoTracking().Where(c=>c.StatusId ==1).OrderBy(j => j.NomeCliente);
+            ListaParaCsv.Clear();
+            ListaParaCsv = query.ToList();
             var model = await PagingList.CreateAsync(query, 5, page);
             return View(model);
         }
@@ -71,6 +76,8 @@ namespace OsirisPdvReal.Controllers
                 if (busca == null)
                 {
                     var query = _context.Clientes.Include(j => j.Status).AsNoTracking().Where(c => c.StatusId == 1).OrderBy(j => j.NomeCliente);
+                    ListaParaCsv.Clear();
+                    ListaParaCsv = query.ToList();
                     var model = await PagingList.CreateAsync(query, 5, page);
                     return View(model);
                 }
@@ -78,6 +85,8 @@ namespace OsirisPdvReal.Controllers
                 {
                     List<Cliente> listadeClientes = new List<Cliente>();
                     var clientes = _context.Clientes.Include(j => j.Status).Where(b => b.NomeCliente.Contains(busca) && b.StatusId==1).OrderBy(b => b.NomeCliente);
+                    ListaParaCsv.Clear();
+                    ListaParaCsv = clientes.ToList();
                     var model = await PagingList.CreateAsync(clientes, 5, page);
                     return View(model);
                 }
@@ -238,6 +247,24 @@ namespace OsirisPdvReal.Controllers
             _context.Update(cliente);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult GerarCSV()
+        {
+            var registros = ListaParaCsv;
+            StringBuilder arquivo = new StringBuilder();
+            arquivo.AppendLine("CPF;Nome;Email;Telefone");
+
+            foreach (var item in registros)
+            {
+
+                byte[] tempBytes;
+                tempBytes = System.Text.Encoding.GetEncoding("ISO-8859-8").GetBytes(item.NomeCliente);
+                string asciiStr = System.Text.Encoding.UTF8.GetString(tempBytes);
+                arquivo.AppendLine(item.CPFcliente + ";" + asciiStr + ";" + item.EmailCliente + ";" + item.TelefoneCliente);
+            }
+
+            return File(Encoding.ASCII.GetBytes(arquivo.ToString()), "text/csv", "clientes.csv");
         }
 
         private bool ClienteExists(int id)

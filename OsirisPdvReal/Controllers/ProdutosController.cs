@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -13,6 +14,7 @@ namespace OsirisPdvReal.Controllers
     public class ProdutosController : Controller
     {
         private readonly Contexto _context;
+        private static List<Produto> ListaParaCsv = new List<Produto>();
 
         public ProdutosController(Contexto context)
         {
@@ -26,8 +28,9 @@ namespace OsirisPdvReal.Controllers
             {
                 return RedirectToAction("Login", "Jornaleiros");
             }
-            ViewBag.categorias = _context.TipoProdutos.Select(t => t.NomeTipoProduto).ToList();
+            ViewBag.categorias = _context.TipoProdutos.Select(t => t.NomeTipoProduto).OrderBy(t => t).ToList();
             var query = _context.Produto.Include(p => p.tipoProduto).AsNoTracking().OrderBy(j => j.NomeProduto);
+            ListaParaCsv = query.ToList();
             //var contexto = _context.Bancas.Include(b => b.Jornaleiro);
             var model = await PagingList.CreateAsync(query, 5, page);
             return View(model);
@@ -41,8 +44,9 @@ namespace OsirisPdvReal.Controllers
                 if (busca == null)
                 {
                     var query = _context.Produto.Include(p=>p.tipoProduto).AsNoTracking().OrderBy(j => j.NomeProduto);
+                    ListaParaCsv = query.ToList();
                     var model = await PagingList.CreateAsync(query, 5, page);
-                    ViewBag.categorias = _context.TipoProdutos.Select(t => t.NomeTipoProduto).ToList();
+                    ViewBag.categorias = _context.TipoProdutos.Select(t => t.NomeTipoProduto).OrderBy(t => t).ToList();
 
                     return View(model);
                 }
@@ -50,8 +54,9 @@ namespace OsirisPdvReal.Controllers
                 {
                     List<Produto> listaDeProdutos = new List<Produto>();
                     var produtos = _context.Produto.Include(p => p.tipoProduto).Where(b => b.NomeProduto.Contains(busca)).OrderBy(b => b.NomeProduto);
+                    ListaParaCsv = produtos.ToList();
                     var model = await PagingList.CreateAsync(produtos, 5, page);
-                    ViewBag.categorias = _context.TipoProdutos.Select(t => t.NomeTipoProduto).ToList();
+                    ViewBag.categorias = _context.TipoProdutos.Select(t => t.NomeTipoProduto).OrderBy(t => t).ToList();
 
                     return View(model);
                 }
@@ -74,8 +79,9 @@ namespace OsirisPdvReal.Controllers
                 if (tipoBusca == null)
                 {
                     var query = _context.Produto.Include(p => p.tipoProduto).AsNoTracking().OrderBy(j => j.NomeProduto);
+                    ListaParaCsv = query.ToList();
                     var model = await PagingList.CreateAsync(query, 5, page);
-                    ViewBag.categorias = _context.TipoProdutos.Select(t => t.NomeTipoProduto).ToList();
+                    ViewBag.categorias = _context.TipoProdutos.Select(t => t.NomeTipoProduto).OrderBy(t=>t).ToList();
 
                     return View("Index", model);
                 }
@@ -83,8 +89,9 @@ namespace OsirisPdvReal.Controllers
                 {
                     List<Produto> listaDeProdutos = new List<Produto>();
                     var produtos = _context.Produto.Include(p => p.tipoProduto).Where(b => b.tipoProduto.NomeTipoProduto.Contains(tipoBusca)).OrderBy(b => b.NomeProduto);
+                    ListaParaCsv = produtos.ToList();
                     var model = await PagingList.CreateAsync(produtos, 5, page);
-                    ViewBag.categorias = _context.TipoProdutos.Select(t => t.NomeTipoProduto).ToList();
+                    ViewBag.categorias = _context.TipoProdutos.Select(t => t.NomeTipoProduto).OrderBy(t => t).ToList();
 
                     return View("Index", model);
                 }
@@ -235,7 +242,7 @@ namespace OsirisPdvReal.Controllers
 
         // POST: Produtos/Delete/5
         [HttpPost]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<String> Delete(int id)
         {
             
             var produto = await _context.Produto.FindAsync(id);
@@ -246,12 +253,28 @@ namespace OsirisPdvReal.Controllers
             }
             else
             {
-                TempData["msgSucesso"] = "Produto atrelado em uma venda, favor excluir a venda antes do produto!";
+                return "erro";
 
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return "ok";
+        }
+
+        public IActionResult GerarCSV()
+        {
+            var registros = ListaParaCsv;
+            StringBuilder arquivo = new StringBuilder();
+            arquivo.AppendLine("ProdutoId;Nome;Valor;Estoque;Categoria");
+
+            foreach (var item in registros)
+            {
+
+
+                arquivo.AppendLine(item.ProdutoId + ";" + item.NomeProduto + ";" + item.ValorProduto + ";" + item.QuantideProduto + ";" + item.tipoProduto.NomeTipoProduto);
+            }
+
+            return File(Encoding.ASCII.GetBytes(arquivo.ToString()), "text/csv", "produtosSalvos.csv");
         }
 
         private bool ProdutoExists(int id)

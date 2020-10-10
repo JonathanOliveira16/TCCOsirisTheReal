@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -13,20 +14,23 @@ namespace OsirisPdvReal.Controllers
     public class VendasController : Controller
     {
         private readonly Contexto _context;
-
+        private static List<Venda> ListaParaCsv = new List<Venda>();
         public VendasController(Contexto context)
         {
             _context = context;
         }
 
         // GET: Vendas
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page= 1)
         {
 
-
-            var contexto = _context.Vendas.Include(v => v.Bancas).Include(v => v.Clientes).Include(v => v.Status);
-            return View(await contexto.ToListAsync());
+            var query = _context.Vendas.Include(v => v.Bancas).Include(v => v.Clientes).Include(v => v.Status).Include(v=>v.Jornaleiros).OrderBy(v=>v.DataVenda);
+            ListaParaCsv.Clear();
+            ListaParaCsv = query.ToList();
+            var model = await PagingList.CreateAsync(query, 5, page);
+            return View(model);
         }
+
 
         [HttpPost]
         public async Task<IActionResult> SearchProduto(string busca, int page = 1)
@@ -37,7 +41,7 @@ namespace OsirisPdvReal.Controllers
                 {
                     String cpf = Request.Cookies["idDoUser"];
 
-                    var prods = _context.Produto.Include(p => p.tipoProduto).AsNoTracking().OrderBy(c => c.NomeProduto);
+                    var prods = _context.Produto.Include(p => p.tipoProduto).Where(p=>p.QuantideProduto >= 1).AsNoTracking().OrderBy(c => c.NomeProduto);
                     ViewBag.produtos = prods;
                     ViewBag.Tipos = _context.TipoProdutos.Select(t => t.NomeTipoProduto).OrderBy(t => t);
                     ViewBag.countCli = _context.Clientes.Where(c => c.StatusId == 1).AsNoTracking().Count();
@@ -50,7 +54,7 @@ namespace OsirisPdvReal.Controllers
                 {
                     String cpf = Request.Cookies["idDoUser"];
 
-                    var prods = _context.Produto.Include(p => p.tipoProduto).Where(b => b.NomeProduto.Contains(busca)).OrderBy(b => b.NomeProduto);
+                    var prods = _context.Produto.Include(p => p.tipoProduto).Where(b => b.NomeProduto.Contains(busca) && b.QuantideProduto>=1).OrderBy(b => b.NomeProduto);
                     ViewBag.produtos = prods;
                     ViewBag.Tipos = _context.TipoProdutos.Select(t => t.NomeTipoProduto).OrderBy(t => t);
                     ViewBag.countCli = _context.Clientes.Where(c => c.StatusId == 1).AsNoTracking().Count();
@@ -79,7 +83,7 @@ namespace OsirisPdvReal.Controllers
                 {
                     String cpf = Request.Cookies["idDoUser"];
 
-                    var prods = _context.Produto.Include(p => p.tipoProduto).AsNoTracking().OrderBy(c => c.NomeProduto);
+                    var prods = _context.Produto.Include(p => p.tipoProduto).Where(p=>p.QuantideProduto>=1).AsNoTracking().OrderBy(c => c.NomeProduto);
                     ViewBag.produtos = prods;
                     ViewBag.banca = _context.Bancas.Where(c => c.CPF == Convert.ToInt64(cpf)).AsNoTracking().OrderBy(c => c.NomeBanca);
 
@@ -93,7 +97,7 @@ namespace OsirisPdvReal.Controllers
                 {
                     String cpf = Request.Cookies["idDoUser"];
 
-                    var prods = _context.Produto.Include(p => p.tipoProduto).Where(b => b.tipoProduto.NomeTipoProduto.Contains(buscaTipo)).OrderBy(b => b.NomeProduto);
+                    var prods = _context.Produto.Include(p => p.tipoProduto).Where(b => b.tipoProduto.NomeTipoProduto.Contains(buscaTipo) && b.QuantideProduto>=1).OrderBy(b => b.NomeProduto);
                     ViewBag.produtos = prods;
                     ViewBag.banca = _context.Bancas.Where(c => c.CPF == Convert.ToInt64(cpf)).AsNoTracking().OrderBy(c => c.NomeBanca);
 
@@ -112,6 +116,69 @@ namespace OsirisPdvReal.Controllers
 
 
         }
+
+        [HttpPost]
+        public async Task<IActionResult> SearchByDate(DateTime busca, int page = 1)
+        {
+            if (busca == DateTime.MinValue)
+            {
+                var query2 = _context.Vendas.Include(v => v.Bancas).Include(v => v.Clientes).Include(v => v.Status).Include(v => v.Jornaleiros).OrderBy(v => v.DataVenda);
+                ListaParaCsv.Clear();
+                ListaParaCsv = query2.ToList();
+                var model2 = await PagingList.CreateAsync(query2, 5, page);
+                return View("Index",model2);
+            }
+            var query = _context.Vendas.Include(v => v.Bancas).Include(v => v.Clientes).Include(v => v.Status).Include(v => v.Jornaleiros).Where(c => c.DataVenda == busca).OrderBy(v => v.DataVenda);
+            ListaParaCsv.Clear();
+            ListaParaCsv = query.ToList();
+            var model = await PagingList.CreateAsync(query, 5, page);
+            return View("Index",model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SearchByCliente(String buscaCliente, int page = 1)
+        {
+            if (buscaCliente == null)
+            {
+                var query2 = _context.Vendas.Include(v => v.Bancas).Include(v => v.Clientes).Include(v => v.Status).Include(v => v.Jornaleiros).OrderBy(v => v.DataVenda);
+                ListaParaCsv.Clear();
+                ListaParaCsv = query2.ToList();
+                var model2 = await PagingList.CreateAsync(query2, 5, page);
+                return View("Index",model2);
+            }
+            else
+            {
+                var query = _context.Vendas.Include(v => v.Bancas).Include(v => v.Clientes).Include(v => v.Status).Include(v => v.Jornaleiros).Where(c => c.Clientes.NomeCliente.ToLower() == buscaCliente.ToLower()).OrderBy(v => v.DataVenda);
+                ListaParaCsv.Clear();
+                ListaParaCsv = query.ToList();
+                var model = await PagingList.CreateAsync(query, 5, page);
+                return View("Index",model);
+            }
+         
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SearchByBanca(String buscaBanca, int page = 1)
+        {
+            if (buscaBanca == null)
+            {
+                var query2 = _context.Vendas.Include(v => v.Bancas).Include(v => v.Clientes).Include(v => v.Status).Include(v => v.Jornaleiros).OrderBy(v => v.DataVenda);
+                ListaParaCsv.Clear();
+                ListaParaCsv = query2.ToList();
+                var model2 = await PagingList.CreateAsync(query2, 5, page);
+                return View("Index",model2);
+            }
+            else
+            {
+                var query = _context.Vendas.Include(v => v.Bancas).Include(v => v.Clientes).Include(v => v.Status).Include(v => v.Jornaleiros).Where(c => c.Bancas.NomeBanca.ToLower() == buscaBanca.ToLower()).OrderBy(v => v.DataVenda);
+                ListaParaCsv.Clear();
+                ListaParaCsv = query.ToList();
+                var model = await PagingList.CreateAsync(query, 5, page);
+                return View("Index",model);
+            }
+
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> SalvarVenda(String[] dados, string valTotal)
@@ -171,14 +238,24 @@ namespace OsirisPdvReal.Controllers
                     //await _context.SaveChangesAsync();
                     //return RedirectToAction(nameof(Index));
                 }
+                String cpf = Request.Cookies["idDoUser"];
+                String prodD = "";
+                foreach(var z in listaProduto)
+                {
+                    prodD = prodD + "," + z.NomeProduto;
+                }
+                var jorna = _context.Jornaleiros.Where(j => j.CPF == Convert.ToInt64(cpf)).FirstOrDefault();
                 Venda venda = new Venda();
                 venda.VendaId = idVenda;
                 venda.ItemVenda = listaProduto;
                 venda.BancaId = intBanca;
+                venda.CPFvJ = Convert.ToInt64(cpf);
                 venda.CPFcliente = intCliente;
                 venda.DataVenda = DateTime.Now.Date;
                 venda.StatusId = 1;
+                venda.ProdutosSalvos = prodD.Substring(1); ;
                 venda.ValorVenda = "R$"+ valTotal;
+                venda.Jornaleiros = jorna;
                 venda.QuantidadeVendida = quantidadeTotalVendida;
                 _context.Add(venda);
                 await _context.SaveChangesAsync();
@@ -193,7 +270,8 @@ namespace OsirisPdvReal.Controllers
             catch (Exception ex)
             {
 
-                throw;
+                TempData["msgSucesso"] = "Erro na sua solicitação, favor tentar novamente!";
+
             }
 
             return RedirectToAction("Index");
@@ -244,10 +322,10 @@ namespace OsirisPdvReal.Controllers
         {
             String cpf = Request.Cookies["idDoUser"];
             ViewBag.countCli = _context.Clientes.Where(c => c.StatusId == 1).AsNoTracking().Count();
-            ViewBag.countProd = _context.Produto.AsNoTracking().Count();
+            ViewBag.countProd = _context.Produto.AsNoTracking().Where(p=>p.QuantideProduto>=1).Count();
             ViewBag.clientes = _context.Clientes.Where(c => c.StatusId == 1).AsNoTracking().OrderBy(c => c.NomeCliente);
             ViewBag.banca = _context.Bancas.Where(c => c.CPF == Convert.ToInt64(cpf)).AsNoTracking().OrderBy(c => c.NomeBanca);
-            ViewBag.produtos = _context.Produto.AsNoTracking().OrderBy(c => c.NomeProduto);
+            ViewBag.produtos = _context.Produto.AsNoTracking().Where(p=>p.QuantideProduto>=1).OrderBy(c => c.NomeProduto);
             ViewBag.Tipos = _context.TipoProdutos.Select(t => t.NomeTipoProduto).OrderBy(t => t);
             ViewData["BancaId"] = new SelectList(_context.Bancas, "BancaId", "NomeBanca");
             ViewData["CPFcliente"] = new SelectList(_context.Clientes, "CPFcliente", "EmailCliente");
@@ -359,6 +437,22 @@ namespace OsirisPdvReal.Controllers
             _context.Vendas.Remove(venda);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult GerarCSV()
+        {
+            var registros = ListaParaCsv;
+            StringBuilder arquivo = new StringBuilder();
+            arquivo.AppendLine("VendaId;Data;Valor;Quantidade total;Produtos;Banca;Cliente;Jornaleiro");
+
+            foreach (var item in registros)
+            {
+                
+             
+                arquivo.AppendLine(item.VendaId + ";" + item.DataVenda.ToShortDateString() + ";" + item.ValorVenda + ";" + item.QuantidadeVendida + ";" + item.ProdutosSalvos + ";" +item.Bancas.NomeBanca + ";" + item.Clientes.NomeCliente + ";" + item.Jornaleiros.NomeJornaleiro);
+            }
+
+            return File(Encoding.ASCII.GetBytes(arquivo.ToString()), "text/csv", "vendas.csv");
         }
 
         private bool VendaExists(int? id)

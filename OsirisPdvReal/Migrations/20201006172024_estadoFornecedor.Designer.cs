@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OsirisPdvReal.Models;
 
 namespace OsirisPdvReal.Migrations
 {
     [DbContext(typeof(Contexto))]
-    partial class ContextoModelSnapshot : ModelSnapshot
+    [Migration("20201006172024_estadoFornecedor")]
+    partial class estadoFornecedor
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -416,14 +418,8 @@ namespace OsirisPdvReal.Migrations
                     b.Property<long>("CPFcliente")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("CPFvJ")
-                        .HasColumnType("bigint");
-
                     b.Property<DateTime>("DataVenda")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("ProdutosSalvos")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("QuantidadeVendida")
                         .HasColumnType("int");
@@ -441,8 +437,6 @@ namespace OsirisPdvReal.Migrations
                     b.HasIndex("BancaId");
 
                     b.HasIndex("CPFcliente");
-
-                    b.HasIndex("CPFvJ");
 
                     b.HasIndex("StatusId");
 
@@ -609,11 +603,6 @@ namespace OsirisPdvReal.Migrations
                         .HasForeignKey("CPFcliente")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("OsirisPdvReal.Models.Jornaleiro", "Jornaleiros")
-                        .WithMany("Vendas")
-                        .HasForeignKey("CPFvJ")
-                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("OsirisPdvReal.Models.Status", "Status")
                         .WithMany("Vendas")

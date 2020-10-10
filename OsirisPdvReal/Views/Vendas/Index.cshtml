@@ -1,5 +1,6 @@
-﻿@model IEnumerable<OsirisPdvReal.Models.Venda>
-
+﻿@model ReflectionIT.Mvc.Paging.PagingList<OsirisPdvReal.Models.Venda>
+@using ReflectionIT.Mvc.Paging
+@addTagHelper *, ReflectionIT.Mvc.Paging
 @{
     ViewData["Title"] = "Index";
 }
@@ -28,11 +29,47 @@
 
 <h5 class="divBtn fontTitles">LISTAGEM DE VENDAS</h5>
 
-<div class="divBtn">
-    <a class="btn btnPage btn-success mt-2" asp-action="Create">Nova venda</a>
+
+<div class="modal" id="modal2" tabindex="-1" style="margin-top:100px;" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div style="margin-left: 40%;" class="loader"></div>
+            </div>
+        </div>
+    </div>
+</div>
+@if (Model.Count() > 0)
+{
+<div class="d-flex" style="margin-left: 5%;">
+    <form asp-action="SearchByDate">
+        <div class="d-flex">
+            <input type="date" class="form-control borderInput" name="busca" id="busca" placeholder="Pesquisar por data..." />
+            <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
+        </div>
+    </form>
+
+    <form class="ml-4" asp-action="SearchByCliente">
+        <div class="d-flex">
+            <input type="text" class="form-control borderInput" name="buscaCliente" id="buscaCliente" placeholder="Pesquisar por cliente..." />
+            <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
+        </div>
+    </form>
+
+    <form class="ml-4" asp-action="SearchByBanca">
+        <div class="d-flex">
+            <input type="text" class="form-control borderInput" name="buscaBanca" id="buscaBanca" placeholder="Pesquisar por banca..." />
+            <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
+        </div>
+    </form>
+
+    <a asp-action="GerarCSV" class="btn btn-success ml-3">Download CSV</a>
 </div>
 
-@if(Model != null) { 
+
+<div class="divBtn mt-3">
+    <a class="btn btnPage btn-success mt-2" asp-action="Create">Nova venda</a>
+</div>
     <table class="table mt-4 table-striped">
         <thead class="tHeadPurple">
             <tr>
@@ -49,7 +86,7 @@
                     Banca
                 </th>
                 <th class="text-white">
-                    Status
+                    Jornaleiro
                 </th>
                 <th></th>
             </tr>
@@ -71,27 +108,23 @@
                         @Html.DisplayFor(modelItem => item.Bancas.NomeBanca)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Status.NomeStatus)
+                        @Html.DisplayFor(modelItem => item.Jornaleiros.NomeJornaleiro)
                     </td>
                     <td>
                         <a class="btn-sm btn-warning text-white" onclick="InfoVenda(@item.VendaId)" data-toggle="modal" data-target="#visao">PRODUTOS</a>
-                        <a class="btn-sm btn-danger text-white" onclick="ApagarVenda(@item.VendaId)">EXCLUIR</a>
+                        <a class="btn-sm btn-danger text-white" onclick="ApagarVenda(@item.VendaId)" data-toggle="modal" data-target="#modal2">EXCLUIR</a>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
+    <nav class="float-right">
+        @await this.Component.InvokeAsync("Pager", new { PagingList = this.Model })
+    </nav>
 }
 else
 {
-<div class="divBtn mt-5">
-    <div class="card">
-        <h5 class="card-header font-weight-bold text-white" style="background-color: #00AA9E;">Nenhum item cadastrado</h5>
-        <div class="card-body">
-            <h5 class="card-title">Você não possui dados para serem exibidos, que tal começar cadastrando alguns dados?</h5>
-        </div>
-    </div>
-</div>
+    @await Component.InvokeAsync("Produto")
 }
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

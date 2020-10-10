@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -13,6 +14,7 @@ namespace OsirisPdvReal.Controllers
     public class ComprasController : Controller
     {
         private readonly Contexto _context;
+        private static List<Compras> ListaParaCsv = new List<Compras>();
 
         public ComprasController(Contexto context)
         {
@@ -27,6 +29,8 @@ namespace OsirisPdvReal.Controllers
                 return RedirectToAction("Login", "Jornaleiros");
             }
             var query = _context.Compras.Include(c => c.Status).Include(c => c.fornecedor).OrderBy(c=>c.DataCompra);
+            ListaParaCsv.Clear();
+            ListaParaCsv = query.ToList();
             var model = await PagingList.CreateAsync(query, 5, page);
             return View(model);
         }
@@ -37,14 +41,35 @@ namespace OsirisPdvReal.Controllers
             if (busca == DateTime.MinValue)
             {
                 var query2 = _context.Compras.Include(c => c.Status).Include(c => c.fornecedor).OrderBy(c => c.DataCompra);
+                ListaParaCsv.Clear();
+                ListaParaCsv = query2.ToList();
                 var model2 = await PagingList.CreateAsync(query2, 5, page);
                 return View(model2);
             }
             var query = _context.Compras.Include(c => c.Status).Include(c => c.fornecedor).Where(c => c.DataCompra == busca).OrderBy(c=>c.DataCompra);
+            ListaParaCsv.Clear();
+            ListaParaCsv = query.ToList();
             var model = await PagingList.CreateAsync(query, 5, page);
             return View(model);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> SearchByFornecedor(String buscaFornecedor, int page=1)
+        {
+            if (buscaFornecedor == null)
+            {
+                var query2 = _context.Compras.Include(c => c.Status).Include(c => c.fornecedor).OrderBy(c => c.DataCompra);
+                ListaParaCsv.Clear();
+                ListaParaCsv = query2.ToList();
+                var model2 = await PagingList.CreateAsync(query2, 5, page);
+                return View("Index",model2);
+            }
+            var query = _context.Compras.Include(c => c.Status).Include(c => c.fornecedor).Where(c => c.fornecedor.NomeFornecedor.Contains(buscaFornecedor)).OrderBy(c => c.DataCompra);
+            ListaParaCsv.Clear();
+            ListaParaCsv = query.ToList();
+            var model = await PagingList.CreateAsync(query, 5, page);
+            return View("Index",model);
+        }
 
         // GET: Compras/Create
         public IActionResult Create()
@@ -189,6 +214,22 @@ namespace OsirisPdvReal.Controllers
             _context.Update(prod);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult GerarCSV()
+        {
+            var registros = ListaParaCsv;
+            StringBuilder arquivo = new StringBuilder();
+            arquivo.AppendLine("ComprasId;Nome Item;Quantidade;Data da compra;Valor da compra;Fornecedor");
+
+            foreach (var item in registros)
+            {
+
+
+                arquivo.AppendLine(item.ComprasId + ";" + item.NomeItemCompra + ";" + item.QuantidadeCompra + ";" + item.DataCompra.ToShortDateString() + ";" + item.ValorCompra + ";" + item.fornecedor.NomeFornecedor);
+            }
+
+            return File(Encoding.ASCII.GetBytes(arquivo.ToString()), "text/csv", "Compras.csv");
         }
 
         private bool ComprasExists(int? id)

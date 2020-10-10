@@ -35,16 +35,39 @@
     </div>
 }
 
-<form asp-action="Index">
-    <div class="d-flex">
-        <input type="text" class="form-control borderInput w-25" name="busca" id="busca" placeholder="Pesquisar por nome..." />
-        <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
-        <a class="btn btnPage btn-success mlAddNew" style="margin-left:10%;" asp-action="Create">Novo fornecedor</a>
-    </div>
-</form>
+
 
 @if (Model.Count > 0)
 {
+    <div class="d-flex">
+        <form asp-action="Index">
+            <div class="d-flex">
+                <input type="text" class="form-control borderInput" name="busca" id="busca" placeholder="Pesquisar por nome..." />
+                <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
+            </div>
+        </form>
+
+        <form class="ml-4" asp-action="SearchEstado">
+            <div class="d-flex">
+                <select id="buscaEstado" name="buscaEstado" class="form-control borderInput">
+                    <option value="" disabled selected>Estados...</option>
+                    @foreach (var y in ViewBag.estados)
+                    {
+                        <option value="@y">@y</option>
+                    }
+                </select>
+                <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
+            </div>
+        </form>
+
+        <div class="ml-4">
+            <a class="btn btn-success" asp-action="Create">Novo fornecedor</a>
+        </div>
+
+        <a asp-action="GerarCSV" class="btn btn-success ml-3">Download CSV</a>
+    </div>
+
+
     <table class="table mt-4 table-striped">
         <thead class="tHeadPurple">
             <tr>
@@ -67,7 +90,7 @@
                     @Html.DisplayNameFor(model => model.CEPFornecedor)
                 </th>
                 <th class="text-white" style="font-size:12px;">
-                    @Html.DisplayNameFor(model => model.Status)
+                    @Html.DisplayNameFor(model => model.EstadoFornecedor)
                 </th>
                 <th></th>
             </tr>
@@ -95,7 +118,7 @@
                         @Html.DisplayFor(modelItem => item.CEPFornecedor)
                     </td>
                     <td style="font-size:12px;">
-                        @Html.DisplayFor(modelItem => item.Status.NomeStatus)
+                        @Html.DisplayFor(modelItem => item.EstadoFornecedor)
                     </td>
                     <td class="float-right">
                         <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.CNPJ">Editar</a> |
@@ -113,14 +136,8 @@
 }
 else
 {
-    <div class="divBtn mt-5">
-        <div class="card">
-            <h5 class="card-header font-weight-bold text-white" style="background-color: #00AA9E;">Nenhum item cadastrado</h5>
-            <div class="card-body">
-                <h5 class="card-title">Você não possui dados para serem exibidos, que tal começar cadastrando alguns dados?</h5>
-            </div>
-        </div>
-    </div>
+    @await Component.InvokeAsync("Produto")
+
 }
 @section Scripts{
     <script>

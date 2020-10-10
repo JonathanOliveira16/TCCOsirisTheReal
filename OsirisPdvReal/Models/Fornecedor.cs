@@ -31,6 +31,9 @@ namespace OsirisPdvReal.Models
         [StringLength(100, ErrorMessage = "Limite de caracteres atingido")]
         [Display(Name = "Ponto focal")]
         public string PontoFocalFornecedor { get; set; }
+        [Required(ErrorMessage ="Campo obrigatório")]
+        [Display(Name = "Estado")]
+        public string EstadoFornecedor { get; set; }
         [Required(ErrorMessage = "Campo obrigatório")]
         [StringLength(100, ErrorMessage = "Limite de caracteres atingido")]
         [Display(Name = "Logradouro")]

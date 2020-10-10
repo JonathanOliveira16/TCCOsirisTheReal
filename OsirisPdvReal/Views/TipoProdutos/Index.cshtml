@@ -26,9 +26,6 @@
 
 <h5 class="divBtn fontTitles">LISTAGEM DE TIPOS DE PRODUTOS</h5>
 
-<div class="divBtn">
-    <a class="btn btnPage btn-success mt-2" asp-action="Create">Novo tipo de produto</a>
-</div>
 
 @if (TempData["msgSucesso"] != null)
 {
@@ -39,6 +36,11 @@
 
 @if (Model != null)
 {
+    <div class="divBtn">
+        <a class="btn btnPage btn-success mt-2" asp-action="Create">Novo tipo de produto</a>
+    </div>
+
+
     <table class="table mt-4 table-striped">
         <thead class="tHeadPurple">
             <tr>
@@ -67,14 +69,8 @@
 }
 else
 {
-    <div class="divBtn mt-5">
-        <div class="card">
-            <h5 class="card-header font-weight-bold text-white" style="background-color: #00AA9E;">Nenhum item cadastrado</h5>
-            <div class="card-body">
-                <h5 class="card-title">Você não possui dados para serem exibidos, que tal começar cadastrando alguns dados?</h5>
-            </div>
-        </div>
-    </div>
+    @await Component.InvokeAsync("Produto")
+
 }
 @section Scripts{
     <script>
