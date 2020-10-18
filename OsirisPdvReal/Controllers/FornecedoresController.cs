@@ -100,7 +100,7 @@ namespace OsirisPdvReal.Controllers
                     var fornecedor = _context.Fornecedores.Include(j => j.Status).Where(b => b.EstadoFornecedor.Contains(buscaEstado) && b.StatusId == 1).OrderBy(b => b.NomeFornecedor);
                     ListaParaCsv.Clear();
                     ListaParaCsv = fornecedor.ToList();
-                    var model = await PagingList.CreateAsync(fornecedor, 5, page);
+                    var model = await PagingList.CreateAsync(fornecedor, 100, page);
                     return View("Index", model);
                 }
             }

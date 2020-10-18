@@ -90,7 +90,7 @@ namespace OsirisPdvReal.Controllers
                     List<Produto> listaDeProdutos = new List<Produto>();
                     var produtos = _context.Produto.Include(p => p.tipoProduto).Where(b => b.tipoProduto.NomeTipoProduto.Contains(tipoBusca)).OrderBy(b => b.NomeProduto);
                     ListaParaCsv = produtos.ToList();
-                    var model = await PagingList.CreateAsync(produtos, 5, page);
+                    var model = await PagingList.CreateAsync(produtos, 100, page);
                     ViewBag.categorias = _context.TipoProdutos.Select(t => t.NomeTipoProduto).OrderBy(t => t).ToList();
 
                     return View("Index", model);

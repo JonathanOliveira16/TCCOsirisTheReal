@@ -172,7 +172,7 @@ namespace OsirisPdvReal.Controllers
             //essas linhas sao necessarias para a paginaca so trocar o tipo de context, jornaleiro, produto etc
             ViewBag.admin = Request.Cookies["admin"];
 
-            var query = _context.Jornaleiros.Include(j => j.Status).AsNoTracking().Where(j=>j.StatusId == 1).OrderBy(j => j.NomeJornaleiro);
+            var query = _context.Jornaleiros.Include(j => j.Status).Include(j=>j.tipo).AsNoTracking().Where(j=>j.StatusId == 1).OrderBy(j => j.NomeJornaleiro);
             ListaParaCsv.Clear();
             ListaParaCsv = query.ToList();
             var model = await PagingList.CreateAsync(query, 5, page);
@@ -184,7 +184,7 @@ namespace OsirisPdvReal.Controllers
         {
             if(busca == null)
             {
-                var query = _context.Jornaleiros.Include(j => j.Status).AsNoTracking().Where(j => j.StatusId == 1).OrderBy(j => j.NomeJornaleiro);
+                var query = _context.Jornaleiros.Include(j => j.Status).Include(j => j.tipo).AsNoTracking().Where(j => j.StatusId == 1).OrderBy(j => j.NomeJornaleiro);
                 ListaParaCsv.Clear();
                 ListaParaCsv = query.ToList();
                 var model = await PagingList.CreateAsync(query, 5, page);
@@ -192,7 +192,7 @@ namespace OsirisPdvReal.Controllers
             }
             else
             {
-                var query = _context.Jornaleiros.Include(j => j.Status).AsNoTracking().Where(j => j.StatusId == 1 && j.NomeJornaleiro.ToLower() == busca.ToLower()).OrderBy(j => j.NomeJornaleiro);
+                var query = _context.Jornaleiros.Include(j => j.Status).Include(j => j.tipo).AsNoTracking().Where(j => j.StatusId == 1 && j.NomeJornaleiro.ToLower() == busca.ToLower()).OrderBy(j => j.NomeJornaleiro);
                 ListaParaCsv.Clear();
                 ListaParaCsv = query.ToList();
                 var model = await PagingList.CreateAsync(query, 5, page);
@@ -427,17 +427,27 @@ namespace OsirisPdvReal.Controllers
             return "ok";
         }
 
+        public IActionResult ViewLoginCliente(String error)
+        {
+            if (error != null)
+            {
+                TempData["msgSucesso"] = "Chave de acesso incorreta!";
+                error = "";
+            }
+            return View();
+        }
+
         public IActionResult GerarCSV()
         {
             var registros = ListaParaCsv;
             StringBuilder arquivo = new StringBuilder();
-            arquivo.AppendLine("CPF;Nome;E-mail;Telefone;Permissão");
+            arquivo.AppendLine("CPF;Nome;E-mail;Telefone;Permissao;Status");
 
             foreach (var item in registros)
             {
 
 
-                arquivo.AppendLine(item.CPF + ";" + item.NomeJornaleiro + ";" + item.EmailJornaleiro + ";" + item.TelefoneJornaleiro + ";" + item.tipo.NomeTipo);
+                arquivo.AppendLine(item.CPF + ";" + item.NomeJornaleiro + ";" + item.EmailJornaleiro + ";" + item.TelefoneJornaleiro + ";" + item.tipo.NomeTipo + ";" + item.Status.NomeStatus);
             }
 
             return File(Encoding.ASCII.GetBytes(arquivo.ToString()), "text/csv", "jornaleiros.csv");

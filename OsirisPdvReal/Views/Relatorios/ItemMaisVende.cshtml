@@ -1,0 +1,50 @@
+﻿@model ReflectionIT.Mvc.Paging.PagingList<OsirisPdvReal.Models.ItemMaisVende>
+@using ReflectionIT.Mvc.Paging
+@addTagHelper *, ReflectionIT.Mvc.Paging
+@{
+    Layout = "_Layout";
+}
+
+
+<h5 class="divBtn fontTitles">RANKING DE VENDA DE ITENS</h5>
+
+<div class="text-center mt-3">
+    <a asp-action="GerarCSVItem" class="btn btn-success ml-3">Download CSV</a>
+</div>
+
+<div>
+    <table class="table mt-4 table-striped">
+        <thead class="tHeadPurple">
+            <tr>
+                <td class="text-white font-weight-bold">
+                    NOME ITEM
+                </td>
+                <td class="text-white font-weight-bold">
+                    QUANTIDADE VENDIDA
+                </td>
+                <td class="text-white font-weight-bold">
+                    VALOR GERADO
+                </td>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @item.NomeProduto
+                    </td>
+                    <td class="font-weight-bold">
+                        @item.Quantidade
+                    </td>
+                    <td style="color:forestgreen" class="font-weight-bold">
+                        @item.ValorTotalGerado
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <nav class="float-right">
+        @await this.Component.InvokeAsync("Pager", new { PagingList = this.Model })
+    </nav>
+</div>

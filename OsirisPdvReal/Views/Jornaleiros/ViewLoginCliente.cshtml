@@ -1,0 +1,51 @@
+﻿@model OsirisPdvReal.Models.Jornaleiro
+
+@{
+    Layout = "LayoutLogin";
+}
+
+<head>
+    <title>Osiris PDV</title>
+</head>
+<body class="bodyLogin">
+    <div class="container">
+        <div>
+            <img src="@Url.Content("~/images/logo.png")" class="imageStyle" />
+        </div>
+        <div class="justify-content-center align-content-center centerLogin h-75">
+            @if (TempData["msgSucesso"] != null)
+            {
+                <div class="alert alert-danger alert-dismissable mt-2" style="margin-left:10%;margin-right:10%">
+                    <strong>@TempData["msgSucesso"]</strong>
+                </div>
+            }
+            <div class="mt-4">
+                <form style="height:350px;" asp-action="LoginRankingClientes" asp-controller="Relatorios">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div>
+                        <label style="margin-left:13%" class="font-weight-bold">CHAVE DE ACESSO</label>
+                        <br>
+                        <input type="text" required name="email" id="email" class="form-control w-75 centerText borderInput" placeholder="Chave de acesso" />
+                    </div>
+                    <div class="divBtn mt-4 mb-4">
+                        <input type="submit" class="btn-success btn btnSize" value="LOGAR" />
+                        <a asp-controller="Jornaleiros" asp-action="EnviarTokenSenha" class="btn btn-info btnSize text-white">VOLTAR</a>
+                    </div>
+
+
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+
+</body>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    
+}
+

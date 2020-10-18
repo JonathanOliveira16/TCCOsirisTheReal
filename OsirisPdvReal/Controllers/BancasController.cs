@@ -95,7 +95,7 @@ namespace OsirisPdvReal.Controllers
                     var bancas = _context.Bancas.Include(j => j.Jornaleiro).Where(j => j.Jornaleiro.NomeJornaleiro.Contains(buscaJornaleiro)).OrderBy(b => b.NomeBanca);
                     ListaParaCsv.Clear();
                     ListaParaCsv = bancas.ToList();
-                    var model = await PagingList.CreateAsync(bancas, 5, page);
+                    var model = await PagingList.CreateAsync(bancas, 100, page);
                     List<String> Bairros = BairroUtil.GetBairros();
                     ViewBag.bairros = Bairros.OrderBy(b => b).ToList();
                     return View("Index", model);
@@ -130,7 +130,7 @@ namespace OsirisPdvReal.Controllers
                     var bancas = _context.Bancas.Include(j => j.Jornaleiro).Where(b => b.Bairro.Contains(bairroBusca)).OrderBy(b => b.NomeBanca);
                     ListaParaCsv.Clear();
                     ListaParaCsv = bancas.ToList();
-                    var model = await PagingList.CreateAsync(bancas, 5, page);
+                    var model = await PagingList.CreateAsync(bancas, 100, page);
                     List<String> Bairros = BairroUtil.GetBairros();
                     ViewBag.bairros = Bairros.OrderBy(b => b).ToList();
                     return View("Index",model);

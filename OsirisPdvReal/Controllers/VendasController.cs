@@ -24,11 +24,29 @@ namespace OsirisPdvReal.Controllers
         public async Task<IActionResult> Index(int page= 1)
         {
 
-            var query = _context.Vendas.Include(v => v.Bancas).Include(v => v.Clientes).Include(v => v.Status).Include(v=>v.Jornaleiros).OrderBy(v=>v.DataVenda);
+            var query = _context.Vendas.Include(v => v.Bancas).Include(v => v.Clientes).Include(v => v.Status).Include(v=>v.Jornaleiros).OrderByDescending(v=>v.DataVenda);
             ListaParaCsv.Clear();
             ListaParaCsv = query.ToList();
             var model = await PagingList.CreateAsync(query, 5, page);
             return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Index(string tipo, DateTime busca, string buscaCliente, string buscaBanca,int page=1)
+        {
+            switch (tipo)
+            {
+                case "date":
+                    var model = await SearchByDate(busca);
+                    return View(model);
+                case "client":
+                    var modelClient = await SearchByCliente(buscaCliente);
+                    return View(modelClient);
+                case "banca":
+                    var modelBanca = await SearchByBanca(buscaBanca);
+                    return View(modelBanca);
+            }
+            return View();
         }
 
 
@@ -118,7 +136,7 @@ namespace OsirisPdvReal.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SearchByDate(DateTime busca, int page = 1)
+        public async Task<PagingList<Venda>> SearchByDate(DateTime busca, int page = 1)
         {
             if (busca == DateTime.MinValue)
             {
@@ -126,17 +144,17 @@ namespace OsirisPdvReal.Controllers
                 ListaParaCsv.Clear();
                 ListaParaCsv = query2.ToList();
                 var model2 = await PagingList.CreateAsync(query2, 5, page);
-                return View("Index",model2);
+                return model2;
             }
-            var query = _context.Vendas.Include(v => v.Bancas).Include(v => v.Clientes).Include(v => v.Status).Include(v => v.Jornaleiros).Where(c => c.DataVenda == busca).OrderBy(v => v.DataVenda);
+            var query = _context.Vendas.Include(v => v.Bancas).Include(v => v.Clientes).Include(v => v.Status).Include(v => v.Jornaleiros).Where(c => c.DataVenda.Year == busca.Year && c.DataVenda.Month == busca.Month && c.DataVenda.Day == busca.Day ).OrderBy(v => v.DataVenda);
             ListaParaCsv.Clear();
             ListaParaCsv = query.ToList();
-            var model = await PagingList.CreateAsync(query, 5, page);
-            return View("Index",model);
+            var model = await PagingList.CreateAsync(query, 100, page);
+            return model;
         }
 
         [HttpPost]
-        public async Task<IActionResult> SearchByCliente(String buscaCliente, int page = 1)
+        public async Task<PagingList<Venda>> SearchByCliente(String buscaCliente, int page = 1)
         {
             if (buscaCliente == null)
             {
@@ -144,21 +162,21 @@ namespace OsirisPdvReal.Controllers
                 ListaParaCsv.Clear();
                 ListaParaCsv = query2.ToList();
                 var model2 = await PagingList.CreateAsync(query2, 5, page);
-                return View("Index",model2);
+                return model2;
             }
             else
             {
                 var query = _context.Vendas.Include(v => v.Bancas).Include(v => v.Clientes).Include(v => v.Status).Include(v => v.Jornaleiros).Where(c => c.Clientes.NomeCliente.ToLower() == buscaCliente.ToLower()).OrderBy(v => v.DataVenda);
                 ListaParaCsv.Clear();
                 ListaParaCsv = query.ToList();
-                var model = await PagingList.CreateAsync(query, 5, page);
-                return View("Index",model);
+                var model = await PagingList.CreateAsync(query, 100, page);
+                return model;
             }
          
         }
 
         [HttpPost]
-        public async Task<IActionResult> SearchByBanca(String buscaBanca, int page = 1)
+        public async Task<PagingList<Venda>> SearchByBanca(String buscaBanca, int page = 1)
         {
             if (buscaBanca == null)
             {
@@ -166,15 +184,15 @@ namespace OsirisPdvReal.Controllers
                 ListaParaCsv.Clear();
                 ListaParaCsv = query2.ToList();
                 var model2 = await PagingList.CreateAsync(query2, 5, page);
-                return View("Index",model2);
+                return model2;
             }
             else
             {
                 var query = _context.Vendas.Include(v => v.Bancas).Include(v => v.Clientes).Include(v => v.Status).Include(v => v.Jornaleiros).Where(c => c.Bancas.NomeBanca.ToLower() == buscaBanca.ToLower()).OrderBy(v => v.DataVenda);
                 ListaParaCsv.Clear();
                 ListaParaCsv = query.ToList();
-                var model = await PagingList.CreateAsync(query, 5, page);
-                return View("Index",model);
+                var model = await PagingList.CreateAsync(query, 100, page);
+                return model;
             }
 
         }

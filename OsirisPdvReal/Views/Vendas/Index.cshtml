@@ -42,22 +42,25 @@
 @if (Model.Count() > 0)
 {
 <div class="d-flex" style="margin-left: 5%;">
-    <form asp-action="SearchByDate">
+    <form asp-action="Index">
         <div class="d-flex">
+            <input style="display: none" id="tipo" name="tipo" value="date"/>
             <input type="date" class="form-control borderInput" name="busca" id="busca" placeholder="Pesquisar por data..." />
             <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
         </div>
     </form>
 
-    <form class="ml-4" asp-action="SearchByCliente">
+    <form class="ml-4" asp-action="Index">
         <div class="d-flex">
+            <input style="display: none" id="tipo" name="tipo" value="client" />
             <input type="text" class="form-control borderInput" name="buscaCliente" id="buscaCliente" placeholder="Pesquisar por cliente..." />
             <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
         </div>
     </form>
 
-    <form class="ml-4" asp-action="SearchByBanca">
+    <form class="ml-4" asp-action="Index">
         <div class="d-flex">
+            <input style="display: none" id="tipo" name="tipo" value="banca" />
             <input type="text" class="form-control borderInput" name="buscaBanca" id="buscaBanca" placeholder="Pesquisar por banca..." />
             <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
         </div>
@@ -119,7 +122,9 @@
         </tbody>
     </table>
     <nav class="float-right">
-        @await this.Component.InvokeAsync("Pager", new { PagingList = this.Model })
+        <form method="post">
+            @await this.Component.InvokeAsync("Pager", new { PagingList = this.Model })
+        </form>
     </nav>
 }
 else

@@ -1,20 +1,30 @@
-﻿<div>
+﻿@{
+    Layout = "LayoutRanking";
+}
+
+
+<h5 class="divBtn fontTitles">RANKING DE CLIENTES</h5>
+
+<div class="text-center mt-3">
+    <a asp-action="GerarCSVRanking" class="btn btn-success ml-3">Download CSV</a>
+</div>
+
+<div>
     <table class="table mt-4 table-striped">
         <thead class="tHeadPurple">
             <tr>
                 <td>
-
                 </td>
-                <td>
+                <td class="text-white font-weight-bold">
                     NOME
                 </td>
-                <td>
+                <td class="text-white font-weight-bold">
                     EMAIL
                 </td>
-                <td>
+                <td class="text-white font-weight-bold">
                     TELEFONE
                 </td>
-                <td>
+                <td class="text-white font-weight-bold">
                     VALOR
                 </td>
             </tr>
@@ -35,7 +45,7 @@
                     <td>
                         @item.TelefoneCliente
                     </td>
-                    <td style="color:lawngreen">
+                    <td style="color:forestgreen" class="font-weight-bold">
                         @item.ValorVenda
                     </td>
                 </tr>

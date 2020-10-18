@@ -1,0 +1,333 @@
+﻿@model ReflectionIT.Mvc.Paging.PagingList<OsirisPdvReal.Models.VendasBancaRelatorio>
+@using ReflectionIT.Mvc.Paging
+@addTagHelper *, ReflectionIT.Mvc.Paging
+@{
+    Layout = "_Layout";
+}
+
+
+@if (TempData["msgSucesso"] != null)
+{
+    <div class="alert alert-danger alert-dismissable mt-2" style="margin-left:10%;margin-right:10%">
+        <strong>@TempData["msgSucesso"]</strong>
+    </div>
+}
+<h5 class="divBtn fontTitles">BANCAS QUE MAIS VENDEM</h5>
+
+<div class="text-center mt-3">
+    <a asp-action="GerarCSVBancas" class="btn btn-success ml-3">Download CSV</a>
+</div>
+
+<div class="d-flex mt-3">
+    <label class="font-weight-bold" style="margin-top:5px;">Ordernar por: </label>
+    <form asp-action="BancasMaisVendem" class="ml-2 d-flex">
+        <select id="buscaName" name="buscaName" class="form-control borderInput">
+            <option value="1">Quantidade vendida</option>
+            <option value="2">Valor gerado</option>
+        </select>
+        <button class="btn btn-success" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
+
+    </form>
+</div>
+<div>
+    <p class="divBtn mt-3 fontTitles" style="font-size:18px;">@ViewBag.ordenado</p>
+
+    <table id="table-id" class="table mt-4 table-striped">
+        <thead class="tHeadPurple">
+            <tr>
+                <td>
+                </td>
+                <td class="text-white font-weight-bold">
+                    NOME
+                </td>
+                <td class="text-white font-weight-bold">
+                    BAIRRO
+                </td>
+                <td class="text-white font-weight-bold">
+                    QUANTIDADE DE VENDAS
+                </td>
+                <td class="text-white font-weight-bold">
+                    VALOR TOTAL
+                </td>
+                <td></td>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @item.Posicao
+                    </td>
+                    <td>
+                        @item.NomeBanca
+                    </td>
+                    <td>
+                        @item.Bairro
+                    </td>
+                    <td class="font-weight-bold">
+                        @item.QuantidadeDeVendas
+                    </td>
+                    <td style="color:forestgreen" class="font-weight-bold">
+                        @item.ValorTotalVenda
+                    </td>
+                    <td><a class="btn btn-warning" id="@item.NomeBanca" onclick="GerarChart(this.id)">Gráfico</a>></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <!--		Start Pagination -->
+    <div class='pagination-container float-right' id="page1">
+        <nav>
+            <ul class="pagination pageArr">
+
+                <li data-page="prev">
+                    <span style="border: 3px solid purple;margin-right:6px;border-radius:5px;color:black"> <i class="fa fa-arrow-left"></i> <span class="sr-only">(current)</span></span>
+                </li>
+                <!--	Here the JS Function Will Add the Rows -->
+                <li data-page="next" id="prev">
+                    <span style="border: 3px solid purple;margin-left:6px;border-radius:5px"> <i class="fa fa-arrow-right"></i> <span class="sr-only">(current)</span></span>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <canvas id="myChart"></canvas>
+        </div>
+        <div class="col">
+            <canvas id="myChart2"></canvas>
+        </div>
+    </div>
+
+
+    <div style="visibility:hidden;">
+        <h2>Select Number Of Rows</h2>
+        <div class="form-group">
+            <!--		Show Numbers Of Rows 		-->
+            <select class="form-control" name="state" id="maxRows">
+                <option value="5000">Show ALL Rows</option>
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="15">15</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="70">70</option>
+                <option value="100">100</option>
+            </select>
+
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+
+
+    <script>
+        getPagination('#table-id');
+
+      
+
+        function GerarChart(NomeBanca) {
+            $.ajax({
+                url: "/Relatorios/GenerateChart",
+                method: "POST",
+                data: { NomeBanca: NomeBanca },
+                success: function (data) {
+                    if (data != null) {
+                        var meses = []
+                        var quantidade = []
+                        var valores = []
+                        console.log(data)
+                        console.log(data[1].nomeMes)
+                        for (var i = 0; i < data.length; i++) {
+                            meses.push(data[i].nomeMes)
+                            quantidade.push(data[i].quantidade)
+                            valores.push(data[i].valor)
+                        }
+                        console.log(meses)
+                        console.log(quantidade)
+                        var ctx = document.getElementById('myChart').getContext('2d');
+                        var ctx2 = document.getElementById('myChart2').getContext('2d');
+                        var chart = new Chart(ctx, {
+                            // The type of chart we want to create
+                            type: 'line',
+
+                            // The data for our dataset
+                            data: {
+                                labels:meses,
+                                datasets: [{
+                                    label: 'Quantidade de vendas - ' + NomeBanca,
+                                    backgroundColor: "#18AEEA",
+                                    borderColor: "#18AEEA",
+                                    fill: false,
+                                    data: quantidade,
+                                },]
+                            },
+                            // Configuration options go here
+                            options: {}
+                        });
+                        var barChartData = {
+                            labels: meses,
+                            datasets: [{
+                                label: 'Valores pode venda',
+                                backgroundColor: "#EA1E18",
+                                borderColor: "#EA1E18",
+                                borderWidth: 1,
+                                data: valores
+                            },]
+                            }
+
+                        };
+                        var myBarChart = new Chart(ctx2, {
+                            type: 'bar',
+                            data: barChartData,
+                            options: {
+                                responsive: true,
+                                legend: {
+                                    position: 'top',
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Chart.js Bar Chart'
+                                }
+                            }                      
+                        });
+                    
+
+
+                }
+            });
+        }
+
+        function getPagination(table) {
+            var lastPage = 1;
+
+            $('#maxRows')
+                .on('change', function (evt) {
+                    //$('.paginationprev').html('');						// reset pagination
+
+                    lastPage = 1;
+                    $('.pageArr')
+                        .find('li')
+                        .slice(1, -1)
+                        .remove();
+                    var trnum = 0; // reset tr counter
+                    var maxRows = parseInt($(this).val()); // get Max Rows from select option
+
+                    if (maxRows == 5000) {
+                        $('.pageArr').hide();
+                    } else {
+                        $('.pageArr').show();
+                    }
+
+                    var totalRows = $(table + ' tbody tr').length; // numbers of rows
+                    $(table + ' tr:gt(0)').each(function () {
+                        // each TR in  table and not the header
+                        trnum++; // Start Counter
+                        if (trnum > maxRows) {
+                            // if tr number gt maxRows
+
+                            $(this).hide(); // fade it out
+                        }
+                        if (trnum <= maxRows) {
+                            $(this).show();
+                        } // else fade in Important in case if it ..
+                    }); //  was fade out to fade it in
+                    if (totalRows > maxRows) {
+                        // if tr total rows gt max rows option
+                        var pagenum = Math.ceil(totalRows / maxRows); // ceil total(rows/maxrows) to get ..
+                        //	numbers of pages
+                        for (var i = 1; i <= pagenum;) {
+                            // for each page append pagination li
+                            $('.pageArr #prev')
+                                .before(
+                                    '<li data-page="' +
+                                    i +
+                                    '">\
+                                                                  <span>' +
+                                    i++ +
+                                    '<span class="sr-only">(current)</span></span>\
+                                                                </li>'
+                                )
+                                .show();
+                        } // end for i
+                    } // end if row count > max rows
+                    $('.pageArr [data-page="1"]').addClass('active'); // add active class to the first li
+                    $('.pageArr li').on('click', function (evt) {
+                        // on click each page
+                        evt.stopImmediatePropagation();
+                        evt.preventDefault();
+                        var pageNum = $(this).attr('data-page'); // get it's number
+                        var maxRows = parseInt($('#maxRows').val()); // get Max Rows from select option
+
+                        if (pageNum == 'prev') {
+                            if (lastPage == 1) {
+                                return;
+                            }
+                            pageNum = --lastPage;
+                        }
+                        if (pageNum == 'next') {
+                            if (lastPage == $('.pageArr li').length - 2) {
+                                return;
+                            }
+                            pageNum = ++lastPage;
+                        }
+
+                        lastPage = pageNum;
+                        var trIndex = 0; // reset tr counter
+                        $('.pageArr li').removeClass('active'); // remove active class from all li
+                        $('.pageArr [data-page="' + lastPage + '"]').addClass('active'); // add active class to the clicked
+                        // $(this).addClass('active');					// add active class to the clicked
+                        limitPagging();
+                        $(table + ' tr:gt(0)').each(function () {
+                            // each tr in table not the header
+                            trIndex++; // tr index counter
+                            // if tr index gt maxRows*pageNum or lt maxRows*pageNum-maxRows fade if out
+                            if (
+                                trIndex > maxRows * pageNum ||
+                                trIndex <= maxRows * pageNum - maxRows
+                            ) {
+                                $(this).hide();
+                            } else {
+                                $(this).show();
+                            } //else fade in
+                        }); // end of for each tr in table
+                    }); // end of on click pagination list
+                    limitPagging();
+                })
+                .val(5)
+                .change();
+
+            // end of on select change
+
+            // END OF PAGINATION
+        }
+
+
+        function limitPagging() {
+            // alert($('.pagination li').length)
+            if ($('.pageArr li').length > 7) {
+                if ($('.pageArr li.active').attr('data-page') <= 3) {
+                    $('.pageArr li:gt(5)').hide();
+                    $('.pageArr li:lt(5)').show();
+                    $('.pageArr [data-page="next"]').show();
+                } if ($('.pageArr li.active').attr('data-page') > 3) {
+                    $('.pageArr li:gt(0)').hide();
+                    $('.pageArr [data-page="next"]').show();
+                    for (let i = (parseInt($('.pageArr li.active').attr('data-page')) - 2); i <= (parseInt($('.pageArr li.active').attr('data-page')) + 2); i++) {
+                        $('.pageArr [data-page="' + i + '"]').show();
+
+                    }
+
+                }
+            }
+        }
+
+    </script>
+
+}
