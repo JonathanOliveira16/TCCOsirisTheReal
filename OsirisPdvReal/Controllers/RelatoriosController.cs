@@ -45,7 +45,7 @@ namespace OsirisPdvReal.Controllers
                     listaDoForeach.Add(item);
                 }
 
-                var clientes = listaDoForeach.Select(v => v.Clientes).Distinct().ToList();
+                var clientes = listaDoForeach.Where(v => v.Clientes.NomeCliente != "Sem Cliente").Select(v => v.Clientes).Distinct().ToList();
                 int posicao = 1;
                 foreach (var data in clientes)
                 {
@@ -69,12 +69,11 @@ namespace OsirisPdvReal.Controllers
                 }
                 ListaParaCsvRanking = rankingClientes;
                 ViewBag.ranking = rankingClientes;
-
+                ViewBag.filtro = "Filtrado por - Todos";
             }
             catch (Exception ex)
             {
-
-                throw;
+                TempData["msgSucesso"] = "Erro na sua solicitação, favor tentar novamente!";
             }
 
 
@@ -82,7 +81,108 @@ namespace OsirisPdvReal.Controllers
 
         }
 
-        public IActionResult BancasMaisVendem(int page=1)
+        [HttpPost]
+        public IActionResult RankingClientes(string buscaMes)
+        {
+            try
+            {
+                List<RankingCliente> rankingClientes = new List<RankingCliente>();
+                List<RankingCliente> ListaFinal = new List<RankingCliente>();
+                List<String> ListaValores = new List<string>();
+                List<Venda> listaDoForeach = new List<Venda>();
+                List<Venda> listaDoIf = new List<Venda>();
+                if (buscaMes.ToLower() == "todos")
+                {
+                    var vendas = _context.Vendas.Include(v => v.Clientes).Include(v => v.Status).ToList();
+                    listaDoIf = vendas;
+                }
+                else
+                {
+                    var vendas = _context.Vendas.Include(v => v.Clientes).Include(v => v.Status).Where(v => v.DataVenda.Month == Convert.ToInt32(buscaMes)).ToList();
+                    listaDoIf = vendas;
+                }
+                foreach (var item in listaDoIf)
+                {
+                    item.ValorVenda = item.ValorVenda.Substring(2).Replace('.', ',');
+                    listaDoForeach.Add(item);
+                }
+
+                var clientes = listaDoForeach.Where(v => v.Clientes.NomeCliente != "Sem Cliente").Select(v => v.Clientes).Distinct().ToList();
+                int posicao = 1;
+                foreach (var data in clientes)
+                {
+                    RankingCliente rcObject = new RankingCliente();
+
+                    var soma = listaDoIf.Where(v => v.Clientes.NomeCliente == data.NomeCliente && v.Clientes.Status.StatusId == 1).Sum(v => Convert.ToDouble(v.ValorVenda));
+                    rcObject.Posicao = posicao.ToString() + "º";
+                    rcObject.NomeCliente = data.NomeCliente;
+                    rcObject.EmailCliente = data.EmailCliente;
+                    rcObject.TelefoneCliente = data.TelefoneCliente;
+                    rcObject.ValorVenda = soma.ToString();
+                    ListaFinal.Add(rcObject);
+                }
+                ListaFinal = ListaFinal.OrderByDescending(b => Convert.ToDouble(b.ValorVenda.Replace('.', ','))).ToList();
+                foreach (var obj in ListaFinal)
+                {
+                    obj.Posicao = posicao.ToString() + "º";
+                    obj.ValorVenda = "R$" + obj.ValorVenda;
+                    posicao++;
+                    rankingClientes.Add(obj);
+                }
+                ListaParaCsvRanking = rankingClientes;
+                ViewBag.ranking = rankingClientes;
+                ViewBag.filtro = buscaMes.ToLower() == "todos" ? "Filtrado por - Todos" : "Filtrado por - " + DataUtil.GetNameMonth(Convert.ToInt32(buscaMes));
+            }
+            catch (Exception ex)
+            {
+                TempData["msgSucesso"] = "Erro na sua solicitação, favor tentar novamente!";
+            }
+
+
+            return View();
+
+        }
+
+        public List<VendasBancaRelatorio> resetarLista()
+        {
+            List<VendasBancaRelatorio> VendaRelatorio = new List<VendasBancaRelatorio>();
+            List<VendasBancaRelatorio> ListaFinal = new List<VendasBancaRelatorio>();
+            List<Venda> listaDoForeach = new List<Venda>();
+            var bancasNome = _context.Vendas.Include(b => b.Bancas).Select(b => b.Bancas.NomeBanca).Distinct().ToList();
+            var vendas = _context.Vendas.Include(v => v.Clientes).Include(v => v.Status).Include(v => v.Bancas).ToList();
+            foreach (var item in vendas)
+            {
+                item.ValorVenda = item.ValorVenda.Substring(2).Replace('.', ',');
+                listaDoForeach.Add(item);
+            }
+            int posicao = 1;
+            foreach (var data in bancasNome)
+            {
+                var soma = vendas.Where(v => v.Bancas.NomeBanca.ToLower() == data.ToLower()).Sum(v => Convert.ToDouble(v.ValorVenda));
+
+                VendasBancaRelatorio vbr = new VendasBancaRelatorio();
+                vbr.QuantidadeDeVendas = vendas.Where(v => v.Bancas.NomeBanca.ToLower() == data.ToLower()).Count();
+                vbr.NomeBanca = data;
+                vbr.ValorTotalVenda = "R$" + soma;
+                vbr.Bairro = vendas.Where(v => v.Bancas.NomeBanca.ToLower() == data.ToLower()).Select(v => v.Bancas.Bairro).FirstOrDefault();
+                VendaRelatorio.Add(vbr);
+            }
+            VendaRelatorio = VendaRelatorio.OrderByDescending(b => b.QuantidadeDeVendas).ToList();
+            foreach (var obj in VendaRelatorio)
+            {
+                obj.Posicao = posicao + "º";
+                ListaFinal.Add(obj);
+                posicao++;
+            }
+            ListaParaCsvBanca = ListaFinal;
+            ViewBag.bancas = ListaFinal;
+            ViewBag.ceps = _context.Vendas.Include(b => b.Bancas).Select(b => b.Bancas.CEPbanca).Distinct().ToList();
+            ViewBag.countProd = ListaFinal.Select(p => p.NomeBanca).Distinct().Count();
+            return ListaFinal.OrderByDescending(b => b.QuantidadeDeVendas).ToList();
+           
+        }
+
+        public IActionResult BancasMaisVendem(int page = 1)
         {
 
             List<VendasBancaRelatorio> VendaRelatorio = new List<VendasBancaRelatorio>();
@@ -116,8 +216,10 @@ namespace OsirisPdvReal.Controllers
             }
             ListaParaCsvBanca = ListaFinal;
             ViewBag.bancas = ListaFinal;
+            ViewBag.ceps = _context.Vendas.Include(b=>b.Bancas).Select(b => b.Bancas.CEPbanca).Distinct().ToList();
+            ViewBag.countProd = ListaFinal.Select(p => p.NomeBanca).Distinct().Count();
             var query = ListaFinal.AsQueryable().OrderByDescending(b => b.QuantidadeDeVendas);
-            var model =  PagingList.Create(query, 500, page);
+            var model = PagingList.Create(query, 500, page);
             model.Action = "BancasMaisVendem";
             ViewBag.ordenado = "Ordenado por: Quantidade vendida";
 
@@ -126,7 +228,7 @@ namespace OsirisPdvReal.Controllers
 
 
         [HttpPost]
-        public IActionResult BancasMaisVendem(string buscaName, int page =1)
+        public IActionResult BancasMaisVendem(string buscaName, string cep, int page = 1)
         {
             if (buscaName == "1")
             {
@@ -137,15 +239,17 @@ namespace OsirisPdvReal.Controllers
                     y.Posicao = posicao + "º";
                     posicao++;
                 }
-                var query = ListaParaCsvBanca.AsQueryable().OrderByDescending(b => b.QuantidadeDeVendas);  
-                
+                var query = ListaParaCsvBanca.AsQueryable().OrderByDescending(b => b.QuantidadeDeVendas);
+                ViewBag.countProd = ListaParaCsvBanca.Select(p => p.NomeBanca).Distinct().Count();
+                ViewBag.ceps = _context.Bancas.Select(b => b.CEPbanca).Distinct().ToList();
+
                 var model = PagingList.Create(query, 500, page);
                 model.Action = "BancasMaisVendem";
                 ViewBag.ordenado = "Ordenado por: Quantidade vendida";
 
                 return View(model);
             }
-            else if(buscaName == "2")
+            else if (buscaName == "2")
             {
                 List<VendasBancaRelatorio> vbr = new List<VendasBancaRelatorio>();
                 foreach (var x in ListaParaCsvBanca)
@@ -153,7 +257,7 @@ namespace OsirisPdvReal.Controllers
                     x.ValorTotalVenda = x.ValorTotalVenda.Substring(2);
                     vbr.Add(x);
                 }
-                ListaParaCsvBanca = vbr.OrderByDescending(v=>Convert.ToDouble(v.ValorTotalVenda)).ToList();
+                ListaParaCsvBanca = vbr.OrderByDescending(v => Convert.ToDouble(v.ValorTotalVenda)).ToList();
                 int posicao = 1;
                 foreach (var y in ListaParaCsvBanca)
                 {
@@ -161,6 +265,9 @@ namespace OsirisPdvReal.Controllers
                     y.ValorTotalVenda = "R$" + y.ValorTotalVenda;
                     posicao++;
                 }
+                ViewBag.countProd = ListaParaCsvBanca.Select(p => p.NomeBanca).Distinct().Count();
+                ViewBag.ceps = _context.Vendas.Include(b => b.Bancas).Select(b => b.Bancas.CEPbanca).Distinct().ToList();
+
                 var query = ListaParaCsvBanca.AsQueryable();
                 var model = PagingList.Create(query, 500, page);
                 model.Action = "BancasMaisVendem";
@@ -168,8 +275,53 @@ namespace OsirisPdvReal.Controllers
 
                 return View(model);
             }
+            else if(buscaName == "cep")
+            {
+                if (cep.ToLower() == "todos")
+                {
+                    return RedirectToAction("BancasMaisVendem");
+                }
+                else
+                {
+                    ListaParaCsvBanca = resetarLista();
+                    List<VendasBancaRelatorio> vbr = new List<VendasBancaRelatorio>();
+                    List<VendasBancaRelatorio> listaNew = new List<VendasBancaRelatorio>();
+                    foreach (var x in ListaParaCsvBanca)
+                    {
+                        x.ValorTotalVenda = x.ValorTotalVenda.Substring(2);
+                        vbr.Add(x);
+                    }
+                   
+                    var bancaDoCep = _context.Bancas.Where(b => b.CEPbanca == cep).Select(v=>v.NomeBanca).ToList();
+
+                    ViewBag.ceps = _context.Vendas.Include(b => b.Bancas).Select(b => b.Bancas.CEPbanca).Distinct().ToList();
+
+                    foreach (var b in bancaDoCep)
+                    {
+                        var result = vbr.Where(p => p.NomeBanca.ToLower() == b.ToLower()).Distinct().FirstOrDefault();
+                        listaNew.Add(result);
+                    }
+                    ListaParaCsvBanca = listaNew.OrderByDescending(v => Convert.ToDouble(v.ValorTotalVenda)).ToList();
+                    int posicao = 1;
+
+                    foreach (var y in ListaParaCsvBanca)
+                    {
+                        y.Posicao = posicao + "º";
+                        y.ValorTotalVenda = "R$" + y.ValorTotalVenda;
+                        posicao++;
+                    }
+                    ViewBag.countProd = ListaParaCsvBanca.Select(p => p.NomeBanca).Distinct().Count();
+                    var query = ListaParaCsvBanca.AsQueryable();
+                    var model = PagingList.Create(query, 500, page);
+                    model.Action = "BancasMaisVendem";
+                    ViewBag.ordenado = "Ordenado por: Valor total";
+
+                    return View(model);
+                }
+            }
             else
             {
+
                 TempData["msgSucesso"] = "Erro na sua solicitação, favor tentar novamente!";
                 return RedirectToAction("BancasMaisVendem");
             }
@@ -184,7 +336,7 @@ namespace OsirisPdvReal.Controllers
             foreach (var item in numbers)
             {
                 var z = x.Where(c => c.DataVenda.Month == item).Count();
-                var valor = x.Where(c => c.DataVenda.Month == item).Select(v => Convert.ToDouble(v.ValorVenda.Substring(2).Replace('.',','))).Sum();
+                var valor = x.Where(c => c.DataVenda.Month == item).Select(v => Convert.ToDouble(v.ValorVenda.Substring(2).Replace('.', ','))).Sum();
                 ChartMonth cm = new ChartMonth();
                 cm.NomeMes = DataUtil.GetNameMonth(item);
                 cm.Quantidade = z;
@@ -194,7 +346,120 @@ namespace OsirisPdvReal.Controllers
             return Json(listaMes);
         }
 
-        public IActionResult ItemMaisVende(int page=1)
+        [HttpPost]
+        public JsonResult GenerateTopBancas(string tipo)
+        {
+            var bancas = _context.Bancas.Select(b => b.NomeBanca).Distinct().ToList();
+            List<BancaAnualMensal> Listba = new List<BancaAnualMensal>();
+            foreach (var item in bancas)
+            {
+                List<double> listaValores = new List<double>();
+                var valorTotal = _context.Vendas.Include(v => v.Bancas).Where(v => v.Bancas.NomeBanca.ToLower() == item.ToLower()).Select(v => Convert.ToDouble(v.ValorVenda.Substring(2).Replace('.', ','))).ToList();
+                
+                var valorMensal = _context.Vendas.Include(v => v.Bancas).Where(v => v.Bancas.NomeBanca == item && v.DataVenda.Month == DateTime.Now.Month).Select(v => Convert.ToDouble(v.ValorVenda.Substring(2).Replace('.', ','))).ToList();
+                BancaAnualMensal ba = new BancaAnualMensal();
+                ba.NomeBanca = item;
+                ba.ValorAnual = valorTotal.Sum();
+                ba.ValorMensal = valorMensal.Sum();
+                Listba.Add(ba);
+                //foreach(var x in valorTotal)
+                //{
+                //    double num = Convert.ToDouble(x.Substring(2).Replace('.', ','));
+                //    listaValores.Add(num);
+                //}
+
+
+            }
+            if (tipo == "mes")
+            {
+                return Json(Listba.Where(v=>v.ValorMensal != 0).OrderByDescending(v=>v.ValorMensal).Take(10));
+            }
+            else
+            {
+                return Json(Listba.Where(v=>v.ValorMensal != 0).OrderByDescending(v =>v.ValorAnual).Take(10));
+            }
+            
+        }
+
+        [HttpPost]
+        public JsonResult GenerateTopItem(string tipo)
+        {
+            List<ProdutoQuantidade> listpq = new List<ProdutoQuantidade>();
+            var idsProdsAndVenda = _context.VendaProduto.Select(v => new { v.ProdutoId ,v.VendaId,v.ValorTotalDoProduto}).ToList();
+            var idsProdsDistintos = idsProdsAndVenda.Select(v => v.ProdutoId).Distinct();
+            
+            foreach (var item in idsProdsDistintos)
+            {
+                double valorTotalMes = 0;
+                ProdutoQuantidade pq = new ProdutoQuantidade();
+                pq.ValorAnual =_context.VendaProduto.Where(p => p.ProdutoId == item).Select(p => p.ValorTotalDoProduto).Sum();
+                var vendas = idsProdsAndVenda.Where(v => v.ProdutoId == item).Select(v => v.VendaId).ToList();
+                foreach (var x in vendas)
+                {
+                    var vendaUnica = _context.Vendas.Where(v => v.VendaId == x && v.DataVenda.Month == DateTime.Now.Month).FirstOrDefault();
+                    if (vendaUnica != null )
+                    {
+                        valorTotalMes = valorTotalMes + _context.VendaProduto.Where(v => v.VendaId == vendaUnica.VendaId).Select(v => v.ValorTotalDoProduto).FirstOrDefault();
+                    }
+                }
+                pq.ValorMensal = valorTotalMes;
+                pq.NomeProduto = _context.Produto.Where(p => p.ProdutoId == item).Select(p => p.NomeProduto).FirstOrDefault();
+                listpq.Add(pq);
+            }
+          
+            if (tipo == "mes")
+            {
+                return Json(listpq.Where(v=>v.ValorMensal != 0).OrderByDescending(v => v.ValorMensal).Take(10));
+            }
+            else
+            {
+                return Json(listpq.Where(v=>v.ValorAnual != 0).OrderByDescending(v => v.ValorAnual).Take(10));
+            }
+
+        }
+
+        [HttpPost]
+        public JsonResult GenerateChartItem(string NomeProduto)
+        {
+            List<ChartMonth> listaMes = new List<ChartMonth>();
+            List<Venda> listaVenda = new List<Venda>();
+
+            var idProd = _context.Produto.Where(p => p.NomeProduto.ToLower() == NomeProduto.ToLower()).Select(p => p.ProdutoId).FirstOrDefault();
+            var prods = _context.VendaProduto.Where(v => v.Produtos.NomeProduto == NomeProduto).Select(v => v.VendaId).ToList();
+
+            foreach (var prod in prods)
+            {
+                var result = _context.Vendas.Where(p => p.VendaId == prod).FirstOrDefault();
+                listaVenda.Add(result);
+
+
+            }
+            var numbers = DataUtil.GetMonthsNumbers();
+            foreach (var item in numbers)
+            {
+                double valPraSomar = 0;
+                int quantPraSomar = 0;
+                var noMesProd = _context.VendaProduto.Where(p => p.ProdutoId == idProd).Select(v => v.VendaId).ToList();
+                foreach (var zum in noMesProd)
+                {
+                    quantPraSomar = quantPraSomar + listaVenda.Where(c => c.DataVenda.Month == item && c.VendaId == zum).Count();
+                }
+                var VendaComProd = listaVenda.Where(c => c.DataVenda.Month == item).Select(v => v.VendaId).ToList();
+                foreach (var x in VendaComProd)
+                {
+                    valPraSomar = valPraSomar + _context.VendaProduto.Where(v => v.VendaId == x && v.ProdutoId == idProd).Select(v => v.ValorTotalDoProduto).FirstOrDefault();
+                }
+                ChartMonth cm = new ChartMonth();
+                cm.NomeMes = DataUtil.GetNameMonth(item);
+                cm.Quantidade = quantPraSomar;
+                cm.Valor = valPraSomar;
+                listaMes.Add(cm);
+            }
+
+            return Json(listaMes);
+        }
+
+        public IActionResult ItemMaisVende(int page = 1)
         {
             List<VendaProduto> ListaDasVendasProduto = new List<VendaProduto>();
             List<ItemMaisVende> listaItems = new List<ItemMaisVende>();
@@ -202,31 +467,77 @@ namespace OsirisPdvReal.Controllers
             var VendaId = _context.Vendas.Select(p => p.VendaId).Distinct().ToList();
             foreach (var item in produtoId)
             {
-                double soma = 0;
-                var vendas = _context.VendaProduto.Where(v => v.ProdutoId == item).Select(v => v.VendaId).ToList();
-                foreach (var valor in vendas)
-                {
-                    var valorVenda = _context.Vendas.Where(v => v.VendaId == valor).Select(v => v.ValorVenda).FirstOrDefault();
-                    soma = soma + Convert.ToDouble(valorVenda.Substring(2).Replace('.', ','));
-                }
+                var somaTotal = _context.VendaProduto.Where(v => v.ProdutoId == item).Select(v => v.ValorTotalDoProduto).Sum();
+           
                 ItemMaisVende im = new ItemMaisVende();
                 im.Quantidade = _context.VendaProduto.Where(v => v.ProdutoId == item).Sum(v => v.QuantidadeVendida);
                 im.NomeProduto = _context.Produto.Where(c => c.ProdutoId == item).Select(c => c.NomeProduto).FirstOrDefault();
-                im.ValorTotalGerado = "R$"+soma.ToString();
+                im.ValorTotalGerado = "R$" + somaTotal.ToString();
                 listaItems.Add(im);
             }
             ListaParaCsvItem = listaItems.OrderByDescending(v => v.Quantidade).ToList();
+            ViewBag.countProd = listaItems.Select(p => p.NomeProduto).Distinct().Count();
             ViewBag.item = listaItems.OrderByDescending(v => v.Quantidade).ToList();
             var query = listaItems.AsQueryable().OrderByDescending(v => v.Quantidade);
-            var model = PagingList.Create(query, 5, page);
+            var model = PagingList.Create(query, 500, page);
+            ViewBag.ordenado = "Ordenado por: Quantidade vendida";
+
             model.Action = "ItemMaisVende";
             return View(model);
-           
+
         }
+
+
+        [HttpPost]
+        public IActionResult ItemMaisVende(string buscaName, int page = 1)
+        {
+            if (buscaName == "1")
+            {
+                ListaParaCsvItem = ListaParaCsvItem.OrderByDescending(b => b.Quantidade).ToList();
+
+                var query = ListaParaCsvItem.AsQueryable().OrderByDescending(b => b.Quantidade);
+                ViewBag.countProd = ListaParaCsvItem.Select(p => p.NomeProduto).Count();
+
+                var model = PagingList.Create(query, 500, page);
+                model.Action = "ItemMaisVende";
+                ViewBag.ordenado = "Ordenado por: Quantidade vendida";
+
+                return View(model);
+            }
+            else if (buscaName == "2")
+            {
+                List<ItemMaisVende> vbr = new List<ItemMaisVende>();
+                foreach (var x in ListaParaCsvItem)
+                {
+                    x.ValorTotalGerado = x.ValorTotalGerado.Substring(2);
+                    vbr.Add(x);
+                }
+                ListaParaCsvItem = vbr.OrderByDescending(v => Convert.ToDouble(v.ValorTotalGerado)).ToList();
+                foreach (var y in ListaParaCsvItem)
+                {
+
+                    y.ValorTotalGerado = "R$" + y.ValorTotalGerado;
+                }
+                ViewBag.countProd = ListaParaCsvItem.Select(p => p.NomeProduto).Count();
+
+                var query = ListaParaCsvItem.AsQueryable();
+                var model = PagingList.Create(query, 500, page);
+                model.Action = "ItemMaisVende";
+                ViewBag.ordenado = "Ordenado por: Valor total";
+
+                return View(model);
+            }
+            else
+            {
+                TempData["msgSucesso"] = "Erro na sua solicitação, favor tentar novamente!";
+                return RedirectToAction("ItemMaisVende");
+            }
+        }
+
 
         public IActionResult EstoqueZerado(int page = 1)
         {
-            var prods = _context.Produto.Include(p=>p.tipoProduto).Where(p => p.QuantideProduto == 0).ToList();
+            var prods = _context.Produto.Include(p => p.tipoProduto).Where(p => p.QuantideProduto == 0).ToList();
             ListaParaCsvProds = prods.OrderBy(v => v.NomeProduto).ToList();
             var query = prods.AsQueryable().OrderBy(v => v.NomeProduto);
             var model = PagingList.Create(query, 5, page);

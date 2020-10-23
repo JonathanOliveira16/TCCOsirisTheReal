@@ -6,6 +6,16 @@
 }
 
 
+    <div class="modal" id="modal2" tabindex="-1" style="margin-top:100px;" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div style="margin-left: 40%;" class="loader"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 @if (TempData["msgSucesso"] != null)
 {
     <div class="alert alert-danger alert-dismissable mt-2" style="margin-left:10%;margin-right:10%">
@@ -28,6 +38,23 @@
         <button class="btn btn-success" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
 
     </form>
+
+    <label class="font-weight-bold ml-5" style="margin-top:5px;">Pesquisar pelo cep: </label>
+    <form asp-action="BancasMaisVendem" class="ml-2 d-flex">
+
+        <select id="cep" name="cep" class="form-control borderInput">
+            <option value="todos">Todos</option>
+            @foreach (var item in ViewBag.ceps)
+            {
+                <option value="@item">@item</option>
+            }
+        </select>
+        <button class="btn btn-success" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
+        <input type="text" value="cep" id="buscaName" name="buscaName" style="visibility:hidden;width:5px;" />
+    </form>
+
+    <button class="btn btn-warning" onclick="GerarTopChart()" data-toggle="modal" data-target="#modal2">Gerar gráfico mensal</button>
+    <button class="btn btn-warning ml-3" onclick="GerarTopChartAnual()" data-toggle="modal" data-target="#modal2">Gerar gráfico anual</button>
 </div>
 <div>
     <p class="divBtn mt-3 fontTitles" style="font-size:18px;">@ViewBag.ordenado</p>
@@ -71,7 +98,7 @@
                     <td style="color:forestgreen" class="font-weight-bold">
                         @item.ValorTotalVenda
                     </td>
-                    <td><a class="btn btn-warning" id="@item.NomeBanca" onclick="GerarChart(this.id)">Gráfico</a>></td>
+                    <td><a class="btn btn-warning" id="@item.NomeBanca" onclick="GerarChart(this.id)">Gráfico</a></td>
                 </tr>
             }
         </tbody>
@@ -92,12 +119,21 @@
         </nav>
     </div>
 
-    <div class="row">
+    <div class="row" style="width:1100px;">
         <div class="col">
             <canvas id="myChart"></canvas>
         </div>
         <div class="col">
             <canvas id="myChart2"></canvas>
+        </div>
+    </div>
+
+    <div class="row" style="width:1000px;" id="graf2">
+        <div class="col">
+            <canvas id="topChart1"></canvas>
+        </div>
+        <div class="col ml-2">
+            <canvas id="topChart2"></canvas>
         </div>
     </div>
 
@@ -129,8 +165,17 @@
 
     <script>
         getPagination('#table-id');
+        var myPieChart = null;
+        var myPieChart2 = null;
+        var topChart1 = null;
+        var topChart2 = null
+        var countProd = '@(ViewBag.countProd)';
 
-      
+        if (countProd > 5) {
+            document.getElementById("page1").style.visibility = "visible";
+        } else {
+            document.getElementById("page1").style.visibility = "hidden";
+        }
 
         function GerarChart(NomeBanca) {
             $.ajax({
@@ -151,6 +196,16 @@
                         }
                         console.log(meses)
                         console.log(quantidade)
+
+
+                        if (myPieChart != null && myPieChart2 != null) {
+                            myPieChart.destroy();
+                            myPieChart2.destroy();
+                        }
+                        // Get the context of the canvas element we want to select
+
+
+
                         var ctx = document.getElementById('myChart').getContext('2d');
                         var ctx2 = document.getElementById('myChart2').getContext('2d');
                         var chart = new Chart(ctx, {
@@ -171,10 +226,12 @@
                             // Configuration options go here
                             options: {}
                         });
+
+                        myPieChart = chart
                         var barChartData = {
                             labels: meses,
                             datasets: [{
-                                label: 'Valores pode venda',
+                                label: 'Valores pode venda - ' + NomeBanca,
                                 backgroundColor: "#EA1E18",
                                 borderColor: "#EA1E18",
                                 borderWidth: 1,
@@ -191,18 +248,162 @@
                                 legend: {
                                     position: 'top',
                                 },
-                                title: {
-                                    display: true,
-                                    text: 'Chart.js Bar Chart'
-                                }
-                            }                      
+
+                            }
                         });
-                    
+                    myPieChart2 = myBarChart
 
 
                 }
             });
         }
+
+        function GerarTopChart() {
+         
+            $.ajax({
+                url: "/Relatorios/GenerateTopBancas",
+                method: "POST",
+                data: { tipo: "mes" },
+                success: function (data) {
+                    scrollDown()
+
+                    if (data != null) {
+                        var nomes = []
+                        var valorMensal = []
+                        console.log(data)
+                        for (var i = 0; i < data.length; i++) {
+                            nomes.push(data[i].nomeBanca)
+                            valorMensal.push(data[i].valorMensal)
+                        }
+                        console.log(nomes)
+                        console.log(valorMensal)
+
+
+                        if (topChart1 != null) {
+                            topChart1.destroy();
+                        }
+                        // Get the context of the canvas element we want to select
+
+
+
+                        var ctx = document.getElementById('topChart1').getContext('2d');
+                        var barChartData = {
+                            labels: nomes,
+                            datasets: [{
+                                label: 'TOP 10 BANCAS QUE MAIS GERARAM RENDA NO MÊS ATUAL',
+                                backgroundColor: "#1FE808",
+                                borderColor: "#1FE808",
+                                borderWidth: 1,
+                                data: valorMensal
+                            },]
+                        }
+
+                    };
+                    var myBarChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: barChartData,
+                        options: {
+                            responsive: true,
+                            legend: {
+                                position: 'top',
+                            },
+
+                        }
+                    });
+                    topChart1 = myBarChart
+                    $(".modal").modal('hide');
+
+                }
+            });
+
+
+        }
+
+        function GerarTopChartAnual() {
+          
+            $.ajax({
+                url: "/Relatorios/GenerateTopBancas",
+                method: "POST",
+                data: { tipo: "ano" },
+                success: function (data) {
+                    scrollDown()
+
+                    if (data != null) {
+                        var nomes = []
+                        var valorAnual = []
+                        console.log(data)
+                        for (var i = 0; i < data.length; i++) {
+                            nomes.push(data[i].nomeBanca)
+                            valorAnual.push(data[i].valorAnual)
+                        }
+                        console.log(nomes)
+                        console.log(valorAnual)
+
+
+                        if (topChart2 != null) {
+                            topChart2.destroy();
+                        }
+                        // Get the context of the canvas element we want to select
+
+
+
+                        var ctx = document.getElementById('topChart2').getContext('2d');
+                        var barChartData = {
+                            labels: nomes,
+                            datasets: [{
+                                label: 'TOP 10 BANCAS QUE MAIS GERARAM RENDA NO ANO ATÉ O MOMENTO',
+                                backgroundColor: "#074500",
+                                borderColor: "#074500",
+                                borderWidth: 1,
+                                data: valorAnual
+                            },]
+                        }
+
+                    };
+                    var myBarChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: barChartData,
+                        options: {
+                            responsive: true,
+                            legend: {
+                                position: 'top',
+                            },
+
+                        }
+                    });
+                    topChart2 = myBarChart
+
+                    $(".modal").modal('hide');
+
+                }
+            });
+
+        }
+
+        //your scroll function
+        function scrollDown() {
+            $('html,body').animate({
+                scrollTop: $("#graf2").offset().top
+            }, 'slow');
+        }
+
+        //$("body").on("click", "#scroll", scrollDown);
+
+        $(window).scroll(function () {
+            var navHeight = 300; // custom nav height
+            if ($(window).scrollTop() > navHeight) {
+                $('#graf2').addClass('goToTop');
+                //finish scroll animation
+                $('html,body').finish();
+                //set event handler to #scroll with your scroll function
+                $("body").off("click", "#scroll", scrollDown);
+            } else {
+                $('#nav').removeClass('goToTop');
+                //unset event handler
+                $("body").on("click", "#scroll", scrollDown);
+            }
+        }); 
+
 
         function getPagination(table) {
             var lastPage = 1;

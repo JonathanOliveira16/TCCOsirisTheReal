@@ -17,6 +17,9 @@ namespace OsirisPdvReal.Models
         public String NomeBanca { get; set; }
         [Required(ErrorMessage = "Campo obrigatório")]
         public String Bairro { get; set; }
+        [Required(ErrorMessage = "Campo obrigatório")]
+        [Display(Name = "CEP")]
+        public string CEPbanca { get; set; }
         public long? CPF { get; set; }
         public Jornaleiro Jornaleiro { get; set; }
         public ICollection<Jornaleiro> Jornaleiros { get; set; }

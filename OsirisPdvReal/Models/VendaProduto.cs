@@ -15,5 +15,6 @@ namespace OsirisPdvReal.Models
         public int ProdutoId { get; set; }
         public Produto Produtos { get; set; }
         public int QuantidadeVendida { get; set; }
+        public double ValorTotalDoProduto { get; set; }
     }
 }

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OsirisPdvReal.Models;
 
 namespace OsirisPdvReal.Migrations
 {
     [DbContext(typeof(Contexto))]
-    partial class ContextoModelSnapshot : ModelSnapshot
+    [Migration("20201022213621_cepNovos")]
+    partial class cepNovos
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -467,9 +469,6 @@ namespace OsirisPdvReal.Migrations
 
                     b.Property<int>("QuantidadeVendida")
                         .HasColumnType("int");
-
-                    b.Property<double>("ValorTotalDoProduto")
-                        .HasColumnType("float");
 
                     b.HasKey("VendaId", "ProdutoId");
 
