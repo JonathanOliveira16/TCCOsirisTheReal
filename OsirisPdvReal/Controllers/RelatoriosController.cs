@@ -57,6 +57,7 @@ namespace OsirisPdvReal.Controllers
                     rcObject.EmailCliente = data.EmailCliente;
                     rcObject.TelefoneCliente = data.TelefoneCliente;
                     rcObject.ValorVenda = soma.ToString();
+                    rcObject.CEP = data.CEPcliente;
                     ListaFinal.Add(rcObject);
                 }
                 ListaFinal = ListaFinal.OrderByDescending(b => Convert.ToDouble(b.ValorVenda.Replace('.', ','))).ToList();
@@ -69,20 +70,23 @@ namespace OsirisPdvReal.Controllers
                 }
                 ListaParaCsvRanking = rankingClientes;
                 ViewBag.ranking = rankingClientes;
+                ViewBag.count = rankingClientes.Count();
+
                 ViewBag.filtro = "Filtrado por - Todos";
             }
             catch (Exception ex)
             {
                 TempData["msgSucesso"] = "Erro na sua solicitação, favor tentar novamente!";
             }
-
-
+            var ceps = _context.Vendas.Include(v => v.Bancas).Where(v=>v.Clientes.NomeCliente != "Sem cliente").Select(v => v.Clientes.CEPcliente).Distinct();
+            ViewBag.cep = ceps;
+            ViewBag.anos = _context.Vendas.Select(v => v.DataVenda.Year).Distinct().ToList();
             return View();
 
         }
 
         [HttpPost]
-        public IActionResult RankingClientes(string buscaMes)
+        public IActionResult RankingClientes(string buscaMes, string buscaAno, string buscaCep)
         {
             try
             {
@@ -91,16 +95,31 @@ namespace OsirisPdvReal.Controllers
                 List<String> ListaValores = new List<string>();
                 List<Venda> listaDoForeach = new List<Venda>();
                 List<Venda> listaDoIf = new List<Venda>();
+                List<Venda> listaDaVendaDoParametro = new List<Venda>();
                 if (buscaMes.ToLower() == "todos")
                 {
-                    var vendas = _context.Vendas.Include(v => v.Clientes).Include(v => v.Status).ToList();
-                    listaDoIf = vendas;
+                    listaDaVendaDoParametro = _context.Vendas.Include(v => v.Clientes).Include(v => v.Status).Include(v=>v.Bancas).ToList();
+                    listaDoIf = listaDaVendaDoParametro;
                 }
                 else
                 {
-                    var vendas = _context.Vendas.Include(v => v.Clientes).Include(v => v.Status).Where(v => v.DataVenda.Month == Convert.ToInt32(buscaMes)).ToList();
-                    listaDoIf = vendas;
+                    listaDaVendaDoParametro = _context.Vendas.Include(v => v.Clientes).Include(v => v.Status).Include(v=>v.Bancas).Where(v => v.DataVenda.Month == Convert.ToInt32(buscaMes)).ToList();
+                    listaDoIf = listaDaVendaDoParametro;
                 }
+
+                if (buscaAno.ToLower() != "todos")
+                {
+                    var venda = listaDoIf.Where(v => v.DataVenda.Year == Convert.ToInt32(buscaAno)).ToList();
+                    listaDoIf = venda;
+                }
+
+
+                if (buscaCep.ToLower() != "todos")
+                {
+                    var venda = listaDoIf.Where(v => v.Clientes.CEPcliente == buscaCep).ToList();
+                    listaDoIf = venda;
+                }
+
                 foreach (var item in listaDoIf)
                 {
                     item.ValorVenda = item.ValorVenda.Substring(2).Replace('.', ',');
@@ -119,6 +138,7 @@ namespace OsirisPdvReal.Controllers
                     rcObject.EmailCliente = data.EmailCliente;
                     rcObject.TelefoneCliente = data.TelefoneCliente;
                     rcObject.ValorVenda = soma.ToString();
+                    rcObject.CEP = data.CEPcliente;
                     ListaFinal.Add(rcObject);
                 }
                 ListaFinal = ListaFinal.OrderByDescending(b => Convert.ToDouble(b.ValorVenda.Replace('.', ','))).ToList();
@@ -131,13 +151,17 @@ namespace OsirisPdvReal.Controllers
                 }
                 ListaParaCsvRanking = rankingClientes;
                 ViewBag.ranking = rankingClientes;
+                ViewBag.count = rankingClientes.Count();
+
                 ViewBag.filtro = buscaMes.ToLower() == "todos" ? "Filtrado por - Todos" : "Filtrado por - " + DataUtil.GetNameMonth(Convert.ToInt32(buscaMes));
             }
             catch (Exception ex)
             {
                 TempData["msgSucesso"] = "Erro na sua solicitação, favor tentar novamente!";
             }
-
+            var ceps = _context.Vendas.Include(v => v.Bancas).Select(v => v.Clientes.CEPcliente).Distinct();
+            ViewBag.cep = ceps;
+            ViewBag.anos = _context.Vendas.Select(v => v.DataVenda.Year).Distinct().ToList();
 
             return View();
 

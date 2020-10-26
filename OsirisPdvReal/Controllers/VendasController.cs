@@ -246,6 +246,7 @@ namespace OsirisPdvReal.Controllers
                     vp.VendaId = idVenda;
                     vp.ProdutoId = prod.ProdutoId;
                     vp.QuantidadeVendida = Convert.ToInt32(y[3]);
+                    vp.ValorTotalDoProduto = Convert.ToDouble(y[1].Substring(2).Replace('.',',')); 
                     listvp.Add(vp);
                     listaProduto.Add(prod);
                     

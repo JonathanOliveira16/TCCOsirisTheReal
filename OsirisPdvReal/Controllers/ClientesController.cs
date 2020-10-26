@@ -117,7 +117,7 @@ namespace OsirisPdvReal.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CPFcliente,NomeCliente,EmailCliente,TelefoneCliente,StatusId")] Cliente cliente)
+        public async Task<IActionResult> Create([Bind("CPFcliente,NomeCliente,EmailCliente,TelefoneCliente,CEPcliente,StatusId")] Cliente cliente)
         {
             cliente.CPFcliente = cpfUser;
             try
@@ -180,7 +180,7 @@ namespace OsirisPdvReal.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, [Bind("CPFcliente,NomeCliente,EmailCliente,TelefoneCliente,StatusId")] Cliente cliente)
+        public async Task<IActionResult> Edit(long id, [Bind("CPFcliente,NomeCliente,EmailCliente,TelefoneCliente,CEPcliente,StatusId")] Cliente cliente)
         {
             if (id != cliente.CPFcliente)
             {

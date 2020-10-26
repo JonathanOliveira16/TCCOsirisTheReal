@@ -58,6 +58,11 @@
                 <span asp-validation-for="TelefoneCliente" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="CEPcliente" class="control-label font-weight-bold"></label>
+                <input asp-for="CEPcliente"  id="inp4" class="form-control borderInput" />
+                <span asp-validation-for="CEPcliente" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="StatusId" class="control-label font-weight-bold"></label>
                 <select asp-for="StatusId" class="form-control borderInput" asp-items="ViewBag.StatusId"></select>
                 <span asp-validation-for="StatusId" class="text-danger"></span>
@@ -79,11 +84,17 @@
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
 
-<script>
+    <script>
         var currencyMask = IMask(
             document.getElementById('inp3'),
             {
                 mask: '(00)00000-0000',
+
+            });
+        var currencyMask2 = IMask(
+            document.getElementById('inp4'),
+            {
+                mask: '00000-000',
 
             });
         function PassarDados() {

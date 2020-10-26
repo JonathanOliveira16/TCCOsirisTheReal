@@ -12,5 +12,6 @@ namespace OsirisPdvReal.Models
         public String EmailCliente { get; set; }
         public String TelefoneCliente { get; set; }
         public String ValorVenda { get; set; }
+        public String CEP { get; set; }
     }
 }
