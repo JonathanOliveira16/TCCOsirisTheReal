@@ -36,7 +36,7 @@
                     @Html.DisplayNameFor(model => model.Status)
                 </th>
                 <th class="text-white">
-                    @Html.DisplayNameFor(model => model.tipo)
+                    Tipo
                 </th>
                 <th></th>
             </tr>
@@ -61,11 +61,9 @@
                         @Html.DisplayFor(modelItem => item.Status.NomeStatus)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.tipo.TipoId)
+                        @Html.DisplayFor(modelItem => item.tipo.NomeTipo)
                     </td>
-                    <td class="float-right">
-                        <a class="btn btn-info" asp-action="AtivarJornaleiro" asp-route-id="@item.CPF">Ativar</a>
-                    </td>
+                   
                 </tr>
             }
         </tbody>

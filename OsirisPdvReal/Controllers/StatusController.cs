@@ -34,7 +34,7 @@ namespace OsirisPdvReal.Controllers
             {
                 return RedirectToAction("Login", "Jornaleiros");
             }
-            return View(await _context.Jornaleiros.Include(j=>j.Status).Where(j=>j.StatusId == 2).ToListAsync());
+            return View(await _context.Jornaleiros.Include(j=>j.Status).Include(j=>j.tipo).Where(j=>j.StatusId == 2).ToListAsync());
         }
 
         public async Task<IActionResult> AtivarJornaleiro(long id)
