@@ -15,6 +15,7 @@ namespace OsirisPdvReal.Controllers
     {
         private readonly Contexto _context;
         private static List<Compras> ListaParaCsv = new List<Compras>();
+        private static List<String> ListaDeFornecedores = new List<String>();
 
         public ComprasController(Contexto context)
         {
@@ -29,6 +30,9 @@ namespace OsirisPdvReal.Controllers
                 return RedirectToAction("Login", "Jornaleiros");
             }
             var query = _context.Compras.Include(c => c.Status).Include(c => c.fornecedor).OrderBy(c=>c.DataCompra);
+            ListaDeFornecedores = query.Select(v => v.fornecedor.NomeFornecedor).OrderBy(v=>v).Distinct().ToList();
+            ViewBag.fornecedor = ListaDeFornecedores;
+
             ListaParaCsv.Clear();
             ListaParaCsv = query.ToList();
             var model = await PagingList.CreateAsync(query, 5, page);
@@ -41,12 +45,15 @@ namespace OsirisPdvReal.Controllers
             if (busca == DateTime.MinValue)
             {
                 var query2 = _context.Compras.Include(c => c.Status).Include(c => c.fornecedor).OrderBy(c => c.DataCompra);
+                ViewBag.fornecedor = ListaDeFornecedores;
                 ListaParaCsv.Clear();
                 ListaParaCsv = query2.ToList();
                 var model2 = await PagingList.CreateAsync(query2, 5, page);
                 return View(model2);
             }
             var query = _context.Compras.Include(c => c.Status).Include(c => c.fornecedor).Where(c => c.DataCompra == busca).OrderBy(c=>c.DataCompra);
+            ViewBag.fornecedor = ListaDeFornecedores;
+
             ListaParaCsv.Clear();
             ListaParaCsv = query.ToList();
             var model = await PagingList.CreateAsync(query, 5, page);
@@ -59,12 +66,16 @@ namespace OsirisPdvReal.Controllers
             if (buscaFornecedor == null)
             {
                 var query2 = _context.Compras.Include(c => c.Status).Include(c => c.fornecedor).OrderBy(c => c.DataCompra);
+                ViewBag.fornecedor = ListaDeFornecedores;
+
                 ListaParaCsv.Clear();
                 ListaParaCsv = query2.ToList();
                 var model2 = await PagingList.CreateAsync(query2, 5, page);
                 return View("Index",model2);
             }
             var query = _context.Compras.Include(c => c.Status).Include(c => c.fornecedor).Where(c => c.fornecedor.NomeFornecedor.Contains(buscaFornecedor)).OrderBy(c => c.DataCompra);
+            ViewBag.fornecedor = ListaDeFornecedores;
+
             ListaParaCsv.Clear();
             ListaParaCsv = query.ToList();
             var model = await PagingList.CreateAsync(query, 100, page);
@@ -89,10 +100,11 @@ namespace OsirisPdvReal.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ComprasId,NomeItemCompra,QuantidadeCompra,DataCompra,ValorCompra,StatusId,CNPJ")] Compras compras)
+        public async Task<IActionResult> Create([Bind("ComprasId,NomeItemCompra,QuantidadeCompra,DataCompra,ValorCompra,CNPJ")] Compras compras)
         {
             if (ModelState.IsValid)
             {
+                compras.StatusId = 1;
                 _context.Add(compras);
                 await _context.SaveChangesAsync();
                 var prod = _context.Produto.Where(p => p.NomeProduto == compras.NomeItemCompra).FirstOrDefault();
@@ -146,6 +158,7 @@ namespace OsirisPdvReal.Controllers
             {
                 try
                 {
+                    compras.StatusId = 1;
                     var compraQuantidade = _context.Compras.Where(c => c.ComprasId == compras.ComprasId).Select(c => c.QuantidadeCompra).FirstOrDefault();
                     if (compraQuantidade != compras.QuantidadeCompra)
                     {

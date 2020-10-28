@@ -15,56 +15,74 @@
     </div>
 }
 
-<table class="table mt-4 table-striped">
-    <thead class="tHeadPurple">
-        <tr>
-            <th class="text-white">
-                @Html.DisplayNameFor(model => model.NomeJornaleiro)
-            </th>
-            <th class="text-white">
-                @Html.DisplayNameFor(model => model.EmailJornaleiro)
-            </th>
-            <th class="text-white">
-                @Html.DisplayNameFor(model => model.TelefoneJornaleiro)
-            </th>
-            <th class="text-white">
-                @Html.DisplayNameFor(model => model.SenhaJornaleiro)
-            </th>
-            <th class="text-white">
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
-            <th class="text-white">
-                @Html.DisplayNameFor(model => model.tipo)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.NomeJornaleiro)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EmailJornaleiro)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TelefoneJornaleiro)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SenhaJornaleiro)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status.NomeStatus)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.tipo.TipoId)
-            </td>
-            <td class="float-right">
-                <a class="btn btn-info" asp-action="AtivarJornaleiro" asp-route-id="@item.CPF">Ativar</a>             
-            </td>
-        </tr>
-        }
-    </tbody>
-</table>
+@if (Model.Count() > 0)
+{
+    <table class="table mt-4 table-striped">
+        <thead class="tHeadPurple">
+            <tr>
+                <th class="text-white">
+                    @Html.DisplayNameFor(model => model.NomeJornaleiro)
+                </th>
+                <th class="text-white">
+                    @Html.DisplayNameFor(model => model.EmailJornaleiro)
+                </th>
+                <th class="text-white">
+                    @Html.DisplayNameFor(model => model.TelefoneJornaleiro)
+                </th>
+                <th class="text-white">
+                    @Html.DisplayNameFor(model => model.SenhaJornaleiro)
+                </th>
+                <th class="text-white">
+                    @Html.DisplayNameFor(model => model.Status)
+                </th>
+                <th class="text-white">
+                    @Html.DisplayNameFor(model => model.tipo)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NomeJornaleiro)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.EmailJornaleiro)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TelefoneJornaleiro)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SenhaJornaleiro)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Status.NomeStatus)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.tipo.TipoId)
+                    </td>
+                    <td class="float-right">
+                        <a class="btn btn-info" asp-action="AtivarJornaleiro" asp-route-id="@item.CPF">Ativar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="divBtn mt-5">
+        <div class="card">
+            <h5 class="card-header font-weight-bold text-white" style="background-color: #00AA9E;">Nenhum jornaleiro inativo</h5>
+            <div class="card-body">
+                <h5 class="card-title">Assim que houver um jornaleiro inativo ele poderá ser ativado novamente por esta tela!</h5>
+                <form class="ml-4 mt-3" asp-action="Index">
+                    <a class="btn btn-success" asp-action="Create">Cadastrar</a>
+                </form>
+            </div>
+
+        </div>
+    </div>
+}

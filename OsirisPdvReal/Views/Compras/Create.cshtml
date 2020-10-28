@@ -39,11 +39,7 @@
                 <label asp-for="ValorCompra" class="control-label font-weight-bold"></label>
                 <input asp-for="ValorCompra" data-val="false" id="inp1" class="form-control borderInput" />
                 <span asp-validation-for="ValorCompra" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label class="control-label font-weight-bold">Status</label>
-                <select asp-for="StatusId" class="form-control borderInput" asp-items="ViewBag.StatusId"></select>
-            </div>
+            </div>         
             <div class="form-group">
                 <label class="control-label font-weight-bold">Fornecedor</label>
                 <select asp-for="CNPJ" class="form-control borderInput" asp-items="ViewBag.CNPJ"></select>

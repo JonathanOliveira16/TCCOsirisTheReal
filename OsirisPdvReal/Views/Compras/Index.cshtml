@@ -46,11 +46,17 @@
         </div>
     </form>
 
-    <form asp-action="SearchByFornecedor">
-        <div class="d-flex ml-3">
-            <input type="text" class="form-control borderInput" name="buscaFornecedor" id="buscaFornecedor" placeholder="Pesquisar fornecedor..." />
-            <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
-        </div>
+    <form asp-action="SearchByFornecedor" class="ml-3">
+            <div class="d-flex">
+                <select id="buscaFornecedor" name="buscaFornecedor" class="form-control borderInput">
+                    <option value="" disabled selected>Fornecedores...</option>
+                    @foreach (var y in ViewBag.fornecedor)
+                    {
+                        <option value="@y">@y</option>
+                    }
+                </select>
+                <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
+            </div>
     </form>
 
     <div class="ml-4 ml-3">

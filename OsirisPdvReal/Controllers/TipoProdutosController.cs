@@ -1,31 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using OsirisPdvReal.Models;
+using ReflectionIT.Mvc.Paging;
 
 namespace OsirisPdvReal.Controllers
 {
     public class TipoProdutosController : Controller
     {
         private readonly Contexto _context;
-
+        private static List<TipoProduto> ListaParaCsv = new List<TipoProduto>();
         public TipoProdutosController(Contexto context)
         {
             _context = context;
         }
 
         // GET: TipoProdutos
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1)
         {
             if (Request.Cookies["idDoUser"] == null)
             {
                 return RedirectToAction("Login", "Jornaleiros");
             }
-            return View(await _context.TipoProdutos.ToListAsync());
+            var query = _context.TipoProdutos.OrderBy(v=>v.NomeTipoProduto);
+            ListaParaCsv = query.ToList();
+            var model = await PagingList.CreateAsync(query, 5, page);
+            return View(model);
         }
 
         // GET: TipoProdutos/Details/5
@@ -145,6 +150,23 @@ namespace OsirisPdvReal.Controllers
             }
             return View(tipoProduto);
         }
+
+        public IActionResult GerarCSV()
+        {
+            var registros = ListaParaCsv;
+            StringBuilder arquivo = new StringBuilder();
+            arquivo.AppendLine("Nome Tipo");
+
+            foreach (var item in registros)
+            {
+
+
+                arquivo.AppendLine(item.NomeTipoProduto);
+            }
+
+            return File(Encoding.ASCII.GetBytes(arquivo.ToString()), "text/csv", "TipoProduto.csv");
+        }
+
 
         // GET: TipoProdutos/Delete/5
         //public async Task<IActionResult> Delete(int? id)

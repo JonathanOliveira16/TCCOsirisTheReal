@@ -4,7 +4,7 @@
     ViewData["Title"] = "InativosClientes";
 }
 
-    <h5 class="divBtn fontTitles">CLIENTES INATIVOS</h5>
+<h5 class="divBtn fontTitles">CLIENTES INATIVOS</h5>
 
 @if (TempData["msgSucesso"] != null)
 {
@@ -12,44 +12,62 @@
         <strong>@TempData["msgSucesso"]</strong>
     </div>
 }
-<table class="table mt-4 table-striped">
-    <thead class="tHeadPurple">
-        <tr>
-            <th class="text-white">
-                @Html.DisplayNameFor(model => model.NomeCliente)
-            </th>
-            <th class="text-white">
-                @Html.DisplayNameFor(model => model.EmailCliente)
-            </th>
-            <th class="text-white">
-                @Html.DisplayNameFor(model => model.TelefoneCliente)
-            </th>
-            <th class="text-white">
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.NomeCliente)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EmailCliente)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TelefoneCliente)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status.NomeStatus)
-            </td>
-            <td class="float-right">
-                <a class="btn btn-info" asp-action="AtivarClientes" asp-route-id="@item.CPFcliente">Ativar</a>
-            </td>
-        </tr>
-        }
-    </tbody>
-</table>
+@if (Model.Count() > 0)
+{
+    <table class="table mt-4 table-striped">
+        <thead class="tHeadPurple">
+            <tr>
+                <th class="text-white">
+                    @Html.DisplayNameFor(model => model.NomeCliente)
+                </th>
+                <th class="text-white">
+                    @Html.DisplayNameFor(model => model.EmailCliente)
+                </th>
+                <th class="text-white">
+                    @Html.DisplayNameFor(model => model.TelefoneCliente)
+                </th>
+                <th class="text-white">
+                    @Html.DisplayNameFor(model => model.Status)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NomeCliente)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.EmailCliente)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TelefoneCliente)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Status.NomeStatus)
+                    </td>
+                    <td class="float-right">
+                        <a class="btn btn-info" asp-action="AtivarClientes" asp-route-id="@item.CPFcliente">Ativar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="divBtn mt-5">
+        <div class="card">
+            <h5 class="card-header font-weight-bold text-white" style="background-color: #00AA9E;">Nenhum cliente inativo</h5>
+            <div class="card-body">
+                <h5 class="card-title">Assim que houver um cliente inativo ele poderá ser ativado novamente por esta tela!</h5>
+                <form class="ml-4 mt-3" asp-action="Index">
+                    <a class="btn btn-success" asp-action="Create">Cadastrar</a>
+                </form>
+            </div>
+
+        </div>
+    </div>
+}

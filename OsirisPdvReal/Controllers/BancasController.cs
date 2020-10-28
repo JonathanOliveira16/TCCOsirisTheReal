@@ -156,7 +156,7 @@ namespace OsirisPdvReal.Controllers
                 return RedirectToAction("Login", "Jornaleiros");
             }
             List<String> Bairros = BairroUtil.GetBairros();
-            ViewBag.bairros = Bairros.OrderBy(b=>b).ToList();
+            ViewBag.bairros = Bairros.OrderBy(b => b).ToList();
             ViewData["CPF"] = new SelectList(_context.Jornaleiros, "CPF", "NomeJornaleiro");
             return View();
         }
@@ -166,7 +166,7 @@ namespace OsirisPdvReal.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("BancaId,NomeBanca,CPF, Bairro")] Banca banca)
+        public async Task<IActionResult> Create([Bind("BancaId,NomeBanca,CPF,CEPbanca, Bairro")] Banca banca)
         {
             try
             {
@@ -188,11 +188,14 @@ namespace OsirisPdvReal.Controllers
                     else
                     {
                         ViewData["CPF"] = new SelectList(_context.Jornaleiros, "CPF", "NomeJornaleiro");
-                        List<String> Bairros = BairroUtil.GetBairros();
-                        ViewBag.bairros = Bairros.OrderBy(b => b).ToList();
                         TempData["msgSucesso"] = "Nome já existente em nosso banco de dados!";
                         return View();
                     }
+
+                }
+                else
+                {
+                    ViewData["CPF"] = new SelectList(_context.Jornaleiros, "CPF", "NomeJornaleiro");
 
                 }
             }
@@ -204,7 +207,8 @@ namespace OsirisPdvReal.Controllers
                 TempData["msgSucesso"] = "Erro na sua solicitação, favor tentar novamente!";
                 return View();
             }
-         
+            List<String> Bairros2 = BairroUtil.GetBairros();
+            ViewBag.bairros = Bairros2.OrderBy(b => b).ToList();
             return View();
         }
 
@@ -236,7 +240,7 @@ namespace OsirisPdvReal.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("BancaId,NomeBanca,CPF,Bairro")] Banca banca)
+        public async Task<IActionResult> Edit(int id, [Bind("BancaId,NomeBanca,CPF,CEPbanca,Bairro")] Banca banca)
         {
             if (id != banca.BancaId)
             {
@@ -274,6 +278,11 @@ namespace OsirisPdvReal.Controllers
                     return View();
                 }
                 return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                ViewData["CPF"] = new SelectList(_context.Jornaleiros, "CPF", "NomeJornaleiro");
+
             }
             List<String> Bairros = BairroUtil.GetBairros();
             ViewBag.bairros = Bairros.OrderBy(b => b).ToList();

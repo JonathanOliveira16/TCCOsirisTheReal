@@ -166,7 +166,7 @@ namespace OsirisPdvReal.Controllers
             }
             else
             {
-                var query = _context.Vendas.Include(v => v.Bancas).Include(v => v.Clientes).Include(v => v.Status).Include(v => v.Jornaleiros).Where(c => c.Clientes.NomeCliente.ToLower() == buscaCliente.ToLower()).OrderBy(v => v.DataVenda);
+                var query = _context.Vendas.Include(v => v.Bancas).Include(v => v.Clientes).Include(v => v.Status).Include(v => v.Jornaleiros).Where(c => c.Clientes.NomeCliente.ToLower().Contains(buscaCliente.ToLower())).OrderBy(v => v.DataVenda);
                 ListaParaCsv.Clear();
                 ListaParaCsv = query.ToList();
                 var model = await PagingList.CreateAsync(query, 100, page);
@@ -188,7 +188,7 @@ namespace OsirisPdvReal.Controllers
             }
             else
             {
-                var query = _context.Vendas.Include(v => v.Bancas).Include(v => v.Clientes).Include(v => v.Status).Include(v => v.Jornaleiros).Where(c => c.Bancas.NomeBanca.ToLower() == buscaBanca.ToLower()).OrderBy(v => v.DataVenda);
+                var query = _context.Vendas.Include(v => v.Bancas).Include(v => v.Clientes).Include(v => v.Status).Include(v => v.Jornaleiros).Where(c => c.Bancas.NomeBanca.ToLower().Contains(buscaBanca.ToLower())).OrderBy(v => v.DataVenda);
                 ListaParaCsv.Clear();
                 ListaParaCsv = query.ToList();
                 var model = await PagingList.CreateAsync(query, 100, page);

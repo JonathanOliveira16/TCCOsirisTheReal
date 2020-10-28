@@ -27,13 +27,18 @@
                 <span asp-validation-for="NomeBanca" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label class="control-label font-weight-bold">CEP</label>
+                <input asp-for="CEPbanca" class="form-control borderInput" id="inp1" />
+                <span asp-validation-for="CEPbanca" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label class="control-label font-weight-bold">Jornaleiro</label>
                 <select asp-for="CPF" class="form-control borderInput" asp-items="ViewBag.CPF"></select>
             </div>
             <div class="form-group">
                 <label class="control-label font-weight-bold">Bairro</label>
                 <select asp-for="Bairro" class="form-control borderInput">
-                    @foreach(var y in ViewBag.bairros)
+                    @foreach (var y in ViewBag.bairros)
                     {
                         <option value="@y">@y</option>
                     }
@@ -53,4 +58,12 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+<script>
+    var currencyMask2 = IMask(
+        document.getElementById('inp1'),
+        {
+            mask: '00000-000',
+
+        });
+</script>
 }

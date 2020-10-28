@@ -38,20 +38,20 @@ namespace OsirisPdvReal.Controllers
                 List<RankingCliente> ListaFinal = new List<RankingCliente>();
                 List<String> ListaValores = new List<string>();
                 List<Venda> listaDoForeach = new List<Venda>();
-                var vendas = _context.Vendas.Include(v => v.Clientes).Include(v => v.Status).ToList();
+                var vendas = _context.Vendas.Include(v => v.Clientes).Include(v => v.Status).Where(v=>v.Clientes.StatusId == 1).ToList();
                 foreach (var item in vendas)
                 {
                     item.ValorVenda = item.ValorVenda.Substring(2).Replace('.', ',');
                     listaDoForeach.Add(item);
                 }
 
-                var clientes = listaDoForeach.Where(v => v.Clientes.NomeCliente != "Sem Cliente").Select(v => v.Clientes).Distinct().ToList();
+                var clientes = listaDoForeach.Where(v => v.Clientes.NomeCliente != "Sem Cliente" && v.StatusId == 1).Select(v => v.Clientes).Distinct().ToList();
                 int posicao = 1;
                 foreach (var data in clientes)
                 {
                     RankingCliente rcObject = new RankingCliente();
 
-                    var soma = vendas.Where(v => v.Clientes.NomeCliente == data.NomeCliente && v.Clientes.Status.StatusId == 1).Sum(v => Convert.ToDouble(v.ValorVenda));
+                    var soma = vendas.Where(v => v.Clientes.NomeCliente == data.NomeCliente).Sum(v => Convert.ToDouble(v.ValorVenda));
                     rcObject.Posicao = posicao.ToString() + "º";
                     rcObject.NomeCliente = data.NomeCliente;
                     rcObject.EmailCliente = data.EmailCliente;

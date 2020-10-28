@@ -195,6 +195,8 @@ namespace OsirisPdvReal.Controllers
                 {
                     if (existeCliente == null)
                     {
+                        var status = _context.Status.Where(v => v.StatusId == 2).FirstOrDefault();
+                        cliente.Status = status;
                         _context.Update(cliente);
                         await _context.SaveChangesAsync();
                     }

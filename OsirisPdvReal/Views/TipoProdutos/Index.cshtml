@@ -1,5 +1,6 @@
-﻿@model IEnumerable<OsirisPdvReal.Models.TipoProduto>
-
+﻿@model ReflectionIT.Mvc.Paging.PagingList<OsirisPdvReal.Models.TipoProduto>
+@using ReflectionIT.Mvc.Paging
+@addTagHelper *, ReflectionIT.Mvc.Paging
 @{
     ViewData["Title"] = "Index";
 }
@@ -26,7 +27,6 @@
 
 <h5 class="divBtn fontTitles">LISTAGEM DE TIPOS DE PRODUTOS</h5>
 
-
 @if (TempData["msgSucesso"] != null)
 {
     <div class="alert alert-danger alert-dismissable mt-2" style="margin-left:10%;margin-right:10%">
@@ -36,9 +36,11 @@
 
 @if (Model != null)
 {
-    <div class="divBtn">
-        <a class="btn btnPage btn-success mt-2" asp-action="Create">Novo tipo de produto</a>
-    </div>
+<div class="divBtn d-flex">
+    <a class="btn btnPage btn-success mt-2" asp-action="Create">Novo tipo de produto</a>
+    <a asp-action="GerarCSV" class="btn btnPage btn-success mt-2 ml-5">Download CSV</a>
+
+</div>
 
 
     <table class="table mt-4 table-striped">
@@ -66,6 +68,9 @@
             }
         </tbody>
     </table>
+    <nav class="float-right">
+        @await this.Component.InvokeAsync("Pager", new { PagingList = this.Model })
+    </nav>
 }
 else
 {

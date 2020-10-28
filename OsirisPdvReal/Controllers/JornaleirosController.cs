@@ -192,7 +192,7 @@ namespace OsirisPdvReal.Controllers
             }
             else
             {
-                var query = _context.Jornaleiros.Include(j => j.Status).Include(j => j.tipo).AsNoTracking().Where(j => j.StatusId == 1 && j.NomeJornaleiro.ToLower() == busca.ToLower()).OrderBy(j => j.NomeJornaleiro);
+                var query = _context.Jornaleiros.Include(j => j.Status).Include(j => j.tipo).AsNoTracking().Where(j => j.StatusId == 1 && j.NomeJornaleiro.ToLower().Contains(busca.ToLower())).OrderBy(j => j.NomeJornaleiro);
                 ListaParaCsv.Clear();
                 ListaParaCsv = query.ToList();
                 var model = await PagingList.CreateAsync(query, 5, page);
