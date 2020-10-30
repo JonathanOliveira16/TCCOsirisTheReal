@@ -44,27 +44,29 @@
         <tbody>
             @foreach (var item in Model)
             {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.NomeJornaleiro)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.EmailJornaleiro)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.TelefoneJornaleiro)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.SenhaJornaleiro)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Status.NomeStatus)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.tipo.NomeTipo)
-                    </td>
-                   
-                </tr>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NomeJornaleiro)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EmailJornaleiro)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TelefoneJornaleiro)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SenhaJornaleiro)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status.NomeStatus)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.tipo.NomeTipo)
+                </td>
+                <td class="float-right">
+                    <a class="btn btn-info" asp-action="AtivarJornaleiro" asp-route-id="@item.CPF">Ativar</a>
+                </td>
+            </tr>
             }
         </tbody>
     </table>

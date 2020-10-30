@@ -340,10 +340,17 @@ namespace OsirisPdvReal.Controllers
         public IActionResult Create(int page = 1)
         {
             String cpf = Request.Cookies["idDoUser"];
+            var bancas = _context.Bancas.Where(c => c.CPF == Convert.ToInt64(cpf)).AsNoTracking().OrderBy(c => c.NomeBanca);
+            ViewBag.banca = bancas;
+            ViewBag.bancaCount = bancas.Count();
+            if (bancas.Count() == 0)
+            {
+                return View();
+            }
             ViewBag.countCli = _context.Clientes.Where(c => c.StatusId == 1).AsNoTracking().Count();
             ViewBag.countProd = _context.Produto.AsNoTracking().Where(p=>p.QuantideProduto>=1).Count();
             ViewBag.clientes = _context.Clientes.Where(c => c.StatusId == 1).AsNoTracking().OrderBy(c => c.NomeCliente);
-            ViewBag.banca = _context.Bancas.Where(c => c.CPF == Convert.ToInt64(cpf)).AsNoTracking().OrderBy(c => c.NomeBanca);
+            
             ViewBag.produtos = _context.Produto.AsNoTracking().Where(p=>p.QuantideProduto>=1).OrderBy(c => c.NomeProduto);
             ViewBag.Tipos = _context.TipoProdutos.Select(t => t.NomeTipoProduto).OrderBy(t => t);
             ViewData["BancaId"] = new SelectList(_context.Bancas, "BancaId", "NomeBanca");

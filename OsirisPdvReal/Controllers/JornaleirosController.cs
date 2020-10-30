@@ -369,6 +369,19 @@ namespace OsirisPdvReal.Controllers
                             throw;
                         }
                     }
+                    if (jornaleiro.TipoId == 1)
+                    {
+                        var option2 = new CookieOptions();
+                        Response.Cookies.Delete("admin");
+                        Response.Cookies.Append("admin", "admin", option2);
+
+                    }
+                    else
+                    {
+                        var option2 = new CookieOptions();
+                        Response.Cookies.Delete("admin");
+                        Response.Cookies.Append("admin", "false", option2);
+                    }
                     return RedirectToAction(nameof(Index));
                 }
                 ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus", jornaleiro.StatusId);

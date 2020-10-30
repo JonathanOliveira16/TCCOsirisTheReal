@@ -72,6 +72,9 @@
                 <th class="text-white">
                     @Html.DisplayNameFor(model => model.Status)
                 </th>
+                <th class="text-white">
+                    Permissão
+                </th>
                 <th></th>
             </tr>
         </thead>
@@ -90,6 +93,9 @@
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.Status.NomeStatus)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.tipo.NomeTipo)
                     </td>
                     <td class="float-right">
                         <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.CPF">Editar</a>

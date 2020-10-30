@@ -35,20 +35,23 @@
         <tbody>
             @foreach (var item in Model)
             {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.NomeCliente)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.EmailCliente)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.TelefoneCliente)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Status.NomeStatus)
-                    </td>              
-                </tr>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NomeCliente)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EmailCliente)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TelefoneCliente)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status.NomeStatus)
+                </td>
+                <td class="float-right">
+                    <a class="btn btn-info" asp-action="AtivarClientes" asp-route-id="@item.CPFcliente">Ativar</a>
+                </td>
+            </tr>
             }
         </tbody>
     </table>

@@ -44,29 +44,33 @@
         <tbody>
             @foreach (var item in Model)
             {
-                <tr>
-                    <td style="font-size:12px;">
-                        @Html.DisplayFor(modelItem => item.NomeFornecedor)
-                    </td>
-                    <td style="font-size:12px;">
-                        @Html.DisplayFor(modelItem => item.EmailFornecedor)
-                    </td>
-                    <td style="font-size:12px;">
-                        @Html.DisplayFor(modelItem => item.TelefoneFornecedor)
-                    </td>
-                    <td style="font-size:12px;">
-                        @Html.DisplayFor(modelItem => item.PontoFocalFornecedor)
-                    </td>
-                    <td style="font-size:12px;">
-                        @Html.DisplayFor(modelItem => item.LogradouroFornecedor)
-                    </td>
-                    <td style="font-size:12px;">
-                        @Html.DisplayFor(modelItem => item.CEPFornecedor)
-                    </td>
-                    <td style="font-size:12px;">
-                        @Html.DisplayFor(modelItem => item.Status.NomeStatus)
-                    </td>
-                </tr>
+            <tr>
+                <td style="font-size:12px;">
+                    @Html.DisplayFor(modelItem => item.NomeFornecedor)
+                </td>
+                <td style="font-size:12px;">
+                    @Html.DisplayFor(modelItem => item.EmailFornecedor)
+                </td>
+                <td style="font-size:12px;">
+                    @Html.DisplayFor(modelItem => item.TelefoneFornecedor)
+                </td>
+                <td style="font-size:12px;">
+                    @Html.DisplayFor(modelItem => item.PontoFocalFornecedor)
+                </td>
+                <td style="font-size:12px;">
+                    @Html.DisplayFor(modelItem => item.LogradouroFornecedor)
+                </td>
+                <td style="font-size:12px;">
+                    @Html.DisplayFor(modelItem => item.CEPFornecedor)
+                </td>
+                <td style="font-size:12px;">
+                    @Html.DisplayFor(modelItem => item.Status.NomeStatus)
+                </td>
+                <td class="float-right">
+                    <a class="btn btn-info" asp-action="AtivarFornecedores" asp-route-id="@item.CNPJ">Ativar</a>
+                </td>
+
+            </tr>
             }
         </tbody>
     </table>

@@ -4,6 +4,8 @@
     ViewData["Title"] = "Create";
 }
 
+@if (ViewBag.bancaCount > 0)
+{
 <div class="modal" id="visao" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -38,7 +40,7 @@
         </div>
     </div>
 </div>
-
+}
 <div class="modal" id="modal2" tabindex="-1" style="margin-top:100px;" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -58,149 +60,166 @@
         <strong>@TempData["msgSucesso"]</strong>
     </div>
 }
-<div class="row">
-    <div class="col-md-2">
+@if (ViewBag.bancaCount > 0)
+{
+    <div class="row">
+        <div class="col-md-2">
 
-    </div>
-    <div class="col-md-8">
-        <!--Parte de produtos inicio-->
-        <div>
-            <div class="d-flex">
-                <form asp-action="SearchProduto">
-                    <div class="d-flex">
-                        <input type="text" class="form-control borderInput" name="busca" id="busca" placeholder="Pesquisar..." />
-                        <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
-                    </div>
-                </form>
-                <form asp-action="SearchTipo" class="ml-3">
-                    <div class="d-flex">
-                        @*<input type="text" class="form-control borderInput w-50" name="busca" id="busca" placeholder="Pesquisar produto..." />*@
-                        <select class="form-control borderInput" style="width:200px;" name="buscaTipo">
-                            <option value="" selected>Tipos de produtos...</option>
-                            @foreach (var tipo in ViewBag.Tipos)
-                            {
-                                <option value="@tipo">@tipo</option>
-                            }
-                        </select>
-                        <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
-                    </div>
-                </form>
+        </div>
+        <div class="col-md-8">
+            <!--Parte de produtos inicio-->
+            <div>
+                <div class="d-flex">
+                    <form asp-action="SearchProduto">
+                        <div class="d-flex">
+                            <input type="text" class="form-control borderInput" name="busca" id="busca" placeholder="Pesquisar..." />
+                            <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
+                        </div>
+                    </form>
+                    <form asp-action="SearchTipo" class="ml-3">
+                        <div class="d-flex">
+                            @*<input type="text" class="form-control borderInput w-50" name="busca" id="busca" placeholder="Pesquisar produto..." />*@
+                            <select class="form-control borderInput" style="width:200px;" name="buscaTipo">
+                                <option value="" selected>Tipos de produtos...</option>
+                                @foreach (var tipo in ViewBag.Tipos)
+                                {
+                                    <option value="@tipo">@tipo</option>
+                                }
+                            </select>
+                            <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
+                        </div>
+                    </form>
+                </div>
+                <div class="data-container"></div>
+                <div id="pagination-demo1"></div>
+                <table id="table-id" class="table mt-4 table-striped">
+                    <thead class="tHeadPurple">
+                        <tr>
+                            <th class="text-white" style="font-size:13px;">
+                                Nome Produto
+                            </th>
+                            <th class="text-white" style="font-size:13px;">
+                                Estoque
+                            </th>
+                            <th class="text-white" style="font-size:13px;">
+                                Valor
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in ViewBag.produtos)
+                        {
+                            <tr>
+                                <td style="font-size:13px;">
+                                    @item.NomeProduto
+                                </td>
+                                <td style="font-size:13px;">
+                                    @item.QuantideProduto
+                                </td>
+                                <td style="font-size:13px;">
+                                    @item.ValorProduto
+                                </td>
+                                <td class="float-right">
+                                    <a class="btn-sm btn-success text-white btnVenda btnProd" data-toggle="modal" data-target="#visao">Adicionar</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+                <!--		Start Pagination -->
+                <div class='pagination-container' id="page1" style="visibility:hidden">
+                    <nav>
+                        <ul class="pagination pageArr">
+
+                            <li data-page="prev">
+                                <span style="border: 3px solid purple;margin-right:6px;border-radius:5px;color:black"> <i class="fa fa-arrow-left"></i> <span class="sr-only">(current)</span></span>
+                            </li>
+                            <!--	Here the JS Function Will Add the Rows -->
+                            <li data-page="next" id="prev">
+                                <span style="border: 3px solid purple;margin-left:6px;border-radius:5px"> <i class="fa fa-arrow-right"></i> <span class="sr-only">(current)</span></span>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
             </div>
-            <div class="data-container"></div>
-            <div id="pagination-demo1"></div>
-            <table id="table-id" class="table mt-4 table-striped">
-                <thead class="tHeadPurple">
+
+            <div style="visibility:hidden;">
+                <h2>Select Number Of Rows</h2>
+                <div class="form-group">
+                    <!--		Show Numbers Of Rows 		-->
+                    <select class="form-control" name="state" id="maxRows">
+                        <option value="5000">Show ALL Rows</option>
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="15">15</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                        <option value="70">70</option>
+                        <option value="100">100</option>
+                    </select>
+
+                </div>
+            </div>
+        </div>
+        <!--fim parte produtos-->
+    </div>
+
+    <div class="card" id="cardCar" style="visibility:hidden">
+        <div class="card-header fontTitles text-center text-white" style="background-color: #00AA9E;">
+            CARRINHO
+        </div>
+        <div class="card-body">
+            <table class="table table-striped" id="tableVenda">
+                <thead>
                     <tr>
-                        <th class="text-white" style="font-size:13px;">
-                            Nome Produto
+                        <th class="font-weight-bold">
+                            Produto
                         </th>
-                        <th class="text-white" style="font-size:13px;">
-                            Estoque
+                        <th class="font-weight-bold">
+                            Valor total
                         </th>
-                        <th class="text-white" style="font-size:13px;">
-                            Valor
+                        <th class="font-weight-bold">
+                            Nome Cliente
                         </th>
-                        <th></th>
+                        <th class="font-weight-bold">
+                            Quantidade vendida
+                        </th>
+                        <th class="font-weight-bold">
+                            Banca
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in ViewBag.produtos)
-                    {
-                        <tr>
-                            <td style="font-size:13px;">
-                                @item.NomeProduto
-                            </td>
-                            <td style="font-size:13px;">
-                                @item.QuantideProduto
-                            </td>
-                            <td style="font-size:13px;">
-                                @item.ValorProduto
-                            </td>
-                            <td class="float-right">
-                                <a class="btn-sm btn-success text-white btnVenda btnProd" data-toggle="modal" data-target="#visao">Adicionar</a>
-                            </td>
-                        </tr>
-                    }
                 </tbody>
+
             </table>
+            <a class="btn-sm btn-success text-white float-right" id="vender" data-toggle="modal" data-target="#modal2">FINALIZAR</a>
 
-            <!--		Start Pagination -->
-            <div class='pagination-container' id="page1" style="visibility:hidden">
-                <nav>
-                    <ul class="pagination pageArr">
-
-                        <li data-page="prev">
-                            <span style="border: 3px solid purple;margin-right:6px;border-radius:5px;color:black"> <i class="fa fa-arrow-left"></i> <span class="sr-only">(current)</span></span>
-                        </li>
-                        <!--	Here the JS Function Will Add the Rows -->
-                        <li data-page="next" id="prev">
-                            <span style="border: 3px solid purple;margin-left:6px;border-radius:5px"> <i class="fa fa-arrow-right"></i> <span class="sr-only">(current)</span></span>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
         </div>
-
-        <div style="visibility:hidden;">
-            <h2>Select Number Of Rows</h2>
-            <div class="form-group">
-                <!--		Show Numbers Of Rows 		-->
-                <select class="form-control" name="state" id="maxRows">
-                    <option value="5000">Show ALL Rows</option>
-                    <option value="5">5</option>
-                    <option value="10">10</option>
-                    <option value="15">15</option>
-                    <option value="20">20</option>
-                    <option value="50">50</option>
-                    <option value="70">70</option>
-                    <option value="100">100</option>
-                </select>
-
+        <div class="card-footer text-muted">
+            <div class="d-flex mt-3">
+                <p>Valor Total: </p> <p class="font-weight-bold" id="valTotalTable"></p>
             </div>
         </div>
     </div>
-    <!--fim parte produtos-->
-</div>
+}
+else
+{
+    <div class="divBtn mt-5">
+        <div class="card">
+            <h5 class="card-header font-weight-bold text-white" style="background-color: #00AA9E;">Nenhuma banca vinculada</h5>
+            <div class="card-body">
+                <h5 class="card-title">Só é possível realizar vendas estando vinculado à uma banca, por favor cadastre sua banca na tela bancas do sistema ou clique no botão abaixo</h5>
+                <form class="ml-4 mt-3" >
+                    <a class="btn btn-success" asp-action="Index" asp-controller="Bancas">Bancas</a>
+                </form>
+            </div>
 
-<div class="card" id="cardCar" style="visibility:hidden">
-    <div class="card-header fontTitles text-center text-white" style="background-color: #00AA9E;">
-        CARRINHO
-    </div>
-    <div class="card-body">
-        <table class="table table-striped" id="tableVenda">
-            <thead>
-                <tr>
-                    <th class="font-weight-bold">
-                        Produto
-                    </th>
-                    <th class="font-weight-bold">
-                        Valor total
-                    </th>
-                    <th class="font-weight-bold">
-                        Nome Cliente
-                    </th>
-                    <th class="font-weight-bold">
-                        Quantidade vendida
-                    </th>
-                    <th class="font-weight-bold">
-                        Banca
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-
-        </table>
-        <a class="btn-sm btn-success text-white float-right" id="vender" data-toggle="modal" data-target="#modal2">FINALIZAR</a>
-
-    </div>
-    <div class="card-footer text-muted">
-        <div class="d-flex mt-3">
-            <p>Valor Total: </p> <p class="font-weight-bold" id="valTotalTable"></p>
         </div>
     </div>
-</div>
-
+}
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
