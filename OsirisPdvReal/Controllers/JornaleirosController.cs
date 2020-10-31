@@ -95,7 +95,7 @@ namespace OsirisPdvReal.Controllers
             }
             catch (Exception ex)
             {
-                TempData["msgSucesso"] = "Erro na sua solicitação, favor tentar novamente!";
+                TempData["msgSucesso"] = "Erro na sua solicitação, favor tentar novamente!" + ex;
                 return RedirectToAction("EnviarTokenSenha");
             }
         }

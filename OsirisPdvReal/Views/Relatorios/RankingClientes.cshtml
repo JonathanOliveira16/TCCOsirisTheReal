@@ -17,7 +17,7 @@
     <form asp-action="RankingClientes" class="d-flex">
 
         <label class="font-weight-bold ml-2" style="margin-top:5px;">Mês: </label>
-        <select id="buscaMes" name="buscaMes" class="form-control ml-2 borderInput">
+        <select id="buscaMes" name="buscaMes" class="form-control ml-2 borderInput" style="width: 140%;">
             <option value="Todos">Todos</option>
             <option value="1">Janeiro</option>
             <option value="2">Fevereiro</option>
@@ -34,7 +34,7 @@
         </select>
 
         <label class="font-weight-bold ml-3" style="margin-top:5px;">Ano: </label>
-        <select id="buscaAno" name="buscaAno" class="form-control borderInput ml-2">
+        <select id="buscaAno" name="buscaAno" class="form-control borderInput ml-2" style="width: 140%;">
             <option value="Todos">Todos</option>
             @foreach (var item in ViewBag.anos)
             {
