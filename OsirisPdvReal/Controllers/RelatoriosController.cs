@@ -400,7 +400,7 @@ namespace OsirisPdvReal.Controllers
             }
             else
             {
-                return Json(Listba.Where(v=>v.ValorMensal != 0).OrderByDescending(v =>v.ValorAnual).Take(10));
+                return Json(Listba.Where(v=>v.ValorAnual != 0).OrderByDescending(v =>v.ValorAnual).Take(10));
             }
             
         }

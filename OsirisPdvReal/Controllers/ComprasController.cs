@@ -29,7 +29,7 @@ namespace OsirisPdvReal.Controllers
             {
                 return RedirectToAction("Login", "Jornaleiros");
             }
-            var query = _context.Compras.Include(c => c.Status).Include(c => c.fornecedor).OrderBy(c=>c.DataCompra);
+            var query = _context.Compras.Include(c => c.Status).Include(c => c.fornecedor).OrderByDescending(c=>c.DataCompra);
             ListaDeFornecedores = query.Select(v => v.fornecedor.NomeFornecedor).OrderBy(v=>v).Distinct().ToList();
             ViewBag.fornecedor = ListaDeFornecedores;
 
@@ -44,7 +44,7 @@ namespace OsirisPdvReal.Controllers
         {
             if (busca == DateTime.MinValue)
             {
-                var query2 = _context.Compras.Include(c => c.Status).Include(c => c.fornecedor).OrderBy(c => c.DataCompra);
+                var query2 = _context.Compras.Include(c => c.Status).Include(c => c.fornecedor).OrderByDescending(c => c.DataCompra);
                 ViewBag.fornecedor = ListaDeFornecedores;
                 ListaParaCsv.Clear();
                 ListaParaCsv = query2.ToList();
@@ -65,7 +65,7 @@ namespace OsirisPdvReal.Controllers
         {
             if (buscaFornecedor == null)
             {
-                var query2 = _context.Compras.Include(c => c.Status).Include(c => c.fornecedor).OrderBy(c => c.DataCompra);
+                var query2 = _context.Compras.Include(c => c.Status).Include(c => c.fornecedor).OrderByDescending(c => c.DataCompra);
                 ViewBag.fornecedor = ListaDeFornecedores;
 
                 ListaParaCsv.Clear();
@@ -73,7 +73,7 @@ namespace OsirisPdvReal.Controllers
                 var model2 = await PagingList.CreateAsync(query2, 5, page);
                 return View("Index",model2);
             }
-            var query = _context.Compras.Include(c => c.Status).Include(c => c.fornecedor).Where(c => c.fornecedor.NomeFornecedor.Contains(buscaFornecedor)).OrderBy(c => c.DataCompra);
+            var query = _context.Compras.Include(c => c.Status).Include(c => c.fornecedor).Where(c => c.fornecedor.NomeFornecedor.Contains(buscaFornecedor)).OrderByDescending(c => c.DataCompra);
             ViewBag.fornecedor = ListaDeFornecedores;
 
             ListaParaCsv.Clear();
@@ -91,7 +91,7 @@ namespace OsirisPdvReal.Controllers
             }
             ViewData["ProdutoId"] = new SelectList(_context.Produto, "NomeProduto", "NomeProduto").OrderBy(c=>c.Text);
             ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus");
-            ViewData["CNPJ"] = new SelectList(_context.Fornecedores, "CNPJ", "NomeFornecedor");
+            ViewData["CNPJ"] = new SelectList(_context.Fornecedores.Where(f=>f.StatusId == 1), "CNPJ", "NomeFornecedor");
             return View();
         }
 
@@ -115,7 +115,7 @@ namespace OsirisPdvReal.Controllers
             }
             ViewData["ProdutoId"] = new SelectList(_context.Produto, "NomeProduto", "NomeProduto", compras.NomeItemCompra) ;
             ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus", compras.StatusId);
-            ViewData["CNPJ"] = new SelectList(_context.Fornecedores, "CNPJ", "NomeFornecedor", compras.CNPJ);
+            ViewData["CNPJ"] = new SelectList(_context.Fornecedores.Where(f => f.StatusId == 1), "CNPJ", "NomeFornecedor", compras.CNPJ);
             return View(compras);
         }
 
@@ -138,7 +138,7 @@ namespace OsirisPdvReal.Controllers
             }
             ViewData["ProdutoId"] = new SelectList(_context.Produto, "NomeProduto", "NomeProduto", compras.NomeItemCompra);
             ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus", compras.StatusId);
-            ViewData["CNPJ"] = new SelectList(_context.Fornecedores, "CNPJ", "NomeFornecedor", compras.CNPJ);
+            ViewData["CNPJ"] = new SelectList(_context.Fornecedores.Where(f => f.StatusId == 1), "CNPJ", "NomeFornecedor", compras.CNPJ);
             return View(compras);
         }
 
@@ -191,7 +191,7 @@ namespace OsirisPdvReal.Controllers
             ViewData["ProdutoId"] = new SelectList(_context.Produto, "NomeProduto", "NomeProduto", compras.NomeItemCompra);
 
             ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus", compras.StatusId);
-            ViewData["CNPJ"] = new SelectList(_context.Fornecedores, "CNPJ", "NomeFornecedor", compras.CNPJ);
+            ViewData["CNPJ"] = new SelectList(_context.Fornecedores.Where(f => f.StatusId == 1), "CNPJ", "NomeFornecedor", compras.CNPJ);
             return View(compras);
         }
 

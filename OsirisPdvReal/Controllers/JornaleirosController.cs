@@ -18,7 +18,7 @@ namespace OsirisPdvReal.Controllers
     {
         private readonly Contexto _context;
         private static String codeEmail;
-        private static String emailParaReset;
+        private static long CPFparaReset;
         private static long cpfUser;
         private static int deuErro;
         private static List<Jornaleiro> ListaParaCsv = new List<Jornaleiro>();
@@ -74,22 +74,26 @@ namespace OsirisPdvReal.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult EnviarTokenSenha([Bind("CPF,NomeJornaleiro,EmailJornaleiro,SenhaJornaleiro")] Jornaleiro jornaleiro)
+        public IActionResult EnviarTokenSenha([Bind("CPF,NomeJornaleiro,EmailJornaleiro,SenhaJornaleiro,TelefoneJornaleiro")] Jornaleiro jornaleiro)
         {
             try
             {
-                var jornaleiroExists = _context.Jornaleiros.Where(j => j.EmailJornaleiro == jornaleiro.EmailJornaleiro).Select(j => j.EmailJornaleiro).FirstOrDefault();
+                var jornaleiroExists = _context.Jornaleiros.Where(j => j.CPF == jornaleiro.CPF).Select(j => j).FirstOrDefault();
                 if (jornaleiroExists != null)
                 {
-                    var code = RandomHelper.RandomString(6);
-                    EmailHelper.SendEmail(jornaleiroExists, code);
-                    emailParaReset = jornaleiroExists;
-                    codeEmail = code;
-                    return RedirectToAction("ValidarCodigo");
+                    if (jornaleiroExists.TelefoneJornaleiro.Substring(4, 5) == jornaleiro.TelefoneJornaleiro && jornaleiroExists.CPF == jornaleiro.CPF)
+                    {
+                        CPFparaReset = Convert.ToInt64(jornaleiro.CPF);
+                        return RedirectToAction("ResetSenha");
+                    }
+                    else {
+                        TempData["msgSucesso"] = "Os dados enviados não coincidem com os dados cadastrados";
+                        return RedirectToAction("EnviarTokenSenha");
+                    }
                 }
                 else
                 {
-                    TempData["msgSucesso"] = "E-mail não encontrado em nossa base de dados";
+                    TempData["msgSucesso"] = "CPF não encontrado em nossa base de dados";
                     return RedirectToAction("EnviarTokenSenha");
                 }
             }
@@ -141,7 +145,7 @@ namespace OsirisPdvReal.Controllers
         {
             try
             {
-                var jornaleiroUser = _context.Jornaleiros.Where(j => j.EmailJornaleiro == emailParaReset).FirstOrDefault();
+                var jornaleiroUser = _context.Jornaleiros.Where(j => j.CPF == CPFparaReset).FirstOrDefault();
                 jornaleiroUser.SenhaJornaleiro = senhaNova;
                 _context.Update(jornaleiroUser);
                 _context.SaveChanges();

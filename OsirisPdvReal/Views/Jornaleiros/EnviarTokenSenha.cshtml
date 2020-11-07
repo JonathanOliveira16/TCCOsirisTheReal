@@ -42,14 +42,17 @@
             <div>
                 <form style="height:250px;" asp-action="EnviarTokenSenha">
                     <div class="marginUpper">
-                        <label style="margin-left:13%" class="font-weight-bold">E-mail cadastrado</label>
+                        <label style="margin-left:13%" class="font-weight-bold">CPF cadastrado</label>
                         <br>
-                        <input type="email" asp-for="EmailJornaleiro" class="form-control w-75 centerText borderInput" placeholder="example@example.com" />
+                        <input type="text" asp-for="CPF" maxlength="11" class="form-control w-75 centerText borderInput" placeholder="Digite seu CPF" />
+                        <label style="margin-left:13%" class="font-weight-bold mt-3">Cinco primeiros números do seu celular</label>
+                        <br>
+                        <input type="text" asp-for="TelefoneJornaleiro" maxlength="5" class="form-control w-75 centerText borderInput" placeholder="xxxxx" />
                     </div>
 
 
                     <div class="divBtn mt-4 mb-4">
-                        <input type="submit" class="btn-success btn btnSize" value="ENVIAR CÓDIGO" />
+                        <input type="submit" class="btn-success btn btnSize" value="ENVIAR DADOS" />
                         <a class="btn btn-info btnSize text-white" asp-controller="Jornaleiros" asp-action="Login">VOLTAR</a>
                     </div>
                 </form>
@@ -62,6 +65,7 @@
 </body>
 
 <script>
+    
     function MensagemModal(tipo,mensagem){
         document.getElementById('textModal').innerHTML = mensagem;
         document.getElementById('titleModal').innerHTML = tipo;

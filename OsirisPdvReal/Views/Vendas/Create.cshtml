@@ -114,7 +114,7 @@
                                 <td style="font-size:13px;">
                                     @item.NomeProduto
                                 </td>
-                                <td style="font-size:13px;">
+                                <td id="quantidadeTd" style="font-size:13px;">
                                     @item.QuantideProduto
                                 </td>
                                 <td style="font-size:13px;">
@@ -287,6 +287,7 @@ else
                 document.getElementById("lblBan").style.visibility = "hidden";
                 valTotal = valTotal + Number(y)
             }
+            
             var valorTotalDaVenda = document.getElementById("valTotalTable");
             var vt = valTotal
             valorTotalDaVenda.textContent = vt.toFixed(2)
@@ -351,6 +352,7 @@ else
             dadosTableRefresh = []
             console.log(dadosTableRefresh)
             var arrProFinal = []
+            var valores = 0
             console.log('new array zerado')
             console.log("array excluido | ")
             $("#tableVenda tr").each(function () {
@@ -369,19 +371,34 @@ else
                     var col3_value = currentRow.find("td:eq(2)").text();
                     var col4_value = currentRow.find("td:eq(3)").text();
                     var col5_value = currentRow.find("td:eq(4)").text();
+                    console.log(valores)
+                    console.log('valir ali')
                     var dadosProds = []
                     dadosProds.push("/" + col1_value)
                     dadosProds.push(col2_value.replace('R$', ''))
                     dadosProds.push(col4_value)
                     dadosProds.push(col3_value)
                     dadosProds.push(col5_value)
-
                     arrProFinal.push(dadosProds);
                     console.log(arrProFinal)
                     console.log('new array rewformulado')
-
                 }
+                var valorTotalDaVenda = document.getElementById("valTotalTable");
+                var valTot = 0;
+                $("#tableVenda tr").each(function () {
+                    var currentRow = $(this);
+
+                    var valorProd = currentRow.find("td:eq(1)").text();
+                    console.log(valorProd)
+                    valTot = valTot + Number(valorProd.replace('R$', ''))
+                    console.log(valTot + 'aquiiiiiii')
+                   
+                })
+                document.getElementById("valTotalTable").innerHTML = valTot.toFixed(2)
+               
+       
             });
+           
             console.log(arrProFinal)
             console.log("array pre finial")
             for (o = 1; o < arrProFinal.length; o++) {
@@ -429,68 +446,72 @@ else
             var valorTotalDaVenda = document.getElementById("valTotalTable");
 
             var quant = document.getElementById("quantidadeProduto").value
-            var valorConvertido = ""
-            if (/[,\-]/.test(dadosProds[2])) {
-                valorConvertido = dadosProds[2].replace(',','.')
-            }
-            var valTotal = 0
-            if (valorConvertido == "") {
-                valTotal = Number(dadosProds[2].substring(2)) * Number(quant)
-
+            console.log(dadosProds[1])
+            if (Number(quant) > Number(dadosProds[1])) {
+                alert("Quantidade de venda maior que o estoque disponível, favor verifique a quantidade inserida")
             } else {
-                valTotal = Number(valorConvertido.substring(2)) * Number(quant)
+                var valorConvertido = ""
+                if (/[,\-]/.test(dadosProds[2])) {
+                    valorConvertido = dadosProds[2].replace(',', '.')
+                }
+                var valTotal = 0
+                if (valorConvertido == "") {
+                    valTotal = Number(dadosProds[2].substring(2)) * Number(quant)
+
+                } else {
+                    valTotal = Number(valorConvertido.substring(2)) * Number(quant)
+                }
+
+
+
+                var x = quant;
+                var e = ""
+                var banca = ""
+                var y = valTotal.toFixed(2);
+                var lenTable = document.getElementById("tableVenda").rows.length;
+
+                if (clienteSelect == "" || clienteSelect == null) {
+                    e = document.getElementById("clienteDrop");
+                    clienteSelect = e
+                } else {
+                    e = clienteSelect
+                }
+
+                if (bancaSelect == "" || bancaSelect == null) {
+                    banca = document.getElementById("bancaDrop");
+                    bancaSelect = banca
+                } else {
+                    banca = bancaSelect
+                }
+                var strUser = e.options[e.selectedIndex].text;
+                var bancaUser = banca.options[banca.selectedIndex].text;
+                var letters = '/^[a-zA-Z]+$/';
+                if ((parseInt(quant) != (x)) && (y == parseInt(y))) {
+                    alert("Valor inválido");
+                } else {
+                    var rows = "";
+                    var name = dadosProds[0];
+                    var valor = valTotal.toFixed(2);
+                    var quantidade = quant;
+                    var clienteVal = strUser
+                    var bancaSelecionada = bancaUser
+                    rows += "<tr><td>" + name + "</td><td>" + 'R$' + valor + "</td><td>" + clienteVal + "</td><td>" + quantidade + "</td><td>" + bancaSelecionada + "</td><td> <a class='btn-sm btn-danger text-white' style='margin-left:90px' id='DeleteButton'>REMOVER</a></td></tr>";
+                    $(rows).appendTo("#tableVenda");
+                }
+                $(".modal").modal('hide');
+                var vt = Number(valorTotalDaVenda.textContent) + Number(valor)
+                valorTotalDaVenda.textContent = vt.toFixed(2)
+
+                document.getElementById("quantidadeProduto").value = "";
+                document.getElementById("cardCar").style.visibility = "visible";
+                document.getElementById("clienteDrop").style.visibility = "hidden";
+                document.getElementById("bancaDrop").style.visibility = "hidden";
+                document.getElementById("lblCli").style.visibility = "hidden";
+                document.getElementById("lblBan").style.visibility = "hidden";
+                var dadoCheio = ["/" + dadosProds[0], valor, quant, strUser, bancaSelecionada]
+                console.log(dadoCheio)
+                dadosTableRefresh.push(dadoCheio)
             }
-
-
-
-            var x = quant;
-            var e = ""
-            var banca = ""
-            var y = valTotal.toFixed(2);
-            var lenTable = document.getElementById("tableVenda").rows.length;
-
-            if (clienteSelect == "" || clienteSelect == null) {
-                e = document.getElementById("clienteDrop");
-                clienteSelect = e
-            } else {
-                e = clienteSelect
-            }
-
-            if (bancaSelect == "" || bancaSelect == null) {
-                banca = document.getElementById("bancaDrop");
-                bancaSelect = banca
-            } else {
-                banca = bancaSelect
-            }
-            var strUser = e.options[e.selectedIndex].text;
-            var bancaUser = banca.options[banca.selectedIndex].text;
-            var letters = '/^[a-zA-Z]+$/';
-            if ((parseInt(quant) != (x)) && (y == parseInt(y))) {
-               alert("Valor inválido");
-            } else {
-                var rows = "";
-                var name = dadosProds[0];
-                var valor = valTotal.toFixed(2);
-                var quantidade = quant;
-                var clienteVal = strUser
-                var bancaSelecionada = bancaUser
-                rows += "<tr><td>" + name + "</td><td>" + 'R$' + valor + "</td><td>" + clienteVal + "</td><td>" + quantidade + "</td><td>" + bancaSelecionada + "</td><td> <a class='btn-sm btn-danger text-white' style='margin-left:90px' id='DeleteButton'>REMOVER</a></td></tr>";
-                $(rows).appendTo("#tableVenda");
-            }
-            $(".modal").modal('hide');
-            var vt = Number(valorTotalDaVenda.textContent) + Number(valor)
-            valorTotalDaVenda.textContent = vt.toFixed(2)
-
-            document.getElementById("quantidadeProduto").value = "";
-            document.getElementById("cardCar").style.visibility = "visible";
-            document.getElementById("clienteDrop").style.visibility = "hidden";
-            document.getElementById("bancaDrop").style.visibility = "hidden";
-            document.getElementById("lblCli").style.visibility = "hidden";
-            document.getElementById("lblBan").style.visibility = "hidden";
-            var dadoCheio = ["/" + dadosProds[0], valor, quant, strUser, bancaSelecionada]
-            console.log(dadoCheio)
-            dadosTableRefresh.push(dadoCheio)
-
         }
 
         var countProd = '@(ViewBag.countProd)';

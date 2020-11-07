@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -246,7 +247,8 @@ namespace OsirisPdvReal.Controllers
                     vp.VendaId = idVenda;
                     vp.ProdutoId = prod.ProdutoId;
                     vp.QuantidadeVendida = Convert.ToInt32(y[3]);
-                    vp.ValorTotalDoProduto = Convert.ToDouble(y[1].Substring(2).Replace('.',',')); 
+                    vp.ValorTotalDoProduto = Double.Parse(y[1].Substring(2).Replace('.', ','), new CultureInfo("pt-BR"));
+                    //vp.ValorTotalDoProduto = Convert.ToDouble(y[1].Substring(2).Replace('.',','));
                     listvp.Add(vp);
                     listaProduto.Add(prod);
                     
