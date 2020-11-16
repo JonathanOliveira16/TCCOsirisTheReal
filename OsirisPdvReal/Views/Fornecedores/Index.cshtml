@@ -35,37 +35,37 @@
     </div>
 }
 
+<div class="d-flex">
+    <form asp-action="Index">
+        <div class="d-flex">
+            <input type="text" class="form-control borderInput" name="busca" id="busca" placeholder="Pesquisar por nome..." />
+            <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
+        </div>
+    </form>
 
+    <form class="ml-4" asp-action="SearchEstado">
+        <div class="d-flex">
+            <select id="buscaEstado" name="buscaEstado" class="form-control borderInput">
+                <option value="" disabled selected>Estados...</option>
+                @foreach (var y in ViewBag.estados)
+                {
+                    <option value="@y">@y</option>
+                }
+            </select>
+            <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
+        </div>
+    </form>
+
+    <div class="ml-4">
+        <a class="btn btn-success" asp-action="Create">Novo fornecedor</a>
+    </div>
+
+    <a asp-action="GerarCSV" class="btn btn-success ml-3">Download CSV</a>
+</div>
 
 @if (Model.Count > 0)
 {
-    <div class="d-flex">
-        <form asp-action="Index">
-            <div class="d-flex">
-                <input type="text" class="form-control borderInput" name="busca" id="busca" placeholder="Pesquisar por nome..." />
-                <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
-            </div>
-        </form>
 
-        <form class="ml-4" asp-action="SearchEstado">
-            <div class="d-flex">
-                <select id="buscaEstado" name="buscaEstado" class="form-control borderInput">
-                    <option value="" disabled selected>Estados...</option>
-                    @foreach (var y in ViewBag.estados)
-                    {
-                        <option value="@y">@y</option>
-                    }
-                </select>
-                <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
-            </div>
-        </form>
-
-        <div class="ml-4">
-            <a class="btn btn-success" asp-action="Create">Novo fornecedor</a>
-        </div>
-
-        <a asp-action="GerarCSV" class="btn btn-success ml-3">Download CSV</a>
-    </div>
 
 
     <table class="table mt-4 table-striped">

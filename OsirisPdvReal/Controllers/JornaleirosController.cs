@@ -332,6 +332,7 @@ namespace OsirisPdvReal.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(long id, [Bind("CPF,NomeJornaleiro,EmailJornaleiro,TelefoneJornaleiro,SenhaJornaleiro,StatusId,TipoId")] Jornaleiro jornaleiro)
         {
+            String cpfAtualLogado = Request.Cookies["idDoUser"];
             ModelState.Remove("CPF");
             ModelState.Remove("SenhaJornaleiro");
             try
@@ -373,19 +374,23 @@ namespace OsirisPdvReal.Controllers
                             throw;
                         }
                     }
-                    if (jornaleiro.TipoId == 1)
+                    if (jornaleiro.CPF.ToString() == cpfAtualLogado)
                     {
-                        var option2 = new CookieOptions();
-                        Response.Cookies.Delete("admin");
-                        Response.Cookies.Append("admin", "admin", option2);
+                        if (jornaleiro.TipoId == 1)
+                        {
+                            var option2 = new CookieOptions();
+                            Response.Cookies.Delete("admin");
+                            Response.Cookies.Append("admin", "admin", option2);
 
+                        }
+                        else
+                        {
+                            var option2 = new CookieOptions();
+                            Response.Cookies.Delete("admin");
+                            Response.Cookies.Append("admin", "false", option2);
+                        }
                     }
-                    else
-                    {
-                        var option2 = new CookieOptions();
-                        Response.Cookies.Delete("admin");
-                        Response.Cookies.Append("admin", "false", option2);
-                    }
+                   
                     return RedirectToAction(nameof(Index));
                 }
                 ViewData["StatusId"] = new SelectList(_context.Status, "StatusId", "NomeStatus", jornaleiro.StatusId);

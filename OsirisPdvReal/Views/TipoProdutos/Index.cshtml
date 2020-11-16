@@ -34,13 +34,15 @@
     </div>
 }
 
-@if (Model != null)
-{
 <div class="divBtn d-flex">
     <a class="btn btnPage btn-success mt-2" asp-action="Create">Novo tipo de produto</a>
     <a asp-action="GerarCSV" class="btn btnPage btn-success mt-2 ml-5">Download CSV</a>
 
 </div>
+
+@if (Model != null)
+{
+
 
 
     <table class="table mt-4 table-striped">
@@ -90,7 +92,7 @@ else
                     success: function (data) {
                         if (data == "ok") {
                             $(".modal").modal('hide');
-                            location.reload(true);
+                            window.location.href = '/TipoProdutos/Index'
                         } else {
                             $(".modal").modal('hide');
                             alert("Esse tipo de produto esta sendo utilizado pelo sistema, favor apague suas amarrações antes de excluí-lo!")

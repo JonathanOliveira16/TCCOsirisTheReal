@@ -1,5 +1,12 @@
 ﻿@{
-    Layout = "LayoutRanking";
+    if (ViewBag.user == true)
+    {
+        Layout = "_Layout";
+    }
+    else
+    {
+        Layout = "LayoutRanking";
+    }
 }
 
 
@@ -60,7 +67,7 @@
 </div>
 <div>
     <p class="divBtn mt-3 fontTitles" style="font-size:18px;">@ViewBag.filtro</p>
-    
+
     <table class="table mt-4 table-striped" id="table-id">
         <thead class="tHeadPurple">
             <tr>
@@ -81,31 +88,37 @@
                 <td class="text-white font-weight-bold">
                     VALOR
                 </td>
+                @if (ViewBag.user == true) {
+                    <td></td>
+                }
             </tr>
         </thead>
         <tbody>
             @foreach (var item in ViewBag.ranking)
             {
-                <tr>
-                    <td>
-                        @item.Posicao
-                    </td>
-                    <td>
-                        @item.NomeCliente
-                    </td>
-                    <td>
-                        @item.EmailCliente
-                    </td>
-                    <td>
-                        @item.TelefoneCliente
-                    </td>
-                    <td>
-                        @item.CEP
-                    </td>
-                    <td style="color:forestgreen" class="font-weight-bold">
-                        @item.ValorVenda
-                    </td>
-                </tr>
+            <tr>
+                <td>
+                    @item.Posicao
+                </td>
+                <td>
+                    @item.NomeCliente
+                </td>
+                <td>
+                    @item.EmailCliente
+                </td>
+                <td>
+                    @item.TelefoneCliente
+                </td>
+                <td>
+                    @item.CEP
+                </td>
+                <td style="color:forestgreen" class="font-weight-bold">
+                    @item.ValorVenda
+                </td>
+                @if (ViewBag.user == true){
+                    <td><a class="btn btn-warning" id="@item.EmailCliente" onclick="GerarChartCliente(this.id)">Gráfico</a></td>
+                }
+            </tr>
             }
         </tbody>
     </table>
@@ -123,6 +136,12 @@
                 </li>
             </ul>
         </nav>
+    </div>
+
+    <div>
+        <div style="width: 600px;">
+            <canvas style="margin-left:40%" id="topChart1"></canvas>
+        </div>
     </div>
 
     <div style="visibility:hidden;">
@@ -145,20 +164,82 @@
 </div>
 
 @section Scripts {
-@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 
 
-<script>
+    <script>
     getPagination('#table-id');
     var count = '@(ViewBag.count)';
-
+    var topChart1 = null;
 
     if (count > 5) {
         document.getElementById("page1").style.visibility = "visible";
     } else {
         document.getElementById("page1").style.visibility = "hidden";
     }
+
+
+    function GerarChartCliente(email) {
+            $.ajax({
+                url: "/Relatorios/GerarChartCliente",
+                method: "POST",
+                data: { email: email },
+                success: function (data) {
+                    console.log(data)
+                  if (data != null) {
+                        var nomes = []
+                        var valorMensal = []
+                        console.log(data)
+                        for (var i = 0; i < data.length; i++) {
+                            nomes.push(data[i].nomeMes)
+                            valorMensal.push(data[i].valorMensal)
+                        }
+                        console.log(nomes)
+                        console.log(valorMensal)
+
+
+                        if (topChart1 != null) {
+                            topChart1.destroy();
+                        }
+                        // Get the context of the canvas element we want to select
+
+
+
+                        var ctx = document.getElementById('topChart1').getContext('2d');
+                        var barChartData = {
+                            labels: nomes,
+                            datasets: [{
+                                label: 'Valor gerado pelo cliente no ano atual',
+                                backgroundColor: "#1FE808",
+                                borderColor: "#1FE808",
+                                borderWidth: 1,
+                                data: valorMensal
+                            },]
+                        }
+
+                    };
+                    var myBarChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: barChartData,
+                        options: {
+                            responsive: true,
+                            legend: {
+                                position: 'top',
+                            },
+
+                        }
+                    });
+                    topChart1 = myBarChart
+                    $(".modal").modal('hide');
+
+                }
+            });
+
+
+    }
+
+
 
     function getPagination(table) {
         var lastPage = 1;
@@ -283,5 +364,5 @@
             }
         }
     }
-</script>
+    </script>
 }

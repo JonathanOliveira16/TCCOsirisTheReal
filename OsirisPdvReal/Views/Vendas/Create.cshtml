@@ -6,40 +6,40 @@
 
 @if (ViewBag.bancaCount > 0)
 {
-<div class="modal" id="visao" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title font-weight-bold" id="titleModal">Informações adicionais</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <label class="font-weight-bold ml-3 control-label">Quantidade vendida</label>
-                <input class="form-control borderInput" type="number" required id="quantidadeProduto" />
-                <label class="control-label ml-3 font-weight-bold" style="visibility:visible" id="lblCli">Cliente</label>
-                <select id="clienteDrop" style="visibility:visible" name="bairroBusca" class="form-control borderInput">
-                    @foreach (var y in ViewBag.clientes)
-                    {
-                        <option value="@y.NomeCliente">@y.NomeCliente</option>
-                    }
-                </select>
-                <label class="control-label ml-3 font-weight-bold" style="visibility:visible" id="lblBan">Banca</label>
-                <select id="bancaDrop" style="visibility:visible" name="bairroBusca" class="form-control borderInput">
-                    @foreach (var y in ViewBag.banca)
-                    {
-                        <option value="@y.NomeBanca">@y.NomeBanca</option>
-                    }
-                </select>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-success botaoDoId" onclick="AddCarrinho()" style="font-size:12px;">Adicionar no carrinho</button>
-                <button type="button" class="btn btn-danger" style="font-size:12px;" data-dismiss="modal">Cancelar</button>
+    <div class="modal" id="visao" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title font-weight-bold" id="titleModal">Informações adicionais</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <label class="font-weight-bold ml-3 control-label">Quantidade vendida</label>
+                    <input class="form-control borderInput" type="number" required id="quantidadeProduto" />
+                    <label class="control-label ml-3 font-weight-bold" style="visibility:visible" id="lblCli">Cliente</label>
+                    <select id="clienteDrop" style="visibility:visible" name="bairroBusca" class="form-control borderInput">
+                        @foreach (var y in ViewBag.clientes)
+                        {
+                            <option value="@y.NomeCliente">@y.NomeCliente</option>
+                        }
+                    </select>
+                    <label class="control-label ml-3 font-weight-bold" style="visibility:visible" id="lblBan">Banca</label>
+                    <select id="bancaDrop" style="visibility:visible" name="bairroBusca" class="form-control borderInput">
+                        @foreach (var y in ViewBag.banca)
+                        {
+                            <option value="@y.NomeBanca">@y.NomeBanca</option>
+                        }
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success botaoDoId" onclick="AddCarrinho()" style="font-size:12px;">Adicionar no carrinho</button>
+                    <button type="button" class="btn btn-danger" style="font-size:12px;" data-dismiss="modal">Cancelar</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 }
 <div class="modal" id="modal2" tabindex="-1" style="margin-top:100px;" role="dialog">
     <div class="modal-dialog" role="document">
@@ -212,7 +212,7 @@ else
             <h5 class="card-header font-weight-bold text-white" style="background-color: #00AA9E;">Nenhuma banca vinculada</h5>
             <div class="card-body">
                 <h5 class="card-title">Só é possível realizar vendas estando vinculado à uma banca, por favor cadastre sua banca na tela bancas do sistema ou clique no botão abaixo</h5>
-                <form class="ml-4 mt-3" >
+                <form class="ml-4 mt-3">
                     <a class="btn btn-success" asp-action="Index" asp-controller="Bancas">Bancas</a>
                 </form>
             </div>
@@ -287,7 +287,7 @@ else
                 document.getElementById("lblBan").style.visibility = "hidden";
                 valTotal = valTotal + Number(y)
             }
-            
+
             var valorTotalDaVenda = document.getElementById("valTotalTable");
             var vt = valTotal
             valorTotalDaVenda.textContent = vt.toFixed(2)
@@ -392,13 +392,13 @@ else
                     console.log(valorProd)
                     valTot = valTot + Number(valorProd.replace('R$', ''))
                     console.log(valTot + 'aquiiiiiii')
-                   
+
                 })
                 document.getElementById("valTotalTable").innerHTML = valTot.toFixed(2)
-               
-       
+
+
             });
-           
+
             console.log(arrProFinal)
             console.log("array pre finial")
             for (o = 1; o < arrProFinal.length; o++) {
@@ -443,6 +443,7 @@ else
         });
 
         function AddCarrinho() {
+            var dadosBancaCliente = []
             var valorTotalDaVenda = document.getElementById("valTotalTable");
 
             var quant = document.getElementById("quantidadeProduto").value
@@ -469,22 +470,31 @@ else
                 var banca = ""
                 var y = valTotal.toFixed(2);
                 var lenTable = document.getElementById("tableVenda").rows.length;
+                var strUser = ""
+                var bancaUser = ""
+                if (lenTable > 1) {
+                    $("#tableVenda tr").each(function () {
+                        var currentRow = $(this);
 
-                if (clienteSelect == "" || clienteSelect == null) {
+
+                        var clienteName = currentRow.find("td:eq(2)").text();
+                        var banca = currentRow.find("td:eq(4)").text();
+                        dadosBancaCliente.push(banca)
+                        dadosBancaCliente.push(clienteName)
+                        console.log(dadosBancaCliente)
+                    })
+                    strUser = dadosBancaCliente[3]
+                    bancaUser = dadosBancaCliente[2]
+                } else {
                     e = document.getElementById("clienteDrop");
-                    clienteSelect = e
-                } else {
-                    e = clienteSelect
+                    strUser = e.options[e.selectedIndex].text;
+
+
+                    banca = document.getElementById("bancaDrop");
+                    bancaUser = banca.options[banca.selectedIndex].text;
+
                 }
 
-                if (bancaSelect == "" || bancaSelect == null) {
-                    banca = document.getElementById("bancaDrop");
-                    bancaSelect = banca
-                } else {
-                    banca = bancaSelect
-                }
-                var strUser = e.options[e.selectedIndex].text;
-                var bancaUser = banca.options[banca.selectedIndex].text;
                 var letters = '/^[a-zA-Z]+$/';
                 if ((parseInt(quant) != (x)) && (y == parseInt(y))) {
                     alert("Valor inválido");

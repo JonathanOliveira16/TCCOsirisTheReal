@@ -38,25 +38,27 @@
     </div>
 }
 
+<div class="d-flex mt-2" style="margin-left:15%">
+    <form asp-action="Index">
+        <div class="d-flex">
+            <input type="text" class="form-control borderInput" name="busca" id="busca" placeholder="Pesquisar por nome..." />
+            <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
+        </div>
+    </form>
+
+    @if (ViewBag.admin == "admin")
+    {
+        <div class="divBtn">
+            <a class="btn btn-success ml-5" asp-action="Create">Novo Jornaleiro</a>
+        </div>
+    }
+
+    <a asp-action="GerarCSV" class="btn btn-success ml-5">Download CSV</a>
+</div>
+
 @if (Model.Count > 0)
 {
-    <div class="d-flex mt-2" style="margin-left:15%">
-        <form asp-action="Index">
-            <div class="d-flex">
-                <input type="text" class="form-control borderInput" name="busca" id="busca" placeholder="Pesquisar por nome..." />
-                <button class="btn btn-success searchBtn" style="margin-left:1%;"><i class="fa fa-search text-white"></i></button>
-            </div>
-        </form>
 
-        @if (ViewBag.admin == "admin")
-        {
-            <div class="divBtn">
-                <a class="btn btn-success ml-5" asp-action="Create">Novo Jornaleiro</a>
-            </div>
-        }
-
-        <a asp-action="GerarCSV" class="btn btn-success ml-5">Download CSV</a>
-    </div>
     <table class="table mt-4 table-striped">
         <thead class="tHeadPurple">
             <tr>

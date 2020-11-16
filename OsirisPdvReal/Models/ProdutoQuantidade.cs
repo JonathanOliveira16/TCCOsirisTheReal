@@ -10,5 +10,7 @@ namespace OsirisPdvReal.Models
         public string NomeProduto { get; set; }
         public double ValorMensal { get; set; }
         public double ValorAnual { get; set; }
+        public int QuantidadeMensal { get; set; }
+        public int QuantidadeAnual { get; set; }
     }
 }

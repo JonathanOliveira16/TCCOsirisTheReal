@@ -11,6 +11,8 @@ namespace OsirisPdvReal.Models
         [Key]
         public int TipoProdId { get; set; }
         [Required(ErrorMessage = "Campo obrigatório")]
+        [Display(Name = "Nome")]
+
         public string NomeTipoProduto { get; set; }
         public ICollection<Produto> Produtos { get; set; }
     }

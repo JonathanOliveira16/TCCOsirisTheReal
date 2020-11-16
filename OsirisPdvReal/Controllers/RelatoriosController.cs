@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,13 +33,18 @@ namespace OsirisPdvReal.Controllers
 
         public IActionResult RankingClientes()
         {
+            String cpfAtualLogado = Request.Cookies["idDoUser"];
+            if (cpfAtualLogado != null)
+            {
+                ViewBag.user = true;
+            }
             try
             {
                 List<RankingCliente> rankingClientes = new List<RankingCliente>();
                 List<RankingCliente> ListaFinal = new List<RankingCliente>();
                 List<String> ListaValores = new List<string>();
                 List<Venda> listaDoForeach = new List<Venda>();
-                var vendas = _context.Vendas.Include(v => v.Clientes).Include(v => v.Status).Where(v=>v.Clientes.StatusId == 1).ToList();
+                var vendas = _context.Vendas.Include(v => v.Clientes).Include(v => v.Status).Where(v => v.Clientes.StatusId == 1 && v.DataVenda.Year == DateTime.Now.Year).ToList();
                 foreach (var item in vendas)
                 {
                     item.ValorVenda = item.ValorVenda.Substring(2).Replace('.', ',');
@@ -51,7 +57,7 @@ namespace OsirisPdvReal.Controllers
                 {
                     RankingCliente rcObject = new RankingCliente();
 
-                    var soma = vendas.Where(v => v.Clientes.NomeCliente == data.NomeCliente).Sum(v => Convert.ToDouble(v.ValorVenda));
+                    var soma = vendas.Where(v => v.Clientes.NomeCliente == data.NomeCliente).Sum(v => Double.Parse(v.ValorVenda, new CultureInfo("pt-BR")));
                     rcObject.Posicao = posicao.ToString() + "º";
                     rcObject.NomeCliente = data.NomeCliente;
                     rcObject.EmailCliente = data.EmailCliente;
@@ -60,7 +66,7 @@ namespace OsirisPdvReal.Controllers
                     rcObject.CEP = data.CEPcliente;
                     ListaFinal.Add(rcObject);
                 }
-                ListaFinal = ListaFinal.OrderByDescending(b => Convert.ToDouble(b.ValorVenda.Replace('.', ','))).ToList();
+                ListaFinal = ListaFinal.OrderByDescending(b => Double.Parse(b.ValorVenda.Replace('.', ','), new CultureInfo("pt-BR"))).ToList();
                 foreach (var obj in ListaFinal)
                 {
                     obj.Posicao = posicao.ToString() + "º";
@@ -83,6 +89,38 @@ namespace OsirisPdvReal.Controllers
             ViewBag.anos = _context.Vendas.Select(v => v.DataVenda.Year).Distinct().ToList();
             return View();
 
+        }
+
+        [HttpPost]
+        public IActionResult GerarChartCliente(string email)
+        {
+            List<Venda> listaDoForeach = new List<Venda>();
+            List<clienteMensal> listaClientes = new List<clienteMensal>();
+
+            var cpf = _context.Clientes.Where(c => c.EmailCliente.ToLower() == email.ToLower()).Select(v=>v.CPFcliente).FirstOrDefault();
+            var vendas = _context.Vendas.Include(v => v.Clientes).Include(v => v.Status).Where(v => v.Clientes.StatusId == 1 && v.DataVenda.Year == DateTime.Now.Year).ToList();
+            foreach (var item in vendas)
+            {
+                item.ValorVenda = item.ValorVenda.Substring(2).Replace('.', ',');
+                listaDoForeach.Add(item);
+            }
+            try
+            {
+                for (int i = 1; i <= 12; i++)
+                {
+                    var clienteValor = listaDoForeach.Where(v => v.CPFcliente == cpf && v.DataVenda.Month == i).Sum(v => Double.Parse(v.ValorVenda, new CultureInfo("pt-BR")));
+                    clienteMensal cm = new clienteMensal();
+                    cm.ValorMensal = clienteValor;
+                    cm.NomeMes = Utils.DataUtil.GetNameMonth(i);
+                    listaClientes.Add(cm);
+                }
+                return Json(listaClientes);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         [HttpPost]
@@ -132,7 +170,7 @@ namespace OsirisPdvReal.Controllers
                 {
                     RankingCliente rcObject = new RankingCliente();
 
-                    var soma = listaDoIf.Where(v => v.Clientes.NomeCliente == data.NomeCliente && v.Clientes.Status.StatusId == 1).Sum(v => Convert.ToDouble(v.ValorVenda));
+                    var soma = listaDoIf.Where(v => v.Clientes.NomeCliente == data.NomeCliente && v.Clientes.StatusId == 1).Sum(v => Double.Parse(v.ValorVenda, new CultureInfo("pt-BR")));
                     rcObject.Posicao = posicao.ToString() + "º";
                     rcObject.NomeCliente = data.NomeCliente;
                     rcObject.EmailCliente = data.EmailCliente;
@@ -141,7 +179,7 @@ namespace OsirisPdvReal.Controllers
                     rcObject.CEP = data.CEPcliente;
                     ListaFinal.Add(rcObject);
                 }
-                ListaFinal = ListaFinal.OrderByDescending(b => Convert.ToDouble(b.ValorVenda.Replace('.', ','))).ToList();
+                ListaFinal = ListaFinal.OrderByDescending(b => Double.Parse(b.ValorVenda.Replace('.', ','), new CultureInfo("pt-BR"))).ToList();
                 foreach (var obj in ListaFinal)
                 {
                     obj.Posicao = posicao.ToString() + "º";
@@ -222,7 +260,7 @@ namespace OsirisPdvReal.Controllers
             int posicao = 1;
             foreach (var data in bancasNome)
             {
-                var soma = vendas.Where(v => v.Bancas.NomeBanca.ToLower() == data.ToLower()).Sum(v => Convert.ToDouble(v.ValorVenda));
+                var soma = vendas.Where(v => v.Bancas.NomeBanca.ToLower() == data.ToLower() && v.DataVenda.Year == DateTime.Now.Year).Sum(v => Double.Parse(v.ValorVenda, new CultureInfo("pt-BR")));
 
                 VendasBancaRelatorio vbr = new VendasBancaRelatorio();
                 vbr.QuantidadeDeVendas = vendas.Where(v => v.Bancas.NomeBanca.ToLower() == data.ToLower()).Count();
@@ -281,7 +319,7 @@ namespace OsirisPdvReal.Controllers
                     x.ValorTotalVenda = x.ValorTotalVenda.Substring(2);
                     vbr.Add(x);
                 }
-                ListaParaCsvBanca = vbr.OrderByDescending(v => Convert.ToDouble(v.ValorTotalVenda)).ToList();
+                ListaParaCsvBanca = vbr.OrderByDescending(v => Double.Parse(v.ValorTotalVenda, new CultureInfo("pt-BR"))).ToList();
                 int posicao = 1;
                 foreach (var y in ListaParaCsvBanca)
                 {
@@ -325,7 +363,7 @@ namespace OsirisPdvReal.Controllers
                         var result = vbr.Where(p => p.NomeBanca.ToLower() == b.ToLower()).Distinct().FirstOrDefault();
                         listaNew.Add(result);
                     }
-                    ListaParaCsvBanca = listaNew.OrderByDescending(v => Convert.ToDouble(v.ValorTotalVenda)).ToList();
+                    ListaParaCsvBanca = listaNew.OrderByDescending(v => Double.Parse(v.ValorTotalVenda, new CultureInfo("pt-BR"))).ToList();
                     int posicao = 1;
 
                     foreach (var y in ListaParaCsvBanca)
@@ -355,12 +393,12 @@ namespace OsirisPdvReal.Controllers
         public JsonResult GenerateChart(string NomeBanca)
         {
             List<ChartMonth> listaMes = new List<ChartMonth>();
-            var x = _context.Vendas.Include(v => v.Bancas).Where(v => v.Bancas.NomeBanca.ToLower() == NomeBanca).ToList();
+            var x = _context.Vendas.Include(v => v.Bancas).Where(v => v.Bancas.NomeBanca.ToLower() == NomeBanca && v.DataVenda.Year == DateTime.Now.Year).ToList();
             var numbers = DataUtil.GetMonthsNumbers();
             foreach (var item in numbers)
             {
                 var z = x.Where(c => c.DataVenda.Month == item).Count();
-                var valor = x.Where(c => c.DataVenda.Month == item).Select(v => Convert.ToDouble(v.ValorVenda.Substring(2).Replace('.', ','))).Sum();
+                var valor = x.Where(c => c.DataVenda.Month == item).Select(v => Double.Parse(v.ValorVenda.Substring(2).Replace('.', ','), new CultureInfo("pt-BR"))).Sum();
                 ChartMonth cm = new ChartMonth();
                 cm.NomeMes = DataUtil.GetNameMonth(item);
                 cm.Quantidade = z;
@@ -378,21 +416,15 @@ namespace OsirisPdvReal.Controllers
             foreach (var item in bancas)
             {
                 List<double> listaValores = new List<double>();
-                var valorTotal = _context.Vendas.Include(v => v.Bancas).Where(v => v.Bancas.NomeBanca.ToLower() == item.ToLower()).Select(v => Convert.ToDouble(v.ValorVenda.Substring(2).Replace('.', ','))).ToList();
+                var valorTotal = _context.Vendas.Include(v => v.Bancas).Where(v => v.Bancas.NomeBanca.ToLower() == item.ToLower() && v.DataVenda.Year == DateTime.Now.Year).Select(v => Double.Parse(v.ValorVenda.Substring(2).Replace('.', ','), new CultureInfo("pt-BR"))).ToList();
                 
-                var valorMensal = _context.Vendas.Include(v => v.Bancas).Where(v => v.Bancas.NomeBanca == item && v.DataVenda.Month == DateTime.Now.Month).Select(v => Convert.ToDouble(v.ValorVenda.Substring(2).Replace('.', ','))).ToList();
+                var valorMensal = _context.Vendas.Include(v => v.Bancas).Where(v => v.Bancas.NomeBanca == item && v.DataVenda.Month == DateTime.Now.Month && v.DataVenda.Year == DateTime.Now.Year).Select(v => Double.Parse(v.ValorVenda.Substring(2).Replace('.', ','), new CultureInfo("pt-BR"))).ToList();
                 BancaAnualMensal ba = new BancaAnualMensal();
                 ba.NomeBanca = item;
                 ba.ValorAnual = valorTotal.Sum();
                 ba.ValorMensal = valorMensal.Sum();
                 Listba.Add(ba);
-                //foreach(var x in valorTotal)
-                //{
-                //    double num = Convert.ToDouble(x.Substring(2).Replace('.', ','));
-                //    listaValores.Add(num);
-                //}
-
-
+            
             }
             if (tipo == "mes")
             {
@@ -423,8 +455,9 @@ namespace OsirisPdvReal.Controllers
                     var vendaUnica = _context.Vendas.Where(v => v.VendaId == x && v.DataVenda.Month == DateTime.Now.Month).FirstOrDefault();
                     if (vendaUnica != null )
                     {
-                        valorTotalMes = valorTotalMes + _context.VendaProduto.Where(v => v.VendaId == vendaUnica.VendaId).Select(v => v.ValorTotalDoProduto).FirstOrDefault();
+                        valorTotalMes = valorTotalMes + _context.VendaProduto.Where(v => v.VendaId == vendaUnica.VendaId && v.ProdutoId == item).Select(v => v.ValorTotalDoProduto).FirstOrDefault();
                     }
+
                 }
                 pq.ValorMensal = valorTotalMes;
                 pq.NomeProduto = _context.Produto.Where(p => p.ProdutoId == item).Select(p => p.NomeProduto).FirstOrDefault();
@@ -509,6 +542,28 @@ namespace OsirisPdvReal.Controllers
             model.Action = "ItemMaisVende";
             return View(model);
 
+        }
+
+        public JsonResult bancaHistorico(String bancaId)
+        {
+            int anoBase = DateTime.Now.Year - 10;
+            List<BancaHistorico> listBh = new List<BancaHistorico>();
+            try
+            {
+                for (int i = anoBase; i <= anoBase+10; i++)
+                {
+                    var bancaQuant = _context.Vendas.Include(v => v.Bancas).Where(v => v.Bancas.NomeBanca.ToLower() == bancaId.ToLower() && v.DataVenda.Year == i).Select(v => v.QuantidadeVendida).Sum();
+                    BancaHistorico bh = new BancaHistorico();
+                    bh.Quantidade = bancaQuant;
+                    bh.Ano = i;
+                    listBh.Add(bh);
+                }
+                return Json(listBh);
+            }
+            catch (Exception ex )
+            {
+                return null;
+            }
         }
 
 

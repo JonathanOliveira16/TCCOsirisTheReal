@@ -77,6 +77,7 @@
                     VALOR TOTAL
                 </td>
                 <td></td>
+                <td></td>
             </tr>
         </thead>
         <tbody>
@@ -99,6 +100,8 @@
                         @item.ValorTotalVenda
                     </td>
                     <td><a class="btn btn-warning" id="@item.NomeBanca" onclick="GerarChart(this.id)">Gráfico</a></td>
+                    <td><a class="btn btn-info" id="@item.NomeBanca" onclick="GerarChartHist(this.id)" data-toggle="modal" data-target="#modal2">Histórico anual</a></td>
+
                 </tr>
             }
         </tbody>
@@ -119,7 +122,13 @@
         </nav>
     </div>
 
-    <div class="row" style="width:1100px;">
+    <div class="mt-2">
+        <div style="width: 600px;">
+            <canvas style="margin-left:40%" id="topChart3"></canvas>
+        </div>
+    </div>
+
+    <div class="row mt-2" style="width:1100px;">
         <div class="col">
             <canvas id="myChart"></canvas>
         </div>
@@ -128,7 +137,7 @@
         </div>
     </div>
 
-    <div class="row" style="width:1000px;" id="graf2">
+    <div class="row mt-2" style="width:1000px;" id="graf2">
         <div class="col">
             <canvas id="topChart1"></canvas>
         </div>
@@ -169,6 +178,7 @@
         var myPieChart2 = null;
         var topChart1 = null;
         var topChart2 = null
+        var topChart3 = null
         var countProd = '@(ViewBag.countProd)';
 
         if (countProd > 5) {
@@ -177,7 +187,64 @@
             document.getElementById("page1").style.visibility = "hidden";
         }
 
+        function GerarChartHist(bancaId) {
+            $.ajax({
+                url: "/Relatorios/bancaHistorico",
+                method: "POST",
+                data: { bancaId: bancaId },
+                success: function (data) {
+                    if (data != null) {
+                        var nomes = []
+                        var valorMensal = []
+                        console.log(data)
+                        for (var i = 0; i < data.length; i++) {
+                            nomes.push(data[i].ano)
+                            valorMensal.push(data[i].quantidade)
+                        }
+                        console.log(nomes)
+                        console.log(valorMensal)
+
+
+                        if (topChart3 != null) {
+                            topChart3.destroy();
+                        }
+                        // Get the context of the canvas element we want to select
+
+
+
+                        var ctx = document.getElementById('topChart3').getContext('2d');
+                        var barChartData = {
+                            labels: nomes,
+                            datasets: [{
+                                label: 'Valor gerado pelo cliente no ano atual',
+                                backgroundColor: "#1FE808",
+                                borderColor: "#1FE808",
+                                borderWidth: 1,
+                                data: valorMensal
+                            },]
+                        }
+
+                    };
+                    var myBarChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: barChartData,
+                        options: {
+                            responsive: true,
+                            legend: {
+                                position: 'top',
+                            },
+
+                        }
+                    });
+                    topChart3 = myBarChart
+                    $(".modal").modal('hide');
+                }
+            }
+        )}
+
         function GerarChart(NomeBanca) {
+            scrollDown()
+
             $.ajax({
                 url: "/Relatorios/GenerateChart",
                 method: "POST",

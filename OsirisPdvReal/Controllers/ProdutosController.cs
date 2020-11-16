@@ -261,6 +261,8 @@ namespace OsirisPdvReal.Controllers
             return "ok";
         }
 
+
+
         public IActionResult GerarCSV()
         {
             var registros = ListaParaCsv;

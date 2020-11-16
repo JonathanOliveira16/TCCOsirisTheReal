@@ -65,7 +65,10 @@ namespace OsirisPdvReal.Controllers
                     ViewBag.Tipos = _context.TipoProdutos.Select(t => t.NomeTipoProduto).OrderBy(t => t);
                     ViewBag.countCli = _context.Clientes.Where(c => c.StatusId == 1).AsNoTracking().Count();
                     ViewBag.countProd = prods.Count();
-                    ViewBag.banca = _context.Bancas.Where(c => c.CPF == Convert.ToInt64(cpf)).AsNoTracking().OrderBy(c => c.NomeBanca);
+                 
+                    var banca =  _context.Bancas.Where(c => c.CPF == Convert.ToInt64(cpf)).AsNoTracking().OrderBy(c => c.NomeBanca);
+                    ViewBag.banca = banca;
+                    ViewBag.bancaCount = banca.Count();
                     ViewBag.clientes = _context.Clientes.Where(c => c.StatusId == 1).AsNoTracking().OrderBy(c => c.NomeCliente);
                     return View("Create");
                 }
@@ -78,7 +81,9 @@ namespace OsirisPdvReal.Controllers
                     ViewBag.Tipos = _context.TipoProdutos.Select(t => t.NomeTipoProduto).OrderBy(t => t);
                     ViewBag.countCli = _context.Clientes.Where(c => c.StatusId == 1).AsNoTracking().Count();
                     ViewBag.countProd = prods.Count();
-                    ViewBag.banca = _context.Bancas.Where(c => c.CPF == Convert.ToInt64(cpf)).AsNoTracking().OrderBy(c => c.NomeBanca);
+                    var banca = _context.Bancas.Where(c => c.CPF == Convert.ToInt64(cpf)).AsNoTracking().OrderBy(c => c.NomeBanca);
+                    ViewBag.banca = banca;
+                    ViewBag.bancaCount = banca.Count();
 
                     ViewBag.clientes = _context.Clientes.Where(c => c.StatusId == 1).AsNoTracking().OrderBy(c => c.NomeCliente);
                     return View("Create");
@@ -104,7 +109,9 @@ namespace OsirisPdvReal.Controllers
 
                     var prods = _context.Produto.Include(p => p.tipoProduto).Where(p=>p.QuantideProduto>=1).AsNoTracking().OrderBy(c => c.NomeProduto);
                     ViewBag.produtos = prods;
-                    ViewBag.banca = _context.Bancas.Where(c => c.CPF == Convert.ToInt64(cpf)).AsNoTracking().OrderBy(c => c.NomeBanca);
+                    var banca = _context.Bancas.Where(c => c.CPF == Convert.ToInt64(cpf)).AsNoTracking().OrderBy(c => c.NomeBanca);
+                    ViewBag.banca = banca;
+                    ViewBag.bancaCount = banca.Count();
 
                     ViewBag.Tipos = _context.TipoProdutos.Select(t => t.NomeTipoProduto).OrderBy(t => t);
                     ViewBag.countCli = _context.Clientes.Where(c => c.StatusId == 1).AsNoTracking().Count();
@@ -118,8 +125,9 @@ namespace OsirisPdvReal.Controllers
 
                     var prods = _context.Produto.Include(p => p.tipoProduto).Where(b => b.tipoProduto.NomeTipoProduto.Contains(buscaTipo) && b.QuantideProduto>=1).OrderBy(b => b.NomeProduto);
                     ViewBag.produtos = prods;
-                    ViewBag.banca = _context.Bancas.Where(c => c.CPF == Convert.ToInt64(cpf)).AsNoTracking().OrderBy(c => c.NomeBanca);
-
+                    var banca = _context.Bancas.Where(c => c.CPF == Convert.ToInt64(cpf)).AsNoTracking().OrderBy(c => c.NomeBanca);
+                    ViewBag.banca = banca;
+                    ViewBag.bancaCount = banca.Count();
                     ViewBag.Tipos = _context.TipoProdutos.Select(t => t.NomeTipoProduto).OrderBy(t => t);
                     ViewBag.countCli = _context.Clientes.Where(c => c.StatusId == 1).AsNoTracking().Count();
                     ViewBag.countProd = prods.Count();
