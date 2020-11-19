@@ -48,6 +48,8 @@
                 </td>
                 <td>
                 </td>
+                <td>
+                </td>
             </tr>
         </thead>
         <tbody>
@@ -64,6 +66,8 @@
                         @item.ValorTotalGerado
                     </td>
                     <td><a class="btn btn-warning" id="@item.NomeProduto" onclick="GerarChart(this.id)" data-toggle="modal" data-target="#modal2">Gráfico</a></td>
+                    <td><a class="btn btn-info" id="@item.NomeProduto" onclick="GerarChartHist(this.id)" data-toggle="modal" data-target="#modal2">Histórico anual</a></td>
+
                 </tr>
             }
         </tbody>
@@ -82,6 +86,12 @@
                 </li>
             </ul>
         </nav>
+    </div>
+
+    <div class="mt-2">
+        <div style="width: 600px;">
+            <canvas style="margin-left:40%" id="topChart3"></canvas>
+        </div>
     </div>
 
     <div class="row">
@@ -142,8 +152,67 @@
         var myPieChart2 = null;
         var topChart1 = null;
         var topChart2 = null
+        var topChart3 = null
+
+        function GerarChartHist(bancaId) {
+            $.ajax({
+                url: "/Relatorios/ItemHistorico",
+                method: "POST",
+                data: { nomeProd: bancaId },
+                success: function (data) {
+                    if (data != null) {
+                        var nomes = []
+                        var valorMensal = []
+                        console.log(data)
+                        for (var i = 0; i < data.length; i++) {
+                            nomes.push(data[i].ano)
+                            valorMensal.push(data[i].quantidade)
+                        }
+                        console.log(nomes)
+                        console.log(valorMensal)
+
+
+                        if (topChart3 != null) {
+                            topChart3.destroy();
+                        }
+                        // Get the context of the canvas element we want to select
+
+
+
+                        var ctx = document.getElementById('topChart3').getContext('2d');
+                        var barChartData = {
+                            labels: nomes,
+                            datasets: [{
+                                label: 'Quantidade de vendas do item ' + bancaId + " ao longo dos anos",
+                                backgroundColor: "#1FE808",
+                                borderColor: "#1FE808",
+                                borderWidth: 1,
+                                data: valorMensal
+                            },]
+                        }
+
+                    };
+                    var myBarChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: barChartData,
+                        options: {
+                            responsive: true,
+                            legend: {
+                                position: 'top',
+                            },
+
+                        }
+                    });
+                    topChart3 = myBarChart
+                    $(".modal").modal('hide');
+                }
+            }
+            )
+        }
 
         function GerarChart(nomeProd) {
+            scrollDown()
+
             $.ajax({
                 url: "/Relatorios/GenerateChartItem",
                 method: "POST",
@@ -182,7 +251,7 @@
                             data: {
                                 labels: meses,
                                 datasets: [{
-                                    label: 'Quantidade de vendas',
+                                    label: 'Quantidade de vendas do item ' + nomeProd,
                                     backgroundColor: "#18AEEA",
                                     borderColor: "#18AEEA",
                                     fill: false,
@@ -197,7 +266,7 @@
                         var barChartData = {
                             labels: meses,
                             datasets: [{
-                                label: 'Valores por venda',
+                                label: 'Valores por venda do item ' + nomeProd,
                                 backgroundColor: "#EA1E18",
                                 borderColor: "#EA1E18",
                                 borderWidth: 1,

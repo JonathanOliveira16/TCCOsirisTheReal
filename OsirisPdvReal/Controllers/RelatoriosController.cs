@@ -452,7 +452,7 @@ namespace OsirisPdvReal.Controllers
                 var vendas = idsProdsAndVenda.Where(v => v.ProdutoId == item).Select(v => v.VendaId).ToList();
                 foreach (var x in vendas)
                 {
-                    var vendaUnica = _context.Vendas.Where(v => v.VendaId == x && v.DataVenda.Month == DateTime.Now.Month).FirstOrDefault();
+                    var vendaUnica = _context.Vendas.Where(v => v.VendaId == x && v.DataVenda.Month == DateTime.Now.Month && v.DataVenda.Year == DateTime.Now.Year).FirstOrDefault();
                     if (vendaUnica != null )
                     {
                         valorTotalMes = valorTotalMes + _context.VendaProduto.Where(v => v.VendaId == vendaUnica.VendaId && v.ProdutoId == item).Select(v => v.ValorTotalDoProduto).FirstOrDefault();
@@ -501,7 +501,7 @@ namespace OsirisPdvReal.Controllers
                 {
                     quantPraSomar = quantPraSomar + listaVenda.Where(c => c.DataVenda.Month == item && c.VendaId == zum).Count();
                 }
-                var VendaComProd = listaVenda.Where(c => c.DataVenda.Month == item).Select(v => v.VendaId).ToList();
+                var VendaComProd = listaVenda.Where(c => c.DataVenda.Month == item && c.DataVenda.Year == DateTime.Now.Year).Select(v => v.VendaId).ToList();
                 foreach (var x in VendaComProd)
                 {
                     valPraSomar = valPraSomar + _context.VendaProduto.Where(v => v.VendaId == x && v.ProdutoId == idProd).Select(v => v.ValorTotalDoProduto).FirstOrDefault();
@@ -561,6 +561,35 @@ namespace OsirisPdvReal.Controllers
                 return Json(listBh);
             }
             catch (Exception ex )
+            {
+                return null;
+            }
+        }
+
+        public JsonResult ItemHistorico(String nomeProd)
+        {
+            int anoBase = DateTime.Now.Year - 10;
+            int quantidade = 0;
+            var produtoId = _context.Produto.Where(v => v.NomeProduto == nomeProd).Select(v=>v.ProdutoId).FirstOrDefault();
+            List<BancaHistorico> listBh = new List<BancaHistorico>();
+            try
+            {
+                for (int i = anoBase; i <= anoBase + 10; i++)
+                {
+                    var itemQuant = _context.Vendas.Where(v => v.ProdutosSalvos.Contains(nomeProd) && v.DataVenda.Year == i).Select(v => v.VendaId).ToList();
+                    foreach (var item in itemQuant)
+                    {
+                        quantidade = quantidade + _context.VendaProduto.Where(p => p.ProdutoId == produtoId && p.VendaId == item).Select(p => p.QuantidadeVendida).FirstOrDefault();
+                    }
+
+                    BancaHistorico bh = new BancaHistorico();
+                    bh.Quantidade = quantidade;
+                    bh.Ano = i;
+                    listBh.Add(bh);
+                }
+                return Json(listBh);
+            }
+            catch (Exception ex)
             {
                 return null;
             }

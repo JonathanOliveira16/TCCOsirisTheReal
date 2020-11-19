@@ -26,6 +26,7 @@ namespace OsirisPdvReal.Controllers
         public IActionResult Login()
         {
             Response.Cookies.Delete("admin");
+            Response.Cookies.Delete("idDoUser");
 
             return View();
         }
@@ -33,7 +34,7 @@ namespace OsirisPdvReal.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Login([Bind("CPF,NomeJornaleiro,EmailJornaleiro,SenhaJornaleiro")] Jornaleiro jornaleiro)
-        {
+        {            
             var jornaleiroOk = _context.Jornaleiros.Include(j=>j.tipo).Where(j => j.EmailJornaleiro.ToLower() == jornaleiro.EmailJornaleiro.ToLower() && j.SenhaJornaleiro == jornaleiro.SenhaJornaleiro && j.StatusId == 1).Select(j => j).FirstOrDefault();
             String variavelDif = "";
             if (jornaleiroOk == null)
